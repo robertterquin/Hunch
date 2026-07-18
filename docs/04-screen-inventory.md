@@ -155,6 +155,8 @@ Required states:
 
 Every state must expose visible feedback, valid actions, and a recoverable next destination.
 
+Phase 4 wireframes, responsive rules, interaction behavior, and state copy are defined in `docs/15-ux-wireframes-and-interaction-contract.md`.
+
 ### Input and analysis states
 
 | State group | State | Visible feedback | Available actions | Next destination |

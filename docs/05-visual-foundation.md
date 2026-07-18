@@ -94,3 +94,7 @@ Avoid:
 - "Harness AI to revolutionize your internship safety workflow."
 - "This is definitely a scam."
 - "Congratulations, this job is safe."
+
+## Phase 5 Implementation Reference
+
+The finalized tokens, component variants, risk-status rules, motion values, representative screen, and content contract are defined in `docs/16-visual-system-and-content-contract.md`.

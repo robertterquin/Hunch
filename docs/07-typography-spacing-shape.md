@@ -82,3 +82,7 @@ Avoid:
 - Do not scale font sizes directly with viewport width.
 - Use the same type scale across breakpoints.
 - Reflow layout instead of shrinking text too far.
+
+## Phase 5 Implementation Reference
+
+The finalized typography, spacing, shape, border, elevation, and motion tokens are defined in `docs/16-visual-system-and-content-contract.md`.

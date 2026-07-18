@@ -89,3 +89,7 @@ Use these labels consistently:
 - Include icons, text labels, and short explanations.
 - Keep contrast high for buttons, badges, and score text.
 - Red, amber, and green text must appear on their matching dark-tinted surfaces or neutral surfaces with enough contrast.
+
+## Phase 5 Implementation Reference
+
+Use the semantic token names and score visualization rules in `docs/16-visual-system-and-content-contract.md` when implementing the color system.

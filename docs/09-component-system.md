@@ -173,3 +173,7 @@ Use to confirm:
 - Checklist updated
 - Screenshot text extracted
 - Error occurred
+
+## Phase 5 Implementation Reference
+
+The component variants, semantic risk treatment, interaction rules, content guidance, and representative screen are defined in `docs/16-visual-system-and-content-contract.md`.
