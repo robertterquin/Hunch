@@ -1,0 +1,205 @@
+{
+  "version": "phase-3.1",
+  "notice": "All names, domains, phone numbers, organizations, and listings in this file are synthetic and de-identified. They are calibration fixtures, not real opportunities.",
+  "riskLevels": {
+    "low-risk": { "min": 0, "max": 30 },
+    "caution": { "min": 31, "max": 65 },
+    "high-risk": { "min": 66, "max": 100 }
+  },
+  "fixtures": [
+    {
+      "id": "safe-01",
+      "kind": "safe-looking",
+      "sourceType": "school-referral",
+      "title": "Brightline Digital Services - Web Support OJT",
+      "text": "Brightline Digital Services is accepting OJT students for a web support placement. Students will help with website content updates, testing, and documentation under the Web Operations team. Schedule: 400 OJT hours, Monday to Friday, 9:00 AM to 5:00 PM. Supervisor: Ana Reyes, Web Operations Lead. Allowance: none; no application, training, or registration fee. Apply through careers@brightline.example and https://brightline.example/careers. Submit only your resume and school endorsement after the interview. We will not ask for passwords, bank details, or government IDs during initial screening. Questions can be verified with your school OJT coordinator.",
+      "expected": {
+        "riskLevel": "low-risk",
+        "scoreRange": [8, 24],
+        "confidence": "high",
+        "findingCategories": [],
+        "nonTriggeringCategories": [
+          "payment-request",
+          "suspicious-email",
+          "vague-company",
+          "vague-role",
+          "unrealistic-compensation",
+          "urgency-pressure",
+          "chat-only-hiring",
+          "sensitive-information"
+        ],
+        "missingInformation": [],
+        "checklistThemes": [
+          "verify company website independently",
+          "confirm supervisor and school placement details"
+        ],
+        "calibrationNote": "Low risk means the visible post contains few warning signals. It is not proof that the opportunity is legitimate."
+      }
+    },
+    {
+      "id": "suspicious-01",
+      "kind": "suspicious",
+      "sourceType": "messenger-forward",
+      "title": "Urgent online office job with registration fee",
+      "text": "URGENT!!! Students needed for easy online office work. Earn PHP 35,000 every month, guaranteed. Limited slots and instant hiring, no interview needed. Pay a PHP 1,500 registration and training fee today before starting. Send your government ID, bank account details, and a selfie to our recruiter on WhatsApp only. Email questions to fastjobs.hiring@gmail.com. Our company name and website will be shared after payment.",
+      "expected": {
+        "riskLevel": "high-risk",
+        "scoreRange": [88, 100],
+        "confidence": "high",
+        "findingCategories": [
+          "payment-request",
+          "suspicious-email",
+          "vague-company",
+          "vague-role",
+          "unrealistic-compensation",
+          "urgency-pressure",
+          "chat-only-hiring",
+          "sensitive-information"
+        ],
+        "evidence": [
+          { "category": "payment-request", "text": "Pay a PHP 1,500 registration and training fee today before starting." },
+          { "category": "suspicious-email", "text": "fastjobs.hiring@gmail.com" },
+          { "category": "vague-company", "text": "Our company name and website will be shared after payment." },
+          { "category": "vague-role", "text": "easy online office work" },
+          { "category": "unrealistic-compensation", "text": "Earn PHP 35,000 every month, guaranteed." },
+          { "category": "urgency-pressure", "text": "URGENT!!!" },
+          { "category": "chat-only-hiring", "text": "to our recruiter on WhatsApp only" },
+          { "category": "sensitive-information", "text": "Send your government ID, bank account details, and a selfie" }
+        ],
+        "missingInformation": [
+          "company identity",
+          "official website",
+          "clear responsibilities",
+          "supervisor and OJT structure"
+        ],
+        "checklistThemes": [
+          "do not pay before independent verification",
+          "do not send IDs or bank details",
+          "verify the company through school or official channels",
+          "request a clear role and supervisor"
+        ]
+      }
+    },
+    {
+      "id": "incomplete-01",
+      "kind": "incomplete",
+      "sourceType": "student-group-chat",
+      "title": "OJT opening with limited details",
+      "text": "Hi students, we need OJT trainees for our growing company. Office work and online tasks, flexible schedule. Good allowance. Message the recruiter on Messenger to know more. Limited slots available. Send your resume if interested.",
+      "expected": {
+        "riskLevel": "caution",
+        "scoreRange": [38, 58],
+        "confidence": "medium",
+        "findingCategories": [
+          "vague-company",
+          "vague-role",
+          "urgency-pressure",
+          "chat-only-hiring"
+        ],
+        "evidence": [
+          { "category": "vague-company", "text": "our growing company" },
+          { "category": "vague-role", "text": "Office work and online tasks, flexible schedule." },
+          { "category": "urgency-pressure", "text": "Limited slots available." },
+          { "category": "chat-only-hiring", "text": "Message the recruiter on Messenger to know more." }
+        ],
+        "missingInformation": [
+          "company name and official website",
+          "specific responsibilities",
+          "OJT hours and supervisor",
+          "allowance amount and conditions",
+          "official application channel"
+        ],
+        "checklistThemes": [
+          "verify the company identity",
+          "request a written role and schedule",
+          "ask for supervisor details",
+          "confirm the application channel through school"
+        ],
+        "calibrationNote": "Missing evidence should reduce confidence without automatically turning an incomplete listing into a high-risk verdict."
+      }
+    },
+    {
+      "id": "informal-01",
+      "kind": "informal-but-verifiable",
+      "sourceType": "school-group",
+      "title": "Northstar Student Tech Lab placement",
+      "text": "Northstar Student Tech Lab is accepting two OJT students for documentation and QA support. The role includes writing test notes, checking assigned pages, and joining a weekly mentor call. The placement follows the school's 400-hour agreement and has no application or training fee. The program uses northstarstudentlab.example for public information, while questions may also be answered at northstar.lab@gmail.com. Apply through the school placement form. Do not send bank details or government IDs during screening.",
+      "expected": {
+        "riskLevel": "low-risk",
+        "scoreRange": [18, 34],
+        "confidence": "medium",
+        "findingCategories": [],
+        "reviewNotes": [
+          "A personal email address is a review signal, not an automatic scam verdict.",
+          "A school application path and verifiable public domain lower uncertainty.",
+          "The final result should explain the personal-email signal if it is surfaced."
+        ],
+        "missingInformation": [
+          "confirm the mentor name through the school placement office"
+        ],
+        "checklistThemes": [
+          "verify the public domain independently",
+          "confirm the placement with the school"
+        ]
+      }
+    }
+  ],
+  "ruleCalibration": [
+    {
+      "category": "payment-request",
+      "positive": "Pay a PHP 1,500 registration and training fee today before starting.",
+      "nonTriggering": "No application, training, or registration fee is required.",
+      "falsePositiveRisk": "A naive text match may flag a sentence that explicitly denies a fee. Negation handling must be tested.",
+      "expectedSeverity": "high"
+    },
+    {
+      "category": "suspicious-email",
+      "positive": "Email questions to fastjobs.hiring@gmail.com.",
+      "nonTriggering": "Apply through careers@brightline.example.",
+      "falsePositiveRisk": "Small organizations, student groups, and legitimate programs may use Gmail. The signal should prompt verification, not a verdict.",
+      "expectedSeverity": "medium"
+    },
+    {
+      "category": "vague-company",
+      "positive": "Our company name and website will be shared after payment.",
+      "nonTriggering": "Brightline Digital Services, https://brightline.example/careers.",
+      "falsePositiveRisk": "Forwarded posts may omit identity details even when the original listing contains them. Ask for verification before escalating.",
+      "expectedSeverity": "medium"
+    },
+    {
+      "category": "vague-role",
+      "positive": "Students needed for easy online office work.",
+      "nonTriggering": "The role includes writing test notes, checking assigned pages, and joining a weekly mentor call.",
+      "falsePositiveRisk": "Short school posts may use broad role language because details are provided in an attached job description.",
+      "expectedSeverity": "medium"
+    },
+    {
+      "category": "unrealistic-compensation",
+      "positive": "Earn PHP 35,000 every month, guaranteed.",
+      "nonTriggering": "The placement follows the school's 400-hour agreement; allowance details are confirmed by the placement office.",
+      "falsePositiveRisk": "Compensation varies by location and program. The rule should consider unclear duties and guarantees, not a fixed amount alone.",
+      "expectedSeverity": "medium"
+    },
+    {
+      "category": "urgency-pressure",
+      "positive": "URGENT! Limited slots and instant hiring, no interview needed.",
+      "nonTriggering": "Applications are open until September 30 and interviews are scheduled through the school placement form.",
+      "falsePositiveRisk": "Real programs can have deadlines. The concern is pressure combined with missing verification or payment demands.",
+      "expectedSeverity": "medium"
+    },
+    {
+      "category": "chat-only-hiring",
+      "positive": "Send your resume to our recruiter on WhatsApp only.",
+      "nonTriggering": "Questions may be answered on Messenger, but applications go through the official school placement form.",
+      "falsePositiveRisk": "Mentioning Messenger or WhatsApp is not enough by itself. The rule should detect exclusive hiring channels and missing official paths.",
+      "expectedSeverity": "medium"
+    },
+    {
+      "category": "sensitive-information",
+      "positive": "Send your government ID, bank account details, and a selfie today.",
+      "nonTriggering": "Submit only your resume and school endorsement during initial screening; no ID or bank details are needed.",
+      "falsePositiveRisk": "Some legitimate onboarding processes request documents later. Timing and request context are essential.",
+      "expectedSeverity": "high"
+    }
+  ]
+}
