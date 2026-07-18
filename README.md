@@ -1,75 +1,45 @@
-# React + TypeScript + Vite
+# Hunch
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Hunch is a student-focused web app for checking OJT and internship listings for visible scam signals before applying.
 
-Currently, two official plugins are available:
+## Current Phase
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Phase 6 establishes the React and TypeScript foundation: a typed domain model, route contract, responsive app shell, and a mock analysis service backed by the calibrated fixtures in `fixtures/hunch-analysis-fixtures.json`.
 
-## React Compiler
+## Setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Requirements: Node.js 20 or newer.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The local app is served by Vite. Phase 6 uses synthetic fixture data only; Supabase and server-side analysis integrations are planned for later phases.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Commands
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm run dev       # Start the local development server
+npm run lint      # Run ESLint
+npm run typecheck # Run the TypeScript project check
+npm run build     # Run typecheck and create a production build
+npm run preview   # Preview the production build locally
 ```
+
+## Project Structure
+
+- `src/app` contains the router and shared application shell.
+- `src/pages` contains route-level screens.
+- `src/types` contains the typed analysis contract.
+- `src/data` and `src/services` expose the fixture-backed mock service.
+- `fixtures` contains the Phase 3 calibration fixtures.
+- `docs` contains the product, UX, visual, and implementation contracts.
+
+## Route Foundation
+
+The current route map includes `/analyze`, `/analyze/review`, `/saved`, `/saved/:analysisId`, `/compare`, `/guide`, `/guide/:patternId`, `/checklist`, `/settings`, and `/auth/:mode`. The root route redirects to `/analyze`.
+
+## Environment Variables
+
+No environment variables are required for Phase 6. Supabase URL and public anon key configuration belongs to the backend integration phase, and secrets must remain outside source control.

@@ -464,6 +464,8 @@ Dependencies: Phases 1-5.
 
 Exit gate: a new contributor can install, run, typecheck, lint, and build the project from the README.
 
+Implementation note: this foundation is now present in `src/app`, `src/pages`, `src/services`, `src/types`, and `src/data`, with the fixture-backed mock flow documented in the repository README. Supabase and server-side OpenAI integration remain intentionally deferred to their later phases.
+
 ### Phase 7: Static UI and interaction build
 
 Outcome: the complete product flow works with controlled mock data.
