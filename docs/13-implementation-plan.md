@@ -623,6 +623,8 @@ Dependencies: Phases 8 and 10.
 
 Exit gate: a student can compare two saved listings without interpreting the lower score as a guarantee of safety.
 
+Implementation note: Phase 12 uses the existing saved-report, rule-finding, and checklist data. It adds saved-report search, filters, and sorting; comparison of two or more selected reports; all rule-catalog Scam Guide entries; a reusable session checklist; and report-specific checklist progress. No Supabase schema change is required.
+
 ### Phase 13: Safety, privacy, accessibility, and abuse review
 
 Outcome: the product handles uncertainty and sensitive content responsibly.
