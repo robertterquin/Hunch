@@ -22,6 +22,7 @@ Run [`supabase/master.sql`](../supabase/master.sql) in the Supabase SQL Editor. 
 - `red_flags`
 - `checklist_items`
 - ownership indexes and row-level security policies
+- authenticated-role table and sequence permissions, with RLS still enforcing ownership
 - a profile row trigger for new Auth users
 - the Phase 9 AI explanation fields on saved reports
 - the optional Phase 11 `analyses.source_url` field for saved public-link reports

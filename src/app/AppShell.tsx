@@ -1,4 +1,4 @@
-import { BookOpen, CheckSquare, FileSearch, Plus, Settings, ShieldCheck } from 'lucide-react'
+import { BookOpen, CheckSquare, FileSearch, Settings, ShieldCheck } from 'lucide-react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useAppState } from './stateContext'
 import hunchLogo from '../assets/hunch-logo.svg'
@@ -35,10 +35,6 @@ export function AppShell() {
         </nav>
 
         <div className="topbar-actions">
-          <Link className="button button-primary button-compact" to="/analyze">
-            <Plus size={16} aria-hidden="true" />
-            New analysis
-          </Link>
           <Link className="account-link" to={user ? '/settings' : '/auth/sign-in'}>{isAuthLoading ? 'Checking...' : user?.email?.split('@')[0] ?? 'Sign in'}</Link>
         </div>
       </header>

@@ -89,6 +89,15 @@ create index if not exists analyses_user_created_at_idx on public.analyses(user_
 create index if not exists red_flags_analysis_id_idx on public.red_flags(analysis_id);
 create index if not exists checklist_items_analysis_id_idx on public.checklist_items(analysis_id);
 
+-- The browser uses Supabase's authenticated role. RLS below still limits every
+-- row to its owner; these grants only allow that role to reach the tables.
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on table public.profiles to authenticated;
+grant select, insert, update, delete on table public.analyses to authenticated;
+grant select, insert, update, delete on table public.red_flags to authenticated;
+grant select, insert, update, delete on table public.checklist_items to authenticated;
+grant usage, select on all sequences in schema public to authenticated;
+
 alter table public.profiles enable row level security;
 alter table public.analyses enable row level security;
 alter table public.red_flags enable row level security;
