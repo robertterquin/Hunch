@@ -16,8 +16,8 @@ const patterns = [
   { id: 'chat-only-hiring', title: 'Chat-only hiring', description: 'The application exists only in a chat app, making it harder to confirm the organization or preserve a record.', safetyTip: 'Ask for an official email, website, or school-approved application path.', fixtureId: 'suspicious-01' },
 ]
 
-function SupportPage({ eyebrow, title, description, actions, children }: { eyebrow: string; title: string; description: string; actions?: ReactNode; children?: ReactNode }) {
-  return <div className="page-stack support-page"><section className="page-heading"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p className="page-intro">{description}</p></div>{actions && <div className="page-actions">{actions}</div>}</section>{children}</div>
+function SupportPage({ eyebrow, title, description, actions, children, className = '' }: { eyebrow: string; title: string; description: string; actions?: ReactNode; children?: ReactNode; className?: string }) {
+  return <div className={`page-stack support-page${className ? ` ${className}` : ''}`}><section className="page-heading"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p className="page-intro">{description}</p></div>{actions && <div className="page-actions">{actions}</div>}</section>{children}</div>
 }
 
 function formatDate(date: string) {
@@ -145,7 +145,7 @@ export function AuthPage() {
   }
   const submitLabel = isRecovery ? 'Update password' : authMode === 'sign-up' ? 'Create account' : authMode === 'reset' ? 'Send reset email' : 'Sign in'
   const showSignedIn = Boolean(user) && !isRecovery
-  return <SupportPage eyebrow="Account" title={title} description={activeReport ? 'Your current report will stay available while you sign in. After authentication, it can be saved privately.' : 'Create a private account to save and revisit your reports.'}>
+  return <SupportPage className="auth-page" eyebrow="Account" title={title} description={activeReport ? 'Your current report will stay available while you sign in. After authentication, it can be saved privately.' : 'Create a private account to save and revisit your reports.'}>
     <section className="panel auth-panel">
       <div className="auth-heading"><div className="settings-icon"><LockKeyhole size={19} aria-hidden="true" /></div><div><strong>{activeReport ? 'Your report is preserved' : 'Private reports, when you are ready'}</strong><p className="muted-copy">No report is saved until you choose to continue.</p></div></div>
       {showSignedIn ? <div className="auth-success"><Check size={22} aria-hidden="true" /><h2>You are signed in.</h2><p>{user?.email ?? 'Your account'} can now access private reports.</p><Link className="button button-primary" to={activeReport ? '/analyze' : '/saved'}>{activeReport ? 'Return to Analyze' : 'Open Saved'} <ArrowRight size={16} aria-hidden="true" /></Link></div> : <form className="auth-form" onSubmit={(event) => { event.preventDefault(); void submit() }}>
