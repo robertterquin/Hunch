@@ -130,6 +130,34 @@ function makeChecklist(fixture: AnalysisFixture): AnalysisReport['checklist'] {
   })
 }
 
+export function createMockReport(
+  fixture: AnalysisFixture,
+  options: { id?: string; sourceType?: AnalysisInput['sourceType']; text?: string; createdAt?: string } = {},
+): AnalysisReport {
+  const { expected } = fixture
+  const riskScore = midpoint(expected.scoreRange)
+  const flags = makeFlags(fixture)
+  const riskLevel = riskScoreToLevel(riskScore)
+
+  return {
+    id: options.id ?? `mock-${fixture.id}-${Date.now()}`,
+    fixtureId: fixture.id,
+    sourceType: options.sourceType ?? fixture.sourceType,
+    originalText: options.text ?? fixture.text,
+    riskScore,
+    riskLevel,
+    resultState: resultStateFor(riskLevel, expected.confidence, expected.missingInformation),
+    confidence: expected.confidence,
+    summary: summaryFor(fixture),
+    uncertainty: uncertaintyFor(fixture),
+    flags,
+    missingInformation: expected.missingInformation,
+    checklist: makeChecklist(fixture),
+    analysisVersion: 'mock-phase-7.1',
+    createdAt: options.createdAt ?? new Date().toISOString(),
+  }
+}
+
 function resultStateFor(riskLevel: RiskLevel, confidence: Confidence, missingInformation: string[]): ResultState {
   if (confidence === 'low' || missingInformation.length > 3) return 'partial-uncertain'
   return riskLevel
@@ -143,28 +171,7 @@ export async function analyzeListing(input: AnalysisInput): Promise<AnalysisRepo
 
   await delay(320)
   const fixture = chooseFixture({ ...input, text: normalizedText })
-  const { expected } = fixture
-  const riskScore = midpoint(expected.scoreRange)
-  const flags = makeFlags(fixture)
-  const riskLevel = riskScoreToLevel(riskScore)
-
-  return {
-    id: `mock-${fixture.id}-${Date.now()}`,
-    fixtureId: fixture.id,
-    sourceType: input.sourceType,
-    originalText: normalizedText,
-    riskScore,
-    riskLevel,
-    resultState: resultStateFor(riskLevel, expected.confidence, expected.missingInformation),
-    confidence: expected.confidence,
-    summary: summaryFor(fixture),
-    uncertainty: uncertaintyFor(fixture),
-    flags,
-    missingInformation: expected.missingInformation,
-    checklist: makeChecklist(fixture),
-    analysisVersion: 'mock-phase-6.1',
-    createdAt: new Date().toISOString(),
-  }
+  return createMockReport(fixture, { sourceType: input.sourceType, text: normalizedText })
 }
 
 function riskScoreToLevel(score: number): RiskLevel {

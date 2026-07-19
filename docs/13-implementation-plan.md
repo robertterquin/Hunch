@@ -490,6 +490,8 @@ Dependencies: Phase 6.
 
 Exit gate: a reviewer can demo the full journey without backend services and no core state is represented only by a happy-path screen.
 
+Implementation note: Phase 7 now provides a controlled mock-data journey across Analyze, Saved, Compare, Scam Guide, Checklist, Settings, Auth, and screenshot review. Report evidence, checklist completion, filters, comparison selection, deletion confirmation, and authentication preservation are represented as interactive client states; backend persistence and OCR remain deferred to Phases 10 and 11.
+
 ### Phase 8: Rule-based detection engine
 
 Outcome: Hunch has a transparent, testable baseline for risk scoring.

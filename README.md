@@ -4,7 +4,7 @@ Hunch is a student-focused web app for checking OJT and internship listings for 
 
 ## Current Phase
 
-Phase 6 establishes the React and TypeScript foundation: a typed domain model, route contract, responsive app shell, and a mock analysis service backed by the calibrated fixtures in `fixtures/hunch-analysis-fixtures.json`.
+Phase 7 turns that foundation into a complete mock-data product flow: polished route states, expandable reports, checklist interactions, saved-report comparison, Scam Guide content, and responsive empty/loading/error-ready surfaces.
 
 ## Setup
 

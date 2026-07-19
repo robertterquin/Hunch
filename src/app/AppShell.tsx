@@ -26,7 +26,7 @@ export function AppShell() {
             <NavLink
               key={to}
               to={to}
-              className={({ isActive }) => `nav-link${isActive ? ' is-active' : ''}`}
+              className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             >
               <Icon size={16} aria-hidden="true" />
               {label}
@@ -39,7 +39,7 @@ export function AppShell() {
             <Plus size={16} aria-hidden="true" />
             New analysis
           </Link>
-          <Link className="account-link" to="/auth/sign-in">Sign in</Link>
+          <Link className="account-link" to="/auth/sign-in">Account</Link>
         </div>
       </header>
 
@@ -52,7 +52,7 @@ export function AppShell() {
           <NavLink
             key={to}
             to={to}
-            className={({ isActive }) => `mobile-nav-link${isActive ? ' is-active' : ''}`}
+            className={({ isActive }) => `mobile-nav-link${isActive ? ' active' : ''}`}
           >
             <Icon size={18} aria-hidden="true" />
             <span>{label}</span>
