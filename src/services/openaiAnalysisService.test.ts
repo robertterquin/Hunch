@@ -37,7 +37,7 @@ describe('openai explanation client', () => {
     const fetchMock = vi.fn().mockResolvedValue(mockJsonResponse(validExplanation()))
     vi.stubGlobal('fetch', fetchMock)
 
-    const report = await analyzeListingWithExplanation({ text: suspiciousFixture.text, sourceType: suspiciousFixture.sourceType })
+    const report = await analyzeListingWithExplanation({ text: suspiciousFixture.text, sourceType: 'public-link', sourceUrl: 'https://careers.example.test/ojt', listingTitle: 'Example OJT opening' })
 
     expect(report.explanationSource).toBe('openai')
     expect(report.analysisVersion).toBe('rules-1.0.0+openai-explanation-1.0.0')
@@ -45,6 +45,8 @@ describe('openai explanation client', () => {
     expect(report.riskLevel).toBe(ruleResult.riskLevel)
     expect(report.scoreBreakdown).toEqual(ruleResult.scoreBreakdown)
     expect(report.flags.map((flag) => flag.evidence)).toEqual(ruleResult.findings.map((finding) => finding.evidence))
+    expect(report.sourceUrl).toBe('https://careers.example.test/ojt')
+    expect(report.listingTitle).toBe('Example OJT opening')
     expect(report.studentAdvice).toContain('school coordinator')
     expect(report.checklist.filter((item) => item.label === 'Verify the company independently before applying.')).toHaveLength(1)
     expect(fetchMock).toHaveBeenCalledOnce()

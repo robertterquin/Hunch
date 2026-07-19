@@ -1,13 +1,12 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react'
-import { ArrowRight, Check, CircleAlert, FileText, LoaderCircle, RotateCcw, Upload } from 'lucide-react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useEffect, useState, type FormEvent } from 'react'
+import { ArrowRight, Check, CircleAlert, FileText, Link as LinkIcon, LoaderCircle, RotateCcw } from 'lucide-react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { AnalysisReportView } from '../components/AnalysisReportView'
 import { useAppState } from '../app/stateContext'
 import { getFixtureById } from '../data/analysisFixtures'
+import { analyzePublicLink } from '../services/linkAnalysisService'
 import { analyzeListingWithExplanation } from '../services/openaiAnalysisService'
-import { setScreenshotDraft } from '../services/screenshotDraft'
-import { validateScreenshotFile } from '../services/screenshotOcr'
-import type { SourceType } from '../types/analysis'
+import type { AnalysisReport, SourceType } from '../types/analysis'
 
 const sourceOptions: Array<{ value: SourceType; label: string }> = [
   { value: 'facebook', label: 'Facebook' },
@@ -18,12 +17,15 @@ const sourceOptions: Array<{ value: SourceType; label: string }> = [
   { value: 'other', label: 'Other' },
 ]
 
+type InputMode = 'paste' | 'link'
+
 export function AnalyzePage() {
   const { activeReport, setActiveReport, saveReport, savedReports, toggleChecklistItem, user } = useAppState()
   const navigate = useNavigate()
-  const location = useLocation()
   const [searchParams] = useSearchParams()
+  const [inputMode, setInputMode] = useState<InputMode>('paste')
   const [text, setText] = useState('')
+  const [linkUrl, setLinkUrl] = useState('')
   const [sourceType, setSourceType] = useState<SourceType>('facebook')
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
@@ -34,6 +36,7 @@ export function AnalyzePage() {
     const fixture = fixtureId ? getFixtureById(fixtureId) : undefined
     if (!fixture) return
     const timer = window.setTimeout(() => {
+      setInputMode('paste')
       setText(fixture.text)
       setSourceType(fixture.sourceType)
       setActiveReport(null)
@@ -42,34 +45,33 @@ export function AnalyzePage() {
     return () => window.clearTimeout(timer)
   }, [searchParams, setActiveReport])
 
-  useEffect(() => {
-    const state = location.state as { text?: string; sourceType?: SourceType; notice?: string } | null
-    if (!state?.sourceType && !state?.text) return
-    const timer = window.setTimeout(() => {
-      if (state.text) setText(state.text)
-      setSourceType(state.sourceType ?? 'screenshot')
-      setActiveReport(null)
-      setNotice(state.notice ?? 'Screenshot text is ready. Review it once more, then analyze it.')
-    })
-    return () => window.clearTimeout(timer)
-  }, [location.state, setActiveReport])
+  const showReport = (nextReport: AnalysisReport) => {
+    setActiveReport(nextReport)
+    setNotice(nextReport.explanationSource === 'openai'
+      ? 'Your report is ready with an evidence-bound explanation. Review the evidence before deciding what to do next.'
+      : `${nextReport.explanationNote ?? 'AI explanation is unavailable right now.'} Review the evidence before deciding what to do next.`)
+  }
 
   const handleAnalyze = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError('')
     setNotice('')
-    if (text.trim().length < 40) {
+
+    if (inputMode === 'paste' && text.trim().length < 40) {
       setError('Paste at least 40 characters so Hunch has enough detail to analyze.')
+      return
+    }
+    if (inputMode === 'link' && !linkUrl.trim()) {
+      setError('Enter one public HTTP or HTTPS listing link.')
       return
     }
 
     setIsAnalyzing(true)
     try {
-      const nextReport = await analyzeListingWithExplanation({ text, sourceType })
-      setActiveReport(nextReport)
-      setNotice(nextReport.explanationSource === 'openai'
-        ? 'Your report is ready with an evidence-bound explanation. Review the evidence before deciding what to do next.'
-        : `${nextReport.explanationNote ?? 'AI explanation is unavailable right now.'} Review the evidence before deciding what to do next.`)
+      const nextReport = inputMode === 'paste'
+        ? await analyzeListingWithExplanation({ text, sourceType })
+        : await analyzePublicLink(linkUrl)
+      showReport(nextReport)
     } catch (analysisError) {
       setError(analysisError instanceof Error ? analysisError.message : 'We could not complete this check.')
     } finally {
@@ -80,6 +82,7 @@ export function AnalyzePage() {
   const loadSample = () => {
     const sample = getFixtureById('suspicious-01')
     if (!sample) return
+    setInputMode('paste')
     setText(sample.text)
     setSourceType(sample.sourceType)
     setActiveReport(null)
@@ -88,29 +91,17 @@ export function AnalyzePage() {
   }
 
   const clearInput = () => {
-    if ((text || activeReport) && !window.confirm('Clear this listing and its current result?')) return
+    const hasInput = inputMode === 'paste' ? Boolean(text) : Boolean(linkUrl)
+    if ((hasInput || activeReport) && !window.confirm('Clear this listing and its current result?')) return
     setText('')
+    setLinkUrl('')
     setActiveReport(null)
     setError('')
     setNotice('')
   }
 
-  const handleScreenshotSelect = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    event.target.value = ''
-    if (!file) return
-    const validation = validateScreenshotFile(file)
-    if (validation) {
-      setError(validation)
-      return
-    }
-    setScreenshotDraft(file)
-    setError('')
-    navigate('/analyze/review')
-  }
-
   const characterCount = text.length
-  const canAnalyze = text.trim().length >= 40 && !isAnalyzing
+  const canAnalyze = (inputMode === 'paste' ? text.trim().length >= 40 : Boolean(linkUrl.trim())) && !isAnalyzing
   const isCurrentReportSaved = activeReport ? savedReports.some((report) => report.id === activeReport.id) : false
   const handleSave = async () => {
     if (!activeReport) return
@@ -129,7 +120,7 @@ export function AnalyzePage() {
         <div>
           <p className="eyebrow">Analyze</p>
           <h1>Check a listing before you apply.</h1>
-          <p className="page-intro">Paste an OJT or internship post to find visible risk signals and practical next steps.</p>
+          <p className="page-intro">Paste an OJT or internship post, or analyze a readable public listing link, to find visible risk signals and practical next steps.</p>
         </div>
         <div className="status-note"><span className="status-dot" aria-hidden="true" /><span>{isAnalyzing ? 'Checking your listing' : 'Anonymous analysis is available'}</span></div>
       </section>
@@ -139,28 +130,36 @@ export function AnalyzePage() {
       <section className="analyzer-layout">
         <form className="panel analyzer-panel" onSubmit={handleAnalyze}>
           <div className="panel-heading">
-            <div><p className="eyebrow">Step 1 of 2</p><h2>Paste the listing</h2></div>
-            <span className="panel-kicker">Text check</span>
+            <div><p className="eyebrow">Step 1 of 2</p><h2>{inputMode === 'paste' ? 'Paste the listing' : 'Analyze a public link'}</h2></div>
+            <span className="panel-kicker">{inputMode === 'paste' ? 'Text check' : 'Public page'}</span>
           </div>
 
-          <label className="field-label" htmlFor="source">Where did you find it?</label>
-          <select id="source" value={sourceType} onChange={(event) => setSourceType(event.target.value as SourceType)}>
-            {sourceOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-          </select>
+          <div className="input-mode-toggle" role="group" aria-label="Choose listing input method">
+            <button className={inputMode === 'paste' ? 'is-active' : ''} type="button" onClick={() => { setInputMode('paste'); setError('') }}>Paste text</button>
+            <button className={inputMode === 'link' ? 'is-active' : ''} type="button" onClick={() => { setInputMode('link'); setError('') }}><LinkIcon size={15} aria-hidden="true" />Public link</button>
+          </div>
 
-          <label className="field-label" htmlFor="listing">Listing or recruiter message</label>
-          <textarea id="listing" value={text} onChange={(event) => setText(event.target.value)} placeholder="Paste the listing, recruiter message, or forwarded post here." aria-describedby="listing-help listing-count" />
-          <div className="field-meta"><span id="listing-help">Use at least 40 characters for a meaningful check.</span><span id="listing-count">{characterCount} characters</span></div>
+          {inputMode === 'paste' ? <>
+            <label className="field-label" htmlFor="source">Where did you find it?</label>
+            <select id="source" value={sourceType} onChange={(event) => setSourceType(event.target.value as SourceType)}>
+              {sourceOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select>
+            <label className="field-label" htmlFor="listing">Listing or recruiter message</label>
+            <textarea id="listing" value={text} onChange={(event) => setText(event.target.value)} placeholder="Paste the listing, recruiter message, or forwarded post here." aria-describedby="listing-help listing-count" />
+            <div className="field-meta"><span id="listing-help">Use at least 40 characters for a meaningful check.</span><span id="listing-count">{characterCount} characters</span></div>
+            {text.length > 0 && text.trim().length < 40 && <p className="field-warning"><CircleAlert size={15} aria-hidden="true" />Paste {40 - text.trim().length} more characters to continue.</p>}
+          </> : <>
+            <label className="field-label" htmlFor="public-link">Public listing URL</label>
+            <input id="public-link" type="url" value={linkUrl} onChange={(event) => setLinkUrl(event.target.value)} placeholder="https://example.com/internship" autoComplete="url" inputMode="url" aria-describedby="public-link-help" />
+            <p className="field-help" id="public-link-help">Hunch can read public HTML pages only. Login-protected, private, JavaScript-only, blocked, or non-HTML pages need to be pasted manually.</p>
+          </>}
 
-          {text.length > 0 && text.trim().length < 40 && <p className="field-warning"><CircleAlert size={15} aria-hidden="true" />Paste {40 - text.trim().length} more characters to continue.</p>}
           {error && <p className="inline-error" role="alert"><CircleAlert size={16} aria-hidden="true" />{error}</p>}
 
           <div className="button-row">
-            <button className="button button-secondary" type="button" onClick={clearInput} disabled={!text && !activeReport}><RotateCcw size={16} aria-hidden="true" />Clear</button>
-            <button className="button button-secondary" type="button" onClick={loadSample}><FileText size={16} aria-hidden="true" />Try a sample</button>
-            <label className="button button-secondary" htmlFor="screenshot-upload"><Upload size={16} aria-hidden="true" />Upload screenshot</label>
-            <input className="sr-only" id="screenshot-upload" type="file" accept="image/png,image/jpeg" aria-label="Upload screenshot of OJT post" onChange={handleScreenshotSelect} />
-            <button className="button button-primary" type="submit" disabled={!canAnalyze}>{isAnalyzing ? <LoaderCircle className="spin" size={16} aria-hidden="true" /> : <ArrowRight size={16} aria-hidden="true" />}{isAnalyzing ? 'Checking' : 'Analyze post'}</button>
+            <button className="button button-secondary" type="button" onClick={clearInput} disabled={!(inputMode === 'paste' ? text : linkUrl) && !activeReport}><RotateCcw size={16} aria-hidden="true" />Clear</button>
+            {inputMode === 'paste' && <button className="button button-secondary" type="button" onClick={loadSample}><FileText size={16} aria-hidden="true" />Try a sample</button>}
+            <button className="button button-primary" type="submit" disabled={!canAnalyze}>{isAnalyzing ? <LoaderCircle className="spin" size={16} aria-hidden="true" /> : <ArrowRight size={16} aria-hidden="true" />}{isAnalyzing ? 'Checking' : inputMode === 'paste' ? 'Analyze post' : 'Analyze link'}</button>
           </div>
           <p className="trust-note">Hunch provides an estimate based on visible signals. It does not prove whether a listing is legitimate.</p>
         </form>

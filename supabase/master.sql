@@ -15,6 +15,7 @@ create table if not exists public.analyses (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   listing_title text not null default 'Saved Hunch report',
+  source_url text,
   source_type text not null,
   original_text text not null check (char_length(original_text) >= 40),
   risk_score integer not null check (risk_score between 0 and 100),
@@ -60,6 +61,7 @@ create table if not exists public.checklist_items (
 -- Upgrade projects previously created from the individual migrations.
 alter table public.analyses
   add column if not exists score_breakdown jsonb not null default '[]'::jsonb,
+  add column if not exists source_url text,
   add column if not exists explanation_source text not null default 'rules',
   add column if not exists explanation_note text,
   add column if not exists student_advice text not null default 'Verify the opportunity through an official company or school channel before applying.';

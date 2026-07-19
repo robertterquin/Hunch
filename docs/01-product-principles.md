@@ -2,7 +2,7 @@
 
 ## Product
 
-Hunch is an OJT and internship safety tool for students. It gives students a second opinion before they apply by analyzing posts, screenshots, and recruiter messages for scam signals.
+Hunch is an OJT and internship safety tool for students. It gives students a second opinion before they apply by analyzing pasted posts, public listing pages, and recruiter messages for scam signals.
 
 ## Target User
 
@@ -34,7 +34,7 @@ The app should not claim that a post is definitely real or fake. It should provi
    The app gives a risk estimate based on signals. It should never guarantee that a listing is safe.
 
 6. Respect privacy.
-   OJT posts, screenshots, names, emails, and recruiter messages may contain sensitive details. Only store what the user chooses to save.
+   OJT posts, public source URLs, names, emails, and recruiter messages may contain sensitive details. Only store what the user chooses to save.
 
 7. Make verification actionable.
    Every result should suggest what the student can do next before applying.
@@ -44,7 +44,7 @@ The app should not claim that a post is definitely real or fake. It should provi
 Hunch can:
 
 - Analyze pasted OJT or internship posts.
-- Analyze text extracted from screenshots.
+- Analyze readable text from public listing pages.
 - Detect common scam indicators.
 - Explain red flags.
 - Generate a pre-application checklist.
@@ -55,5 +55,5 @@ Hunch should not:
 - Guarantee that an internship is legitimate.
 - Replace school placement office guidance.
 - Publicly accuse a company or person of fraud.
-- Store uploaded screenshots without user intent.
+- Fetch private pages or store extracted page content without user intent.
 - Ask users for unnecessary personal documents.

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, ChevronDown, ChevronUp, CircleAlert, Info, LockKeyhole, Sparkles } from 'lucide-react'
+import { Check, ChevronDown, ChevronUp, CircleAlert, ExternalLink, Info, LockKeyhole, Sparkles } from 'lucide-react'
 import type { AnalysisReport } from '../types/analysis'
 
 const riskLabels = {
@@ -30,6 +30,7 @@ export function AnalysisReportView({ report, onToggleChecklist, onSave, isSaved 
             <span className={`risk-pill risk-pill-${report.riskLevel}`}>{report.confidence} confidence</span>
           </div>
           <p className="report-summary">{report.summary}</p>
+          {report.sourceUrl && <a className="report-source-link" href={report.sourceUrl} target="_blank" rel="noreferrer"><ExternalLink size={14} aria-hidden="true" />Open analyzed source</a>}
           <p className="explanation-status" role="status">
             {report.explanationSource === 'openai' ? <Sparkles size={13} aria-hidden="true" /> : <Info size={13} aria-hidden="true" />}
             {report.explanationNote ?? (report.explanationSource === 'openai' ? 'AI explanation is grounded in the rule findings.' : 'This report uses deterministic rule analysis.')}

@@ -6,6 +6,7 @@ interface AnalysisRow {
   id: string
   user_id: string
   listing_title: string
+  source_url: string | null
   source_type: AnalysisReport['sourceType']
   original_text: string
   risk_score: number
@@ -58,6 +59,7 @@ function mapReport(row: AnalysisRow): AnalysisReport {
     id: row.id,
     fixtureId: `saved-${row.id}`,
     listingTitle: row.listing_title,
+    sourceUrl: row.source_url ?? undefined,
     sourceType: row.source_type,
     originalText: row.original_text,
     riskScore: row.risk_score,
@@ -162,6 +164,7 @@ export async function saveAnalysisReport(report: AnalysisReport, userId: string)
   const { data: analysis, error: analysisError } = await client.from('analyses').insert({
     user_id: userId,
     listing_title: report.listingTitle ?? 'Saved Hunch report',
+    source_url: report.sourceUrl ?? null,
     source_type: report.sourceType,
     original_text: report.originalText,
     risk_score: report.riskScore,

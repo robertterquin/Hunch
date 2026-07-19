@@ -16,7 +16,7 @@ Hunch gives students a fast, explainable second opinion on an OJT or internship 
 - Core job: identify warning signals in a job post and turn them into cautious, practical next steps.
 - Core experience: analyzer-first web app, not a general chatbot or job board.
 - Primary artifact: a risk report containing a score, evidence, explanations, and a before-applying checklist.
-- Input methods: pasted post text in the first release; screenshot OCR when the text flow is reliable.
+- Input methods: pasted post text and readable public-link analysis.
 - AI boundary: OpenAI improves classification explanations and checklist wording; deterministic rules remain visible and testable.
 - Data boundary: anonymous analysis is supported; saving reports requires authentication and explicit user action.
 - Visual direction: minimal dark interface, high contrast, compact dashboard layout, and restrained motion.
@@ -37,7 +37,7 @@ Your second opinion before applying.
 
 ### The problem
 
-Students searching for OJT often encounter listings through social media, messaging apps, school groups, and forwarded screenshots. These posts may be incomplete, informal, or intentionally deceptive. A student may not know whether a request for a fee, personal email, urgent reply, or sensitive document is normal.
+Students searching for OJT often encounter listings through social media, messaging apps, school groups, and public career pages. These posts may be incomplete, informal, or intentionally deceptive. A student may not know whether a request for a fee, personal email, urgent reply, or sensitive document is normal.
 
 The problem is not only detecting scams. It is helping a student pause, understand the signals, and choose a safer next action before the opportunity becomes costly.
 
@@ -48,7 +48,7 @@ The problem is not only detecting scams. It is helping a student pause, understa
 | Students see posts without enough context. | A quick decision can lead to money loss or exposed documents. | Surface missing information and recommend verification steps. |
 | Warning signs are scattered across the post. | A student may notice one signal but miss a pattern. | Group findings into understandable red-flag categories. |
 | A simple fake-or-real label is too confident. | False positives can reject valid opportunities; false negatives can create harm. | Show a risk estimate with evidence, uncertainty, and next actions. |
-| Students find posts as screenshots. | Manually retyping a post adds friction and errors. | Support screenshot extraction with an editable text review step. |
+| Students find public listing pages. | Finding and comparing the relevant text adds friction. | Safely extract readable public HTML with a paste-text recovery path. |
 | Students need to compare opportunities. | The safer-looking option may not be the most obvious one. | Save reports and compare scores, evidence, and missing details. |
 
 ### Sharp problem statement
@@ -92,8 +92,8 @@ The product should feel like a short, visible sequence. Analysis is the primary 
 
 | Stage | Student action | Hunch response |
 | --- | --- | --- |
-| 01. Submit | Paste a listing or upload a screenshot. | Accept the input and show what will be analyzed. |
-| 02. Review | Confirm or edit extracted text. | Make OCR uncertainty visible before analysis. |
+| 01. Submit | Paste a listing or enter a public link. | Accept the input and show what will be analyzed. |
+| 02. Review | Inspect the rule-based result and evidence. | Make extraction limits and uncertainty visible before action. |
 | 03. Analyze | Start the check. | Run deterministic rules, then request structured AI explanations. |
 | 04. Understand | Read score, level, evidence, and missing details. | Explain each signal in plain language and show its effect on the score. |
 | 05. Verify | Complete practical checks before applying. | Generate a checklist based on the actual findings. |
@@ -103,12 +103,12 @@ The product should feel like a short, visible sequence. Analysis is the primary 
 
 | Stage | Input | Output | Exit gate |
 | --- | --- | --- | --- |
-| 1. Analyzer intake | Pasted text, optional source label, or screenshot | Normalized text, source type, input quality state | User can see what will be analyzed. |
-| 2. Text review | OCR text with uncertain or missing sections | User-confirmed text and extraction corrections | No analysis starts from unreviewed OCR when confidence is low. |
+| 1. Analyzer intake | Pasted text, optional source label, or public link | Normalized text, source type, input quality state | User can see what will be analyzed. |
+| 2. Link extraction | Static public HTML and page title | Readable text or manual-paste recovery | Unsafe or unreadable pages are never analyzed. |
 | 3. Rule scan | Normalized listing text | Deterministic findings, categories, score impacts, matched evidence | Every rule result has a stable category and explanation key. |
 | 4. AI explanation | Listing text plus rule findings | Summary, cautious interpretation, evidence mapping, tailored checklist | Structured response validates against the response schema. |
 | 5. Result review | Score, findings, and context | Risk level, expanded warnings, missing information, next actions | Student can explain why the result received its level. |
-| 6. Persistence | Accepted report and optional screenshot | Private saved analysis with version metadata | RLS prevents access by other users. |
+| 6. Persistence | Accepted report and optional source URL | Private saved analysis with version metadata | RLS prevents access by other users. |
 | 7. Comparison | Two or more saved reports | Side-by-side signal and score comparison | Comparison does not imply that the lower score is guaranteed safe. |
 
 ### Core UX rule
@@ -182,7 +182,7 @@ Use OpenAI on the server side to turn rule findings into careful explanations an
 | Structured response | Return summary, findings, and checklist in a known schema. | Schema validity does not guarantee factual correctness. |
 | Server-side request | Keep the API key away from the browser. | Never place the key in Vite client environment variables. |
 | Streaming or progress | Show analysis stages only when backend events support them. | Do not fake precise progress percentages. |
-| Image input or OCR support | Optional screenshot path after text extraction is stable. | Let the user review extracted text before scoring. |
+| Public-link extraction | Server-side static HTML path after paste analysis is stable. | Let students analyze public pages with manual-paste recovery. |
 | Safety review | Filter or soften unsupported accusations and sensitive-data handling. | Hunch should describe signals in a post, not label people criminals. |
 
 ### Request sequence
@@ -213,7 +213,7 @@ Use OpenAI on the server side to turn rule findings into careful explanations an
 | `analyses` | `id`, `user_id`, `source_type`, `original_text`, `risk_score`, `risk_level`, `summary`, `analysis_version`, `created_at` | Private saved report snapshot. |
 | `red_flags` | `id`, `analysis_id`, `rule_id`, `category`, `title`, `severity`, `explanation`, `evidence`, `score_impact`, `confidence` | Explainable findings. |
 | `checklist_items` | `id`, `analysis_id`, `label`, `reason`, `completed`, `position` | Report-specific actions. |
-| `saved_assets` | `id`, `analysis_id`, `storage_path`, `consent`, `created_at` | Optional screenshot storage only after consent. |
+| `analyses.source_url` | Canonical public source URL | Optional source context for a saved report. |
 | `scam_patterns` | `id`, `category`, `title`, `description`, `example`, `safety_tip` | Curated Scam Guide content. |
 
 ### Security requirements
@@ -221,7 +221,7 @@ Use OpenAI on the server side to turn rule findings into careful explanations an
 - Enable Row Level Security on every user-owned table.
 - Require `auth.uid() = user_id` for reads, writes, updates, and deletes.
 - Never expose service-role credentials in the frontend.
-- Use short-lived or private storage access for saved screenshots.
+- Never automatically store extracted page content; persist only an explicitly saved report.
 - Allow anonymous analysis without creating a saved database row.
 - Provide a clear delete-data action for saved reports and assets.
 
@@ -241,7 +241,7 @@ Use OpenAI on the server side to turn rule findings into careful explanations an
 
 ### Build after the core flow is stable
 
-- Screenshot OCR with editable extraction review.
+- Public-link extraction with static HTML and manual-paste recovery.
 - Side-by-side comparison of saved reports.
 - PDF report export for a school coordinator or mentor.
 - Company-domain verification helper.
@@ -280,8 +280,8 @@ The first viewport must immediately communicate what Hunch does and let a studen
 | Can a low-risk result be trusted? | No. A post can omit information or use a new tactic. | Use risk estimate language and always show independent verification steps. |
 | Will students overreact to false positives? | Some legitimate posts use informal channels or personal emails. | Explain evidence and confidence; do not use a single signal as a verdict. |
 | Can AI invent a company fact? | Yes, if prompts allow open-ended claims. | Restrict explanations to submitted evidence and label missing information. |
-| Will screenshots contain sensitive data? | They may include names, phone numbers, or IDs. | Review text before analysis, request consent before storage, and provide deletion. |
-| Is the scope too broad? | OCR, comparison, guides, and auth can slow the core analyzer. | Keep paste-text analysis as the release gate; add extensions only after it is reliable. |
+| Could a public page expose sensitive data? | It may include names, contact details, or application instructions. | Do not cache pages and save only student-approved reports. |
+| Is the scope too broad? | Link extraction, comparison, guides, and auth can slow the core analyzer. | Keep paste-text analysis as the release gate; add extensions only after it is reliable. |
 | Does a risk score create false authority? | A number can look more certain than it is. | Show score methodology, ranges, evidence, uncertainty, and next actions together. |
 
 ## 11. Validation and success criteria
@@ -294,7 +294,7 @@ The first viewport must immediately communicate what Hunch does and let a studen
 | Workflow | Observe first-time users analyzing safe, suspicious, and incomplete listings. | At least 4 of 5 complete the core flow without facilitator rescue. |
 | Detection | Run a labeled fixture set through the rule engine. | Expected high-signal warnings appear with stable categories and score bounds. |
 | Explainability | Ask users to explain why a listing received its result. | Users can identify the evidence and the recommended next step. |
-| Reliability | Simulate AI timeout, invalid JSON, empty input, and OCR failure. | The app returns a useful fallback or clear recovery path every time. |
+| Reliability | Simulate AI timeout, invalid JSON, empty input, and link extraction failure. | The app returns a useful fallback or clear recovery path every time. |
 
 ### Core metrics
 
@@ -352,7 +352,7 @@ Workstreams:
 
 - Map Analyze, Result, Saved, Compare, Scam Guide, Checklist, and Settings.
 - Define anonymous and signed-in behavior.
-- Define the screenshot path separately from the paste-text path.
+- Define the public-link path separately from the paste-text path.
 - List all input, loading, partial, empty, error, retry, save, delete, and sign-out states.
 - Write the route and navigation contract before implementation.
 
@@ -400,7 +400,7 @@ Workstreams:
 - Wire the analyzer with paste, upload, sample, clear, and analyze actions.
 - Wire the result with score, summary, evidence, expandable warnings, and checklist.
 - Design the saved report and comparison surfaces.
-- Design OCR text review and the failure fallback.
+- Design public-link extraction and the manual-paste fallback.
 - Check the layout at mobile, tablet, and desktop widths.
 
 Deliverables:
@@ -484,13 +484,13 @@ Deliverables:
 - Clickable frontend flow.
 - Mock fixtures for safe, caution, high-risk, and incomplete results.
 - Responsive component states.
-- Visual regression screenshots for key screens.
+- Visual regression screen captures for key screens.
 
 Dependencies: Phase 6.
 
 Exit gate: a reviewer can demo the full journey without backend services and no core state is represented only by a happy-path screen.
 
-Implementation note: Phase 7 now provides a controlled mock-data journey across Analyze, Saved, Compare, Scam Guide, Checklist, Settings, Auth, and screenshot review. Report evidence, checklist completion, filters, comparison selection, deletion confirmation, and authentication preservation are represented as interactive client states; backend persistence and OCR remain deferred to Phases 10 and 11.
+Implementation note: Phase 7 now provides a controlled mock-data journey across Analyze, Saved, Compare, Scam Guide, Checklist, Settings, and Auth. Report evidence, checklist completion, filters, comparison selection, deletion confirmation, and authentication preservation are represented as interactive client states; backend persistence and public-link extraction remain deferred to Phases 10 and 11.
 
 ### Phase 8: Rule-based detection engine
 
@@ -545,7 +545,7 @@ Dependencies: Phases 6-8 and current official OpenAI API documentation checked a
 
 Exit gate: API keys never reach the browser, invalid or unavailable AI output leaves the report usable, and AI explanations cite only available evidence.
 
-Implementation note: Phase 9 is implemented in `api/analyze.ts`, `src/services/openaiAnalysisService.ts`, and `src/services/openaiAnalysisSchema.ts`. The server recomputes the deterministic result, uses Responses Structured Outputs, and returns only schema-safe AI explanation content. The client preserves the rule score and evidence and falls back automatically when the route or provider is unavailable. OCR remains deferred.
+Implementation note: Phase 9 is implemented in `api/analyze.ts`, `src/services/openaiAnalysisService.ts`, and `src/services/openaiAnalysisSchema.ts`. The server recomputes the deterministic result, uses Responses Structured Outputs, and returns only schema-safe AI explanation content. The client preserves the rule score and evidence and falls back automatically when the route or provider is unavailable. Public-link extraction follows in Phase 11.
 
 ### Phase 10: Supabase authentication and persistence
 
@@ -574,32 +574,31 @@ Exit gate: anonymous users can analyze, signed-in users can save and reopen, and
 
 Implementation note: the browser client, email magic-link flow, saved-report mapper, child red-flag/checklist persistence, delete/sign-out handling, local environment template, and initial RLS migration are now present. The migration must be run in the Supabase SQL Editor before remote persistence can succeed.
 
-### Phase 11: Screenshot OCR and input quality
+### Phase 11: Public-link analyzer
 
-Outcome: students can use screenshots without trusting an unreviewed extraction.
+Outcome: students can analyze readable public listing pages without relying on image-text extraction.
 
 Workstreams:
 
-- Add upload controls with file type, size, and privacy guidance.
-- Extract text through the selected OCR approach.
-- Mark uncertain or empty extraction states.
-- Let the user edit extracted text before analysis.
-- Prevent automatic storage unless the user saves and consents.
-- Test low resolution, cropped, multi-language, and text-heavy images.
+- Add a public HTTP/HTTPS link mode beside pasted text.
+- Fetch static readable HTML through a server-only route.
+- Reject private, login-protected, non-HTML, oversized, and unavailable pages with manual-paste recovery.
+- Preserve canonical source URLs and page titles when a report is saved.
+- Test redirect, SSRF, extraction, and deterministic-analysis behavior.
 
 Deliverables:
 
-- Screenshot upload flow.
-- Editable extraction review.
-- OCR error and fallback states.
-- Optional private storage path.
-- Input-quality test set.
+- Public-link input flow.
+- Server-side readable-HTML extraction.
+- SSRF and redirect protections.
+- Source-link persistence.
+- Link failure recovery tests.
 
 Dependencies: Phases 7, 8, and 10.
 
-Exit gate: OCR never silently analyzes missing text, users can correct extraction, and a failed upload returns to paste input cleanly.
+Exit gate: only public static HTML is analyzed, unsafe or unreadable pages recover cleanly to pasted text, and saved source URLs remain private under RLS.
 
-Implementation note: Phase 11 uses browser-only Tesseract.js for PNG/JPG screenshots up to 10 MB. The screenshot stays in memory during review and is discarded before analysis; only student-reviewed text reaches the analyzer. Low-confidence, empty, and failed extraction states require an explicit review confirmation or manual-paste recovery. See `docs/20-screenshot-ocr.md`.
+Implementation note: Phase 11 uses `api/extract-link.ts` with static HTML parsing, a 10-second timeout, a 1 MB limit, redirect limits, and private-network blocking. No image uploads, image-text services, or scraping-provider keys are used. See `docs/20-public-link-analyzer.md`.
 
 ### Phase 12: Comparison, Scam Guide, and checklist depth
 
@@ -632,7 +631,7 @@ Workstreams:
 
 - Review every user-facing claim about legitimacy, fraud, and safety.
 - Check prompt behavior for unsupported company claims or invented facts.
-- Review screenshot and text retention behavior.
+- Review public-link and text retention behavior.
 - Add rate limits and abuse controls appropriate for anonymous analysis.
 - Test keyboard navigation, focus order, contrast, labels, reduced motion, and mobile text wrapping.
 - Review deletion, sign-out, and error recovery.
@@ -656,18 +655,18 @@ Outcome: a stable, explainable, live project that can be evaluated in a short de
 Workstreams:
 
 - Run unit, integration, end-to-end, and manual fixture tests.
-- Test fresh-browser setup, auth boundaries, API outages, OCR failure, and delete flows.
-- Check desktop and mobile screenshots for overlap, clipping, and unreadable content.
+- Test fresh-browser setup, auth boundaries, API outages, link extraction failure, and delete flows.
+- Check desktop and mobile screen captures for overlap, clipping, and unreadable content.
 - Configure Vercel, Supabase production settings, secrets, and redirects.
 - Deploy and run a clean-browser smoke test.
-- Write README, architecture notes, screenshots, demo script, and known limitations.
+- Write README, architecture notes, screen captures, demo script, and known limitations.
 
 Deliverables:
 
 - QA checklist and issue log.
 - Production deployment.
 - Environment and rollback notes.
-- Portfolio README and screenshots.
+- Portfolio README and screen captures.
 - Three-minute demo path plus deterministic fallback.
 
 Dependencies: all prior phases.
@@ -683,8 +682,8 @@ For a solo student project, these are hats rather than separate people.
 | Product and research | Scope, student interviews, fixtures, acceptance criteria | Keep the problem narrow and grounded. |
 | Frontend and design | App flow, dark system, responsive states, content | Make the analyzer feel immediate and trustworthy. |
 | AI and backend | Rules, prompts, schemas, API route, fallback | Make analysis explainable and observable. |
-| Data and security | Supabase schema, RLS, storage, deletion | Protect private reports and screenshots. |
-| QA and demo | Fixtures, failure tests, screenshots, README, rehearsal | Prove the product works beyond the happy path. |
+| Data and security | Supabase schema, RLS, storage, deletion | Protect private reports and source URLs. |
+| QA and demo | Fixtures, failure tests, screen captures, README, rehearsal | Prove the product works beyond the happy path. |
 
 ### Engineering checkpoints
 
@@ -692,7 +691,7 @@ For a solo student project, these are hats rather than separate people.
 - Version rule IDs, prompt versions, response schemas, and saved report format together.
 - Test malformed input, empty input, long input, model timeout, invalid JSON, and partial persistence.
 - Keep a deterministic sample result for the live demo.
-- Review privacy copy before enabling screenshot storage.
+- Review privacy copy before enabling public-link persistence.
 - Make the result understandable with AI disabled.
 
 ## 14. Demo story and portfolio narrative
@@ -726,7 +725,7 @@ For a solo student project, these are hats rather than separate people.
 | OpenAI through a server route | Adds structured explanation while keeping secrets and control on the server. |
 | Vercel | Fits the React frontend and serverless API deployment model. |
 | Rule engine before AI | Creates a transparent baseline and prevents the score from depending on prose generation. |
-| Paste text before OCR | Proves the core product loop before adding image extraction complexity. |
+| Paste text before public links | Proves the core product loop before adding remote content extraction complexity. |
 | Private saved reports | Gives history value without creating a public accusation system. |
 
 ### Final scope test

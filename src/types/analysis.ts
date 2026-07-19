@@ -30,7 +30,7 @@ export type SourceType =
   | 'student-group-chat'
   | 'messenger-forward'
   | 'other'
-  | 'screenshot'
+  | 'public-link'
 
 export interface EvidenceMatch {
   category: RiskCategory
@@ -63,6 +63,8 @@ export interface AnalysisInput {
   text: string
   sourceType: SourceType
   fixtureId?: string
+  sourceUrl?: string
+  listingTitle?: string
 }
 
 export interface RedFlag {
@@ -99,6 +101,7 @@ export interface AnalysisReport {
   id: string
   fixtureId: string
   listingTitle?: string
+  sourceUrl?: string
   scoreBreakdown: ScoreBreakdownItem[]
   explanationSource: ExplanationSource
   explanationNote?: string

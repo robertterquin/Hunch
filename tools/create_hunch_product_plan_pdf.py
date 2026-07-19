@@ -229,7 +229,7 @@ story = []
 story += [Spacer(1, 40 * mm), P("STUDENT SAFETY TOOL / PRODUCT PLAN", "CoverKicker"), P("Hunch", "CoverTitle"), P("Your second opinion before applying.", "CoverLead"), rule(), Spacer(1, 8 * mm)]
 story += [P("A focused web app that helps students evaluate OJT and internship listings before they apply, send sensitive documents, or pay money.", "PlanSubtitle")]
 story += [Spacer(1, 22 * mm)]
-story += [table(["Target user", "Main action", "Stack", "Design"], [["Students hunting for OJT or internships", "Paste a post or upload a screenshot, then review an explainable risk score", "React + TypeScript / Supabase / OpenAI / Vercel", "Minimal dark analyzer-first interface"]], [38 * mm, 55 * mm, 45 * mm, 33 * mm], small=True)]
+story += [table(["Target user", "Main action", "Stack", "Design"], [["Students hunting for OJT or internships", "Paste a post or analyze a public link, then review an explainable risk score", "React + TypeScript / Supabase / OpenAI / Vercel", "Minimal dark analyzer-first interface"]], [38 * mm, 55 * mm, 45 * mm, 33 * mm], small=True)]
 story += [PageBreak()]
 
 # 02 Executive brief
@@ -250,11 +250,11 @@ story += [PageBreak()]
 
 # 03 Problem and users
 story += section(1, "Product definition and real problem", "Hunch is a decision-support product for the moment before a student applies.")
-story += [P("Students encounter OJT posts through social media, messaging apps, school groups, email, and forwarded screenshots. The posts can be incomplete, informal, or intentionally deceptive. A student may notice a fee request or an urgent message but still not know what to verify next.")]
+story += [P("Students encounter OJT posts through social media, messaging apps, school groups, email, and public career pages. The posts can be incomplete, informal, or intentionally deceptive. A student may notice a fee request or an urgent message but still not know what to verify next.")]
 story += [P("THE SHARP PROBLEM STATEMENT", "PlanHeading"), P("Students need a fast way to identify and understand warning signals in OJT and internship listings before they apply. Hunch makes those signals visible and actionable without pretending to deliver certainty.")]
 story += [table(["Observed problem", "Why it matters", "Hunch response"], [
     ["Warning signs are scattered across a post.", "A student may notice one signal but miss a pattern.", "Group findings into categories with evidence and next actions."],
-    ["Listings are often screenshots or forwarded messages.", "Retyping adds friction and errors.", "Support editable text extraction after screenshot upload."],
+    ["Listings are often public pages or forwarded messages.", "Finding the relevant listing text adds friction.", "Support safe public HTML extraction with paste recovery."],
     ["A fake-or-real answer is too confident.", "False positives and false negatives can both cause harm.", "Show an estimate, uncertainty, and verification checklist."],
     ["Students need to choose between opportunities.", "The safer-looking option may not be the most obvious one.", "Save reports and compare signals side by side."],
 ], [47 * mm, 48 * mm, 47 * mm], small=True)]
@@ -265,16 +265,16 @@ story += [PageBreak()]
 # 04 Workflow
 story += section(2, "End-to-end product workflow", "A short visible sequence: submit, understand, verify, and decide.")
 story += [table(["01", "Stage", "Student action", "Hunch response"], [
-    ["01", "Submit", "Paste a listing or upload a screenshot.", "Accept the input and show what will be analyzed."],
-    ["02", "Review", "Confirm or edit extracted text.", "Make OCR uncertainty visible before analysis."],
+    ["01", "Submit", "Paste a listing or enter a public link.", "Accept the input and show what will be analyzed."],
+    ["02", "Review", "Inspect the extracted source and result.", "Make page-access limits visible before analysis."],
     ["03", "Analyze", "Start the check.", "Run rules, then request structured AI explanations."],
     ["04", "Understand", "Read score, evidence, and missing details.", "Explain signals in plain language and show score impact."],
     ["05", "Verify", "Complete practical checks before applying.", "Generate a checklist based on actual findings."],
     ["06", "Save or compare", "Save the report or compare it later.", "Persist only after explicit consent and keep it private."],
 ], [12 * mm, 30 * mm, 48 * mm, 56 * mm], small=True)]
 story += [P("DETAILED WORKFLOW CONTRACT", "PlanHeading"), table(["Stage", "Input", "Output", "Exit gate"], [
-    ["1. Intake", "Text, source label, or screenshot", "Normalized text and input quality state", "User can see what will be analyzed."],
-    ["2. Text review", "OCR text and uncertainty", "User-confirmed text", "Low-confidence extraction is never scored silently."],
+    ["1. Intake", "Text, source label, or public link", "Normalized text and input quality state", "User can see what will be analyzed."],
+    ["2. Link extraction", "Public HTML and page title", "Readable text or manual-paste recovery", "Unsafe or unavailable pages are never scored."],
     ["3. Rule scan", "Normalized listing", "Findings, categories, score impacts, evidence", "Every result has a stable rule ID."],
     ["4. AI explanation", "Listing plus rule findings", "Summary and tailored checklist", "Response validates against schema."],
     ["5. Result review", "Score and findings", "Risk level, evidence, next actions", "Student can explain the result."],
@@ -327,7 +327,7 @@ story += [table(["Capability", "Hunch use", "Boundary"], [
     ["Structured response", "Return summary, explanations, and checklist in a known schema.", "Schema validity does not guarantee factual quality."],
     ["Server-side request", "Call OpenAI from a Vercel serverless route.", "Never expose the API key in the browser."],
     ["Progress or streaming", "Show stages only when backend events support them.", "Do not fake precise progress percentages."],
-    ["Image/OCR support", "Support screenshot path after text extraction is stable.", "Let the user review extracted text before scoring."],
+    ["Public-link support", "Support a static public HTML path after text analysis is stable.", "Return manual-paste recovery when the page cannot be read."],
     ["Safety review", "Soften unsupported accusations and sensitive-data claims.", "Describe signals in the post, not people as criminals."],
 ], [38 * mm, 57 * mm, 69 * mm], small=True)]
 story += [P("SUGGESTED REQUEST SEQUENCE", "PlanHeading"), table(["A", "B", "C", "D", "E", "F"], [["Normalize", "Rule scan", "Generate", "Validate", "Reconcile", "Render"]], [24 * mm] * 6, small=True)]
@@ -348,7 +348,7 @@ story += [table(["Entity", "Important fields", "Purpose"], [
     ["analyses", "id, user_id, source_type, original_text, risk_score, risk_level, summary, analysis_version, created_at", "Private report snapshot."],
     ["red_flags", "analysis_id, rule_id, category, title, severity, evidence, score_impact, confidence", "Explainable findings."],
     ["checklist_items", "analysis_id, label, reason, completed, position", "Report-specific actions."],
-    ["saved_assets", "analysis_id, storage_path, consent, created_at", "Optional screenshot storage after consent."],
+    ["analyses.source_url", "canonical_url", "Optional source context for a saved report."],
     ["scam_patterns", "category, title, description, example, safety_tip", "Curated Scam Guide content."],
 ], [33 * mm, 78 * mm, 53 * mm], small=True)]
 story += [P("SECURITY REQUIREMENTS", "PlanHeading")]
@@ -356,7 +356,7 @@ story += bullets([
     "Enable Row Level Security on every user-owned table.",
     "Require auth.uid() = user_id for reads, writes, updates, and deletes.",
     "Never expose service-role credentials in the frontend.",
-    "Use private storage access for saved screenshots and delete them with the report.",
+    "Store source URLs only when the student saves a report and delete them with the report.",
     "Allow anonymous analysis without creating a saved database row.",
     "Give users a clear delete-data action and explain what is retained.",
 ])
@@ -365,7 +365,7 @@ story += [PageBreak()]
 # 09 Scope
 story += section(7, "MVP boundaries", "One credible workflow: analyze a listing, understand the signals, and decide what to verify next.")
 story += [table(["Build now", "After the core flow", "Explicitly out of scope"], [
-    ["Analyzer-first home screen", "Screenshot OCR", "Guaranteed fraud detection"],
+    ["Analyzer-first home screen", "Public-link extraction", "Guaranteed fraud detection"],
     ["Pasted listing analysis", "Saved-report comparison", "Public company ratings"],
     ["Rule-based score and warnings", "PDF export", "Automatic employer outreach"],
     ["Server-side AI explanation", "Company-domain helper", "Full job marketplace"],
@@ -411,14 +411,14 @@ story += [table(["Risk or hard question", "Honest answer", "MVP mitigation"], [
     ["Can a low-risk result be trusted?", "No. A post can omit information or use a new tactic.", "Use estimate language and always show independent verification steps."],
     ["Will students overreact to false positives?", "Some legitimate posts use informal channels.", "Explain evidence and confidence; do not let one signal decide alone."],
     ["Can AI invent a company fact?", "Yes, if prompts allow open-ended claims.", "Restrict explanations to submitted evidence and missing information."],
-    ["Will screenshots contain sensitive data?", "They may include names, phone numbers, or IDs.", "Review text before analysis; request consent before storage."],
+    ["Could public pages contain sensitive data?", "They may include names, phone numbers, or IDs.", "Do not cache pages; save only explicitly approved reports."],
     ["Does the score create false authority?", "A number can look more certain than it is.", "Show method, ranges, evidence, uncertainty, and next actions together."],
 ], [42 * mm, 52 * mm, 54 * mm], small=True)]
 story += [P("NON-NEGOTIABLE BOUNDARIES", "PlanHeading")]
 story += bullets([
     "Hunch flags signals in the submitted post; it does not declare a person or company criminal.",
     "A score is an estimate, not proof, legal advice, or a guarantee of safety.",
-    "Sensitive screenshots are not stored unless the user saves and consents.",
+    "Extracted page content is not stored unless the user saves a report.",
     "The system must remain useful when OpenAI is unavailable.",
 ])
 story += [PageBreak()]
@@ -430,7 +430,7 @@ story += [table(["Layer", "Method", "Minimum evidence"], [
     ["Workflow", "Observe first-time users with safe, suspicious, and incomplete listings.", "At least 4 of 5 complete without facilitator rescue."],
     ["Detection", "Run labeled fixtures through the rule engine.", "Expected warnings appear with stable categories and bounded scores."],
     ["Explainability", "Ask users to explain why a listing received its result.", "Users can identify evidence and the recommended next step."],
-    ["Reliability", "Simulate AI timeout, invalid JSON, empty input, OCR failure.", "Every case returns a useful fallback or recovery path."],
+    ["Reliability", "Simulate AI timeout, invalid JSON, empty input, link failure.", "Every case returns a useful fallback or recovery path."],
 ], [32 * mm, 67 * mm, 49 * mm], small=True)]
 story += [P("CORE METRICS", "PlanHeading")]
 story += bullets([
@@ -458,7 +458,7 @@ phase_rows = [
     ["8. Rule engine", "Transparent baseline score.", "Rules, catalog, tests", "Golden fixtures pass"],
     ["9. OpenAI API", "Evidence-bound explanation.", "Route, schemas, fallback", "Invalid AI cannot break UI"],
     ["10. Supabase", "Private saved reports.", "Auth, migrations, RLS", "Second user is isolated"],
-    ["11. OCR", "Editable screenshot path.", "Upload, extraction, review", "No silent low-confidence scoring"],
+    ["11. Public links", "Readable public-page path.", "URL, extraction, recovery", "No unsafe remote fetching"],
     ["12. Support tools", "Comparison, Guide, checklist depth.", "Saved filters, compare, content", "Comparison stays cautious"],
     ["13. Safety", "Responsible and accessible product.", "Review log, privacy, fixes", "No critical safety/privacy issue"],
     ["14. Ship", "Live, tested, portfolio-ready demo.", "QA, Vercel, README, rehearsal", "Fresh reviewer succeeds"],
@@ -489,7 +489,7 @@ story += phase_block(1, "Product definition and scope lock", "One stable promise
 ], "Product brief, scope list, trust copy, fixtures, acceptance checklist.", "None.", "The MVP fits in one minute and each rule category has a reason to exist.")
 story += phase_block(2, "Information architecture and user-flow contract", "A complete map from opening Hunch to saving or discarding a result.", [
     "Map Analyze, Result, Saved, Compare, Guide, Checklist, and Settings.",
-    "Define anonymous and signed-in behavior plus screenshot-specific flow.",
+    "Define anonymous and signed-in behavior plus public-link flow.",
     "List input, loading, partial, empty, error, retry, save, delete, and sign-out states.",
     "Write routes and navigation before implementation.",
 ], "Site map, journeys, screen inventory, state matrix, route notes.", "Phase 1.", "A student can explain each primary action and no screen depends on an undefined state.")
@@ -501,7 +501,7 @@ story += phase_block(3, "Research and fixture calibration", "Realistic student l
 story += phase_block(4, "UX wireframes and interaction contract", "An analyzer-first flow and understandable result report before visual polish.", [
     "Wire paste, upload, sample, clear, analyze, score, evidence, warning, and checklist actions.",
     "Design saved report and comparison surfaces.",
-    "Design OCR review and failure fallback.",
+    "Design public-link extraction and manual-paste fallback.",
     "Check mobile, tablet, and desktop layouts.",
 ], "Wireframes, annotated interactions, responsive rules, key-state copy deck.", "Phases 1-3.", "Users identify the input action, risk level, and next step without narration.")
 story += [PageBreak()]
@@ -522,7 +522,7 @@ story += phase_block(7, "Static UI and interaction build", "The complete journey
     "Build analyzer, result, checklist, Saved, Compare, Guide, and Settings views.",
     "Implement responsive behavior, keyboard focus, loading, empty, error, retry, and no-result states.",
     "Add safe, caution, high-risk, and incomplete mock fixtures.",
-], "Clickable frontend, mock fixtures, responsive states, visual screenshots.", "Phase 6.", "The full journey demos without backend services and no core state is only a happy-path screen.")
+], "Clickable frontend, mock fixtures, responsive states, visual screen captures.", "Phase 6.", "The full journey demos without backend services and no core state is only a happy-path screen.")
 story += phase_block(8, "Rule-based detection engine", "A transparent, testable baseline for risk scoring.", [
     "Normalize text and implement fee, email, company, role, compensation, urgency, chat-only, and sensitive-document rules.",
     "Define severity, score impact, evidence spans, deduplication, and 0-100 normalization.",
@@ -543,12 +543,12 @@ story += phase_block(10, "Supabase authentication and persistence", "Students ca
     "Save report snapshots, checklist state, and analysis version.",
     "Test multiple-user isolation and add delete-report and asset deletion.",
 ], "Migrations, auth screens, save/open/delete services, RLS tests, privacy copy.", "Phases 6-9.", "Anonymous users analyze; signed-in users save/reopen; a second user cannot access the first report.")
-story += phase_block(11, "Screenshot OCR and input quality", "Students can use screenshots without trusting unreviewed extraction.", [
+story += phase_block(11, "Public-link analyzer", "Students can analyze readable public pages with controlled server-side extraction.", [
     "Add upload constraints and privacy guidance.",
     "Extract text, mark uncertainty, and let users edit before analysis.",
     "Prevent storage without explicit save and consent.",
     "Test low-resolution, cropped, multilingual, and text-heavy images.",
-], "Upload flow, extraction review, OCR fallback, optional storage path, input-quality set.", "Phases 7, 8, and 10.", "OCR never silently scores missing text and failed uploads return cleanly to paste input.")
+], "Public-link flow, extraction safeguards, paste recovery, source persistence, and security tests.", "Phases 7, 8, and 10.", "Unsafe or unreadable pages return cleanly to paste input without creating a result.")
 story += [PageBreak()]
 
 # 17 Detailed phases 12-14
@@ -559,21 +559,21 @@ story += phase_block(12, "Comparison, Scam Guide, and checklist depth", "Hunch s
     "Write curated Guide content from the rule catalog and reusable checklist templates.",
 ], "Saved list/detail views, comparison view, Guide entries, checklist templates.", "Phases 8 and 10.", "A student can compare listings without treating a lower score as a guarantee of safety.")
 story += phase_block(13, "Safety, privacy, accessibility, and abuse review", "The product handles uncertainty and sensitive content responsibly.", [
-    "Review claims, prompts, screenshot retention, deletion, sign-out, and error recovery.",
+    "Review claims, prompts, source URL retention, deletion, sign-out, and error recovery.",
     "Add rate limits and anonymous-analysis abuse controls.",
     "Test keyboard flow, focus, contrast, labels, reduced motion, and mobile wrapping.",
 ], "Safety log, privacy copy, accessibility fixes, abuse notes, final disclaimer.", "Phases 9-12.", "No critical safety, privacy, unsupported-claim, keyboard, or contrast issue remains.")
 story += phase_block(14, "Testing, deployment, and portfolio proof", "A stable live project that can be evaluated in a short demo.", [
     "Run unit, integration, end-to-end, manual fixture, fresh-browser, auth-boundary, and failure tests.",
     "Configure Vercel, Supabase production settings, secrets, redirects, and smoke tests.",
-    "Write README, architecture notes, screenshots, demo script, limitations, and deterministic fallback.",
-], "QA checklist, production deployment, environment notes, README, screenshots, rehearsal.", "All prior phases.", "A fresh reviewer analyzes a fixture, understands the result, reviews the checklist, and sees the technical boundaries within five minutes.")
+    "Write README, architecture notes, screen captures, demo script, limitations, and deterministic fallback.",
+], "QA checklist, production deployment, environment notes, README, screen captures, rehearsal.", "All prior phases.", "A fresh reviewer analyzes a fixture, understands the result, reviews the checklist, and sees the technical boundaries within five minutes.")
 story += [P("SOLO PROJECT ROLES", "PlanHeading"), table(["Role", "Owns", "Focus"], [
     ["Product/research", "Scope, student interviews, fixtures, acceptance criteria", "Keep the problem narrow and grounded."],
     ["Frontend/design", "Flow, dark system, responsive states, content", "Make the analyzer immediate and trustworthy."],
     ["AI/backend", "Rules, prompts, schemas, API, fallback", "Make analysis explainable and observable."],
-    ["Data/security", "Supabase schema, RLS, storage, deletion", "Protect private reports and screenshots."],
-    ["QA/demo", "Fixtures, failures, screenshots, README, rehearsal", "Prove the product beyond the happy path."],
+    ["Data/security", "Supabase schema, RLS, storage, deletion", "Protect private reports and source URLs."],
+    ["QA/demo", "Fixtures, failures, screen captures, README, rehearsal", "Prove the product beyond the happy path."],
 ], [33 * mm, 74 * mm, 53 * mm], small=True)]
 story += [PageBreak()]
 
@@ -601,7 +601,7 @@ story += [P("DECISION LOG", "PlanHeading"), table(["Decision", "Reason"], [
     ["Supabase", "Auth, Postgres, RLS, and storage without a custom backend from scratch."],
     ["OpenAI through a server route", "Structured explanation while keeping secrets and control on the server."],
     ["Rule engine before AI", "Transparent baseline prevents the score from depending on prose generation."],
-    ["Paste text before OCR", "Proves the core loop before adding image-extraction complexity."],
+    ["Paste text before public links", "Proves the core loop before adding remote content-extraction complexity."],
     ["Private saved reports", "History value without creating a public accusation system."],
 ], [51 * mm, 109 * mm], small=True)]
 story += [Spacer(1, 5 * mm), callout("FINAL SCOPE TEST", "If a feature does not help a student analyze a listing, understand the evidence, choose a safer next step, or review a private decision later, it should not be part of the first Hunch release.")]

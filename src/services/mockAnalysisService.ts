@@ -78,11 +78,12 @@ function uncertaintyFor(result: RuleEngineResult) {
   return `This estimate has ${result.confidence} confidence because the post does not provide ${result.missingInformation.slice(0, 2).join(' or ')}.`
 }
 
-function makeReport(result: RuleEngineResult, options: { fixture?: AnalysisFixture; id?: string; sourceType: SourceType; text: string; createdAt?: string }): AnalysisReport {
+function makeReport(result: RuleEngineResult, options: { fixture?: AnalysisFixture; id?: string; sourceType: SourceType; text: string; createdAt?: string; sourceUrl?: string; listingTitle?: string }): AnalysisReport {
   return {
     id: options.id ?? `analysis-${Date.now()}`,
     fixtureId: options.fixture?.id ?? 'custom-listing',
-    listingTitle: options.fixture?.title ?? 'Submitted listing',
+    listingTitle: options.listingTitle ?? options.fixture?.title ?? 'Submitted listing',
+    sourceUrl: options.sourceUrl,
     sourceType: options.sourceType,
     originalText: options.text,
     riskScore: result.score,
@@ -104,10 +105,10 @@ function makeReport(result: RuleEngineResult, options: { fixture?: AnalysisFixtu
 
 export function createMockReport(
   fixture: AnalysisFixture,
-  options: { id?: string; sourceType?: AnalysisInput['sourceType']; text?: string; createdAt?: string } = {},
+  options: { id?: string; sourceType?: AnalysisInput['sourceType']; text?: string; createdAt?: string; sourceUrl?: string; listingTitle?: string } = {},
 ): AnalysisReport {
   const text = options.text ?? fixture.text
-  return makeReport(runRuleEngine(text), { fixture, id: options.id, sourceType: options.sourceType ?? fixture.sourceType, text, createdAt: options.createdAt })
+  return makeReport(runRuleEngine(text), { fixture, id: options.id, sourceType: options.sourceType ?? fixture.sourceType, text, createdAt: options.createdAt, sourceUrl: options.sourceUrl, listingTitle: options.listingTitle })
 }
 
 export async function analyzeListing(input: AnalysisInput): Promise<AnalysisReport> {
@@ -115,12 +116,12 @@ export async function analyzeListing(input: AnalysisInput): Promise<AnalysisRepo
   if (normalizedText.length < 40) throw new Error('Paste at least 40 characters so Hunch has enough detail to analyze.')
   await delay(320)
   const fixture = chooseFixture({ ...input, text: normalizedText })
-  return makeReport(runRuleEngine(normalizedText), { fixture, sourceType: input.sourceType, text: normalizedText })
+  return makeReport(runRuleEngine(normalizedText), { fixture, sourceType: input.sourceType, text: normalizedText, sourceUrl: input.sourceUrl, listingTitle: input.listingTitle })
 }
 
 export function buildRuleOnlyReport(input: AnalysisInput, result = runRuleEngine(input.text)) {
   const normalizedText = input.text.trim()
   if (normalizedText.length < 40) throw new Error('Paste at least 40 characters so Hunch has enough detail to analyze.')
   const fixture = chooseFixture({ ...input, text: normalizedText })
-  return makeReport(result, { fixture, sourceType: input.sourceType, text: normalizedText })
+  return makeReport(result, { fixture, sourceType: input.sourceType, text: normalizedText, sourceUrl: input.sourceUrl, listingTitle: input.listingTitle })
 }

@@ -27,7 +27,7 @@ The canonical route and state definitions remain in:
 Open /
   -> /analyze
       -> paste text -> validate -> analyze -> active result
-      -> upload screenshot -> /analyze/review -> edit or confirm OCR -> active result
+      -> public link -> extract readable HTML -> active result
       -> save -> signed in? -> save report
                          no -> auth -> return to active result -> save report
       -> saved report -> /saved/:analysisId -> compare or start new analysis
@@ -60,7 +60,7 @@ Target: wide desktop viewport, approximately 1200px or wider.
 |  |                                                                          |  |
 |  +--------------------------------------------------------------------------+  |
 |  0 characters                                              [Clear] [Analyze] |
-|  [Upload screenshot]  [Try a sample post]                                     |
+|  [Paste text | Public link]  [Try a sample post]                              |
 |                                                                                |
 |  Hunch gives an estimate based on visible signals. It is not proof of safety. |
 +----------------------------------------------------------------------------------+
@@ -70,7 +70,7 @@ Behavior:
 
 - Analyze is disabled until the input contains at least 40 characters.
 - `Try a sample post` loads `suspicious-01` but does not submit it automatically.
-- `Upload screenshot` moves to `/analyze/review` after file selection.
+- `Public link` switches to a URL field and analyzes readable static HTML on submit.
 - The right column is a compact preview, not a marketing panel.
 
 ### Analyze - active result
@@ -110,31 +110,13 @@ Behavior:
 - Focus moves to the result heading after analysis completes.
 - Checklist completion updates immediately and confirms with a non-critical toast.
 
-### OCR review
-
-```text
-+----------------------------------------------------------------------------------+
-| Hunch                                      Analyze > Screenshot review            |
-+----------------------------------------------------------------------------------+
-|  REVIEW BEFORE ANALYZING                                                        |
-|  Confirm that Hunch read the screenshot correctly.                              |
-|                                                                                |
-|  +----------------------------+  +------------------------------------------+  |
-|  |                            |  | Extracted text                            |  |
-|  |      Screenshot preview    |  | ----------------------------------------- |  |
-|  |                            |  | Editable OCR text appears here.         |  |
-|  +----------------------------+  +------------------------------------------+  |
-|  OCR confidence: Medium       Some words may be missing.                        |
-|                                                                                |
-|  [Remove screenshot] [Try again]                      [Cancel] [Use this text] |
-+----------------------------------------------------------------------------------+
-```
+### Public-link extraction
 
 Behavior:
 
-- Low-confidence or empty extraction does not enable scoring until usable text is confirmed.
-- OCR failure keeps the student in context and offers manual paste recovery.
-- The screenshot is not stored by this review step.
+- The link remains on Analyze while the server safely reads static public HTML.
+- Private, blocked, JavaScript-only, non-HTML, short, or oversized pages show manual-paste recovery.
+- The canonical source URL is shown on the result and stored only with an explicit saved report.
 
 ### Saved and comparison surfaces
 
@@ -172,7 +154,7 @@ Target: approximately 700px to 1199px wide.
 - Stack the analyzer and result panel vertically: input first, result second.
 - Keep the score panel at the top of the result section.
 - Place warnings, score breakdown, and checklist in one readable column.
-- Keep screenshot preview and OCR text review side by side only when both remain at least 280px wide; otherwise stack them.
+- Keep the mode selector and URL field readable at every tablet width.
 - Turn comparison rows into grouped sections instead of allowing a wide table to overflow.
 - Keep the text area tall enough for pasted posts and keep the Analyze action visible after the input.
 
@@ -191,7 +173,7 @@ Target: below 700px wide.
 | | Paste text here...               | |
 | |                                  | |
 | +----------------------------------+ |
-| [Upload screenshot]                 |
+| [Paste text | Public link]          |
 | [Try a sample post]                 |
 |                         [Analyze]   |
 |--------------------------------------|
@@ -223,8 +205,7 @@ Target: below 700px wide.
 | Text area | Type or paste | `empty` -> `ready` or `too-short`. | Character count and field guidance update. | Edit or clear. |
 | Clear | Click or activate with keyboard | Reset input and active result after confirmation only when a result exists. | Return to empty state. | Cancel confirmation. |
 | Try a sample | Click | Load a named fixture into the text area. | Show the loaded source and text count. | Edit or clear before analysis. |
-| Upload screenshot | Select file or drop file | `screenshot-selected` -> OCR review. | Show file name, preview, and processing status. | Remove file or paste manually. |
-| Use OCR text | Confirm reviewed text | Return to Analyze with validated text. | Show source as screenshot-derived text. | Edit again before analysis. |
+| Public link | Enter one URL and analyze | `link-ready` -> `link-loading` -> result or error. | Show extraction state and canonical source URL. | Edit URL or switch to paste text. |
 | Analyze | Click with valid input | `ready` -> `loading` -> result or error. | Stage text, disabled duplicate action, then focus result. | Retry or edit preserved input. |
 | Warning card | Click or press Enter/Space | Collapsed <-> expanded. | Reveal evidence, score impact, explanation, next action. | Collapse without losing scroll position. |
 | Checklist item | Click or press Enter/Space | Incomplete <-> complete. | Checkbox state and brief toast. | Toggle again or reset checklist. |
@@ -241,9 +222,8 @@ Target: below 700px wide.
 | Empty | `Paste an OJT or internship post to check for risk signals.` |
 | Helper | `Hunch gives an estimate based on visible signals. It does not prove whether a listing is legitimate.` |
 | Too short | `Paste at least 40 characters so Hunch has enough detail to analyze.` |
-| Screenshot review | `Confirm the extracted text before Hunch checks it.` |
-| OCR low confidence | `Some words may be missing. Review or edit the text before analyzing.` |
-| OCR failure | `We could not read the screenshot. Try a clearer image or paste the text manually.` |
+| Link extraction | `Hunch is reading the public page before checking its visible signals.` |
+| Link unavailable | `We could not read that public page. Paste the listing text manually instead.` |
 | Analyzing | `Checking recruiter details...` |
 | Analyzing | `Looking for payment requests...` |
 | Analyzing | `Preparing your risk report...` |
@@ -256,14 +236,14 @@ Target: below 700px wide.
 | Save auth required | `Sign in to save this report. Your current result will be preserved.` |
 | Save error | `The report was not saved, but your current result is still available. Try again.` |
 | Saved empty | `No saved checks yet. Analyze an OJT post and save the report to compare it later.` |
-| Delete confirmation | `Delete this private report and any saved screenshot connected to it?` |
+| Delete confirmation | `Delete this private report?` |
 | Network error | `We could not connect. Check your connection and try again.` |
 
 ## Accessibility and Usability Review
 
 - Every input has a visible label and a connected error message.
 - The Analyze button has the accessible name `Analyze post for risk signals`.
-- The upload control has the accessible name `Upload screenshot of OJT post`.
+- The public-link action has the accessible name `Analyze public listing link`.
 - The result heading receives focus after analysis completes.
 - Loading messages use a polite live region and do not claim fake percentage progress.
 - Risk score text includes both the numeric score and risk label.

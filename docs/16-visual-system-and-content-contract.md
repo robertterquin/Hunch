@@ -166,7 +166,7 @@ Do not use a circular gauge without labels, color-only dots, or a score displaye
 | App shell | Desktop, tablet, mobile | Wordmark, primary nav, account action, New Analysis. | Active navigation is visible through text and blue emphasis. |
 | Analyzer input | Empty, ready, too-short, loading, error | Label, source selector, textarea, count, upload, sample, clear, Analyze. | Analyze is disabled below 40 characters. |
 | Source selector | Facebook, LinkedIn, email, Messenger, school group, other | Visible label and selected source. | Changing source does not delete text. |
-| Screenshot uploader | Idle, selected, processing, review, failed | Dropzone, file name, preview, OCR status, privacy note. | Keyboard-accessible and never silently scores failed OCR. |
+| Public-link input | Idle, ready, extracting, failed | Segmented mode, URL field, status, and manual-paste recovery. | Keyboard-accessible and never silently scores unavailable content. |
 | Risk summary | Low risk, Caution, High risk, Partial result | Score, risk label, summary, warning count, uncertainty, Save. | Score stays beside explanation. |
 | Risk meter | Low, caution, high, partial | Labeled 0-100 bands and position marker. | Never communicates meaning through color alone. |
 | Warning card | Collapsed, expanded, highlighted | Category, severity, title, explanation, evidence, impact, next action. | Enter and Space toggle; expanded evidence remains readable. |
@@ -253,7 +253,7 @@ The primary visual reference is the desktop Analyze screen with the `suspicious-
 |  +-------------------------------+      [7] Summary and uncertainty      |
 |  248 characters [Clear] [Analyze]       Plain-language explanation.       |
 |                                                                            |
-|  [2] Upload screenshot  [3] Sample      [8] Warning cards                 |
+|  [2] Public link        [3] Sample      [8] Warning cards                 |
 |                                           Payment request [Expand]        |
 |  [4] Trust note                            Personal email [Expand]        |
 |                                           Sensitive data [Expand]          |
@@ -267,7 +267,7 @@ The primary visual reference is the desktop Analyze screen with the `suspicious-
 Annotations:
 
 1. The input is the dominant action and remains visible after analysis.
-2. Screenshot upload is a secondary input path, never the only path.
+2. Public-link analysis is a secondary input path, never the only path.
 3. Sample content makes the empty state immediately testable.
 4. The trust note sets expectations before scoring.
 5. Score and label are adjacent and use semantic status treatment.

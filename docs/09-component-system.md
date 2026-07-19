@@ -4,7 +4,7 @@
 
 Purpose:
 
-Accept pasted OJT posts, recruiter messages, or extracted screenshot text.
+Accept pasted OJT posts, recruiter messages, or a public listing URL.
 
 Elements:
 
@@ -24,17 +24,17 @@ States:
 - Loading
 - Error
 
-## Screenshot Uploader
+## Public-Link Input
 
 Purpose:
 
-Allow students to upload screenshots from Facebook, Messenger, LinkedIn, email, or group chats.
+Allow students to submit a public HTTP or HTTPS listing page for server-side readable-HTML extraction.
 
 Elements:
 
 - Upload dropzone
 - File preview
-- OCR status
+- Link extraction status
 - Extracted text review
 
 States:
@@ -42,9 +42,9 @@ States:
 - Idle
 - Dragging
 - Uploading
-- OCR processing
-- OCR success
-- OCR failed
+- Extracting page
+- Extraction success
+- Extraction failed with manual-paste recovery
 
 ## Risk Score Panel
 
@@ -171,7 +171,7 @@ Use to confirm:
 
 - Analysis saved
 - Checklist updated
-- Screenshot text extracted
+- Public listing text extracted
 - Error occurred
 
 ## Phase 5 Implementation Reference

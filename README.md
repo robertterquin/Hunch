@@ -4,7 +4,7 @@ Hunch is a student-focused web app for checking OJT and internship listings for 
 
 ## Current Phase
 
-Phase 11 adds browser-only screenshot OCR with an editable review gate. Hunch analyzes only text the student has reviewed; uploaded screenshots are not stored. Secure OpenAI explanations, Supabase password accounts, and private saved-report persistence are also present.
+Phase 11 replaces image-text extraction with a public-link analyzer. Hunch can fetch readable public HTML from a supplied URL, then analyze it with the existing rule-first pipeline. Secure OpenAI explanations, Supabase password accounts, and private saved-report persistence are also present.
 
 ## Setup
 
@@ -37,12 +37,13 @@ npm run preview   # Preview the production build locally
 - `src/types` contains the typed analysis contract.
 - `src/data` and `src/services` expose the fixture-backed mock service.
 - `api/analyze.ts` is the server-side Vercel function for OpenAI explanations.
+- `api/extract-link.ts` is the server-side Vercel function that safely extracts readable public HTML.
 - `fixtures` contains the Phase 3 calibration fixtures.
 - `docs` contains the product, UX, visual, and implementation contracts.
 
 ## Route Foundation
 
-The current route map includes `/analyze`, `/analyze/review`, `/saved`, `/saved/:analysisId`, `/compare`, `/guide`, `/guide/:patternId`, `/checklist`, `/settings`, and `/auth/:mode`. The root route redirects to `/analyze`.
+The current route map includes `/analyze`, `/saved`, `/saved/:analysisId`, `/compare`, `/guide`, `/guide/:patternId`, `/checklist`, `/settings`, and `/auth/:mode`. The root route redirects to `/analyze`.
 
 ## Environment Variables
 
@@ -57,9 +58,9 @@ The anon key is intended for browser use and is protected by Supabase Auth and R
 
 Configure the Supabase Auth URL allow list to include `http://localhost:5173/auth/sign-in` during local development. Add the production URL before deployment.
 
-### Screenshot OCR
+### Public-link analysis
 
-Hunch accepts PNG and JPG screenshots up to 10 MB. OCR runs locally in the browser with Tesseract.js, crop selection, image preprocessing, and an editable review gate. Low-confidence OCR can optionally use a consent-based Google Cloud Vision fallback; configure `GOOGLE_CLOUD_VISION_API_KEY` server-side only. See [`docs/20-screenshot-ocr.md`](C:/Hunch/Hunch/docs/20-screenshot-ocr.md).
+Hunch accepts one public HTTP or HTTPS URL and fetches static readable HTML server-side. It rejects private and local addresses, follows at most three redirects, uses a ten-second timeout, limits pages to 1 MB, and never sends browser cookies or executes page JavaScript. Private, login-protected, JavaScript-only, blocked, non-HTML, short, or oversized pages must be pasted manually. See [`docs/20-public-link-analyzer.md`](C:/Hunch/Hunch/docs/20-public-link-analyzer.md).
 
 ### OpenAI explanation setup
 
@@ -74,6 +75,6 @@ OPENAI_MODEL=gpt-5.6-luna
 
 Never use `VITE_OPENAI_API_KEY`. The API key must not be in browser code, Supabase, source control, or a public environment variable. Configure the same variables as encrypted environment variables in Vercel for deployed explanations.
 
-Vite alone serves the React app and does not execute `api/analyze.ts`. Running `npm run dev` without a Vercel function automatically falls back to the deterministic rule-only report. Use a Vercel-compatible local server such as `vercel dev` when you need to exercise the OpenAI route locally.
+Vite alone serves the React app and does not execute `api/analyze.ts` or `api/extract-link.ts`. Running `npm run dev` without a Vercel function automatically falls back to the deterministic rule-only report, but public-link analysis needs a Vercel-compatible local server such as `vercel dev`.
 
 See [`docs/19-openai-integration.md`](C:/Hunch/Hunch/docs/19-openai-integration.md) for the request contract, fallback behavior, security rules, and test instructions.

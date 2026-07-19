@@ -73,4 +73,4 @@ The Phase 9 tests cover valid structured output, invalid requests, method handli
 
 ## Current limitation
 
-Phase 9 analyzes pasted or reviewed text only. Screenshot OCR remains a later phase; this integration does not perform OCR or silently analyze an unreviewed extraction.
+Phase 9 analyzes pasted text or text extracted from a public HTML page. The link extractor does not alter the deterministic score and never sends images to OpenAI.

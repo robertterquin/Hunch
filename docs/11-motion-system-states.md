@@ -57,15 +57,15 @@ Reveal:
 
 Show a calm error message and retry action.
 
-## Screenshot States
+## Public-Link States
 
 - Idle upload
 - File selected
-- OCR processing
+- Link extraction in progress
 - Text extracted
 - Extraction failed
 
-If OCR fails, let the user paste manually.
+If link extraction fails, let the user paste manually.
 
 ## Result Reveal
 
@@ -107,11 +107,11 @@ The implementation should use explicit state groups so screens do not infer beha
 
 ### InputState
 
-Allowed values: `empty`, `ready`, `too-short`, `screenshot-selected`, `ocr-review`, and `invalid`.
+Allowed values: `empty`, `ready`, `too-short`, `link-ready`, `link-loading`, and `invalid`.
 
 - Fewer than 40 characters produces `too-short` and blocks analysis.
-- A selected screenshot moves to `/analyze/review` before scoring.
-- Low-confidence or empty OCR remains in `ocr-review` until the student edits or confirms usable text.
+- A valid public link stays on `/analyze` while Hunch safely fetches static HTML before scoring.
+- A private, blocked, short, or unreadable page returns a visible manual-paste recovery path.
 - Invalid input keeps the entered content and shows a field-level recovery action.
 
 ### AnalysisState
@@ -149,7 +149,7 @@ Each state exposes a visible status, an available recovery action, and a valid d
 
 - AI explanation runs only after normalized input and deterministic rule scanning succeed.
 - AI failure falls back to a usable rule-only report.
-- OCR failure returns to manual paste without silently scoring missing text.
+- Link extraction failure returns to manual paste without silently scoring missing text.
 - Network, OpenAI, and Supabase failures keep recoverable user context.
 - Delete requires confirmation and returns to the saved list or empty state.
 - A lower risk score never becomes a claim that a listing is safe.

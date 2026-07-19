@@ -53,7 +53,7 @@ The first screen must include:
 - Hunch name
 - Tagline: "Your second opinion before applying."
 - Paste input
-- Screenshot upload option
+- Public-link input mode
 - Analyze button
 - A compact preview of what Hunch checks
 - A result preview or empty risk panel that makes the analysis flow obvious
@@ -117,7 +117,7 @@ The shell owns the global navigation and keeps the active analysis context avail
 | New Analysis | `/analyze` | Clears only when the student confirms starting over. | Public |
 | Account action | Auth routes or sign-out | Preserves return destination for authentication. | Public or signed in |
 
-The root route `/` redirects to `/analyze`. Saved detail uses `/saved/:analysisId`; screenshot review uses `/analyze/review`; comparison uses `/compare` and requires at least two selected private reports.
+The root route `/` redirects to `/analyze`. Saved detail uses `/saved/:analysisId`; comparison uses `/compare` and requires at least two selected private reports. Public-link extraction remains within `/analyze`.
 
 ## Auth and Privacy Navigation
 

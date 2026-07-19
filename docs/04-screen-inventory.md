@@ -9,7 +9,7 @@ Let students immediately check an OJT or internship post.
 Primary actions:
 
 - Paste post
-- Upload screenshot
+- Public-link mode
 - Try sample post
 - Analyze
 
@@ -17,8 +17,8 @@ Required states:
 
 - Empty input
 - Typing/pasted text
-- Screenshot uploaded
-- OCR processing
+- Link entered
+- Link extraction in progress
 - Analysis loading
 - Result ready
 - Error
@@ -144,7 +144,7 @@ Required states:
 ## Shared System States
 
 - Loading analysis
-- OCR failed
+- Link extraction failed
 - OpenAI/API failed
 - Network unavailable
 - Supabase save failed
@@ -161,11 +161,11 @@ Phase 4 wireframes, responsive rules, interaction behavior, and state copy are d
 
 | State group | State | Visible feedback | Available actions | Next destination |
 | --- | --- | --- | --- | --- |
-| InputState | Empty | Prompt, source selector, sample action, and disabled Analyze button. | Paste, choose source, use sample, upload screenshot. | Typing, Screenshot selected, or Guide sample. |
+| InputState | Empty | Prompt, source selector, public-link mode, sample action, and disabled Analyze button. | Paste, choose source, use a public link, or use a sample. | Typing, Link ready, or Guide sample. |
 | InputState | Ready | Character count and enabled Analyze button. | Edit, clear, change source, analyze. | Loading or Empty. |
 | InputState | Too-short | Inline message requiring at least 40 characters. | Add text, use sample, clear. | Ready or Empty. |
-| InputState | Screenshot-selected | File name, preview, and OCR status. | Review file, remove file, continue to review. | `/analyze/review` or OCR error. |
-| InputState | OCR-review | Editable extracted text and confidence notice. | Correct text, confirm, cancel, retry extraction. | Analyze ready or `/analyze`. |
+| InputState | Link-ready | Valid public URL and Analyze link action. | Edit URL, change mode, analyze. | Loading, error, or result. |
+| InputState | Link-error | Clear extraction failure and manual-paste recovery. | Edit URL or switch to paste. | Link-ready or paste input. |
 | InputState | Invalid | Field-level explanation of the input problem. | Correct, clear, or paste manually. | Ready, Empty, or `/analyze`. |
 | AnalysisState | Idle | No active analysis status. | Edit input, sample, upload, analyze. | Input state. |
 | AnalysisState | Loading | Current stage text and disabled duplicate submission. | Wait or cancel when supported. | Complete, fallback, or Error. |

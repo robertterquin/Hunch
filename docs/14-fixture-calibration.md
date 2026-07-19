@@ -17,7 +17,7 @@ The machine-readable fixture library is stored in `fixtures/hunch-analysis-fixtu
 | `incomplete-01` | Forwarded post with missing company, role, schedule, and official application details. | Caution, medium confidence. | Partial evidence and uncertainty behavior. |
 | `informal-01` | Personal email appears, but the role, public domain, school path, and privacy boundary are clear. | Low risk or low caution, medium confidence. | False-positive calibration for informal channels. |
 
-All fixture text uses fictional names and `.example` domains. No fixture contains real personal contact information, government identifiers, or private screenshots.
+All fixture text uses fictional names and `.example` domains. No fixture contains real personal contact information, government identifiers, or private source content.
 
 ## Student Vocabulary Notes
 

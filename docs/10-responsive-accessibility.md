@@ -2,7 +2,7 @@
 
 ## Responsive Goals
 
-Hunch should work well for students using laptops, tablets, and phones. Many students may check OJT posts directly from a phone screenshot or chat message.
+Hunch should work well for students using laptops, tablets, and phones. Many students may check OJT posts from a public link or chat message.
 
 ## Desktop
 
@@ -33,7 +33,7 @@ Use a single-column layout:
 
 - Top bar
 - Analyzer input
-- Upload button
+- Public-link mode toggle
 - Analyze button
 - Risk result
 - Warning cards
@@ -49,7 +49,7 @@ Mobile rules:
 ## Accessibility Rules
 
 - Every input needs a visible label.
-- Upload controls need keyboard access.
+- Public-link mode and URL controls need keyboard access.
 - Buttons need clear focus states.
 - Risk colors must include text labels.
 - Warning icons must not be the only indicator.
@@ -70,7 +70,7 @@ Required keyboard behavior:
 Important labels:
 
 - Text area: "Paste OJT or internship post"
-- Upload: "Upload screenshot of OJT post"
+- Public link: "Analyze public listing link"
 - Analyze button: "Analyze post for risk signals"
 - Risk score: include score and risk level in text.
 
@@ -81,7 +81,7 @@ Errors should be attached to the relevant field.
 Examples:
 
 - "Paste at least 40 characters so Hunch has enough text to analyze."
-- "We could not read the screenshot. Try a clearer image or paste the text manually."
+- "We could not read that public page. Paste the listing text manually instead."
 
 ## Content Accessibility
 

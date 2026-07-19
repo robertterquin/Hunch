@@ -16,12 +16,12 @@ Primary navigation:
 
 ### Analyze
 
-The main screen where students paste an OJT post, upload a screenshot, or try a sample listing.
+The main screen where students paste an OJT post, analyze a public listing link, or try a sample listing.
 
 Content:
 
 - Paste input
-- Screenshot upload
+- Public-link input
 - Source selector
 - Analyze button
 - Recent or sample risk indicators
@@ -149,7 +149,6 @@ The route contract is framework-independent and must be established before front
 | --- | --- | --- | --- |
 | `/` | Analyze | Public | Redirect to `/analyze`. |
 | `/analyze` | Analyze and active result panel | Public | Accept pasted text, source selection, samples, and completed reports. |
-| `/analyze/review` | Screenshot review | Public | Review and edit OCR text before analysis. |
 | `/saved` | Saved analyses | Signed in | Browse, search, filter, and delete private reports. |
 | `/saved/:analysisId` | Saved analysis detail | Signed in | Reopen one saved report with breadcrumbs. |
 | `/compare` | Comparison | Signed in | Compare two or more selected saved reports. |
@@ -168,7 +167,7 @@ The anonymous result remains on `/analyze` as an active in-memory report. A pers
 | Action | Anonymous behavior | Signed-in behavior |
 | --- | --- | --- |
 | Analyze pasted text | Allowed without account. | Allowed without account requirement. |
-| Review screenshot text | Allowed; low-confidence OCR requires review. | Same behavior. |
+| Analyze a public link | Allowed; readable public HTML is analyzed immediately. | Same behavior. |
 | View result | Full report remains available. | Full report remains available. |
 | Save result | Open sign-in while preserving the report. | Save a private report snapshot. |
 | Saved reports | Redirect to sign-in with return destination. | List, open, filter, search, and delete own reports. |

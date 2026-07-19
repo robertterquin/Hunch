@@ -14,10 +14,10 @@ Success outcome:
 
 The student knows whether the listing deserves caution before applying.
 
-## Journey 2: Upload a Screenshot
+## Journey 2: Analyze a Public Link
 
-1. Student uploads a screenshot from Messenger, Facebook, LinkedIn, email, or a school group chat.
-2. Hunch extracts readable text through OCR.
+1. Student copies a public listing URL from a job board, company site, or public post.
+2. Hunch fetches readable static HTML through its server-side link extractor.
 3. Student reviews or edits the extracted text.
 4. Student runs the analysis.
 5. Hunch displays the same report format as pasted text.
@@ -69,7 +69,7 @@ Hunch becomes a fast safety habit before sending applications or personal inform
 ## Edge Cases
 
 - Empty or very short post: ask for more details before scoring.
-- Low-quality screenshot: show OCR confidence and allow manual editing.
+- Private, blocked, JavaScript-only, or unavailable page: explain the limit and offer manual paste.
 - Ambiguous result: show medium risk and explain missing evidence.
 - Safe-looking post with missing details: show low or medium risk with verification reminders.
 - User tries to save while signed out: prompt sign in without losing the result.
@@ -87,11 +87,11 @@ Hunch becomes a fast safety habit before sending applications or personal inform
 | Analyze, complete | Read report, expand warning, or complete checklist | Keep the submitted text beside the report. | Analyze, active result. |
 | Analyze, active result | Click Save | Save directly if signed in; otherwise preserve the report and open auth. | Saved detail or `/auth/sign-in`. |
 
-### Screenshot path
+### Public-link path
 
-1. The student starts on `/analyze` and selects a screenshot.
-2. Hunch moves to `/analyze/review` and shows the file, extraction status, and confidence.
-3. OCR text is editable before analysis.
+1. The student starts on `/analyze` and selects Public link.
+2. Hunch validates the URL, safely fetches public static HTML, and extracts readable text.
+3. The extracted text is analyzed immediately with the existing rule engine.
 4. Low-confidence or empty extraction blocks scoring until the student confirms or corrects the text.
 5. A failed extraction offers manual paste recovery and does not silently analyze missing text.
 6. Confirmed text returns to `/analyze` and follows the same analysis and result path as pasted text.
@@ -117,5 +117,5 @@ Hunch becomes a fast safety habit before sending applications or personal inform
 - Rule processing failure shows an input error and does not invent a report.
 - AI failure renders a useful rule-only report and labels the reduced explanation state.
 - Network or save failure keeps the active report and offers retry.
-- OCR failure returns the student to manual paste without deleting the selected context.
+- Link extraction failure returns the student to manual paste without creating a report.
 - Delete failure keeps the report in the saved list and provides a retry action.

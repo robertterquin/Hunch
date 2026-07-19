@@ -15,7 +15,7 @@ Use the project root URL. Do not append `/rest/v1/`; the Supabase JavaScript cli
 
 ## Database
 
-Run [`supabase/master.sql`](../supabase/master.sql) in the Supabase SQL Editor. This is the single, idempotent master query for a clean project and also brings an existing project up to the current Phase 10 schema. It creates:
+Run [`supabase/master.sql`](../supabase/master.sql) in the Supabase SQL Editor. This is the single, idempotent master query for a clean project and also brings an existing project up to the current Phase 11 schema. It creates:
 
 - `profiles`
 - `analyses`
@@ -24,6 +24,7 @@ Run [`supabase/master.sql`](../supabase/master.sql) in the Supabase SQL Editor. 
 - ownership indexes and row-level security policies
 - a profile row trigger for new Auth users
 - the Phase 9 AI explanation fields on saved reports
+- the optional Phase 11 `analyses.source_url` field for saved public-link reports
 
 The numbered files in `supabase/migrations/` remain the historical migration record. Use `master.sql` for manual Supabase Dashboard setup; do not run both approaches on a fresh project.
 
