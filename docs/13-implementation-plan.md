@@ -599,6 +599,8 @@ Dependencies: Phases 7, 8, and 10.
 
 Exit gate: OCR never silently analyzes missing text, users can correct extraction, and a failed upload returns to paste input cleanly.
 
+Implementation note: Phase 11 uses browser-only Tesseract.js for PNG/JPG screenshots up to 10 MB. The screenshot stays in memory during review and is discarded before analysis; only student-reviewed text reaches the analyzer. Low-confidence, empty, and failed extraction states require an explicit review confirmation or manual-paste recovery. See `docs/20-screenshot-ocr.md`.
+
 ### Phase 12: Comparison, Scam Guide, and checklist depth
 
 Outcome: Hunch supports the decision after the first score without expanding into a job board.

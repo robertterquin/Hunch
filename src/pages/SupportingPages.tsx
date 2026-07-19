@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { ArrowLeft, ArrowRight, BookOpen, Check, CheckSquare, CircleAlert, FileSearch, LockKeyhole, RotateCcw, Search, Settings, ShieldCheck, Trash2, Upload, X } from 'lucide-react'
+import { useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from 'react'
+import { ArrowLeft, ArrowRight, BookOpen, Check, CheckSquare, CircleAlert, FileSearch, LoaderCircle, LockKeyhole, RotateCcw, Search, Settings, ShieldCheck, Trash2, Upload, X } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAppState } from '../app/stateContext'
 import { getFixtureTitle } from '../data/analysisFixtures'
 import { AnalysisReportView } from '../components/AnalysisReportView'
 import { validateEmail, validatePassword, validateSignIn, validateSignUp } from '../services/authValidation'
+import { clearScreenshotDraft, getScreenshotDraft, setScreenshotDraft } from '../services/screenshotDraft'
+import { canUseReviewedOcrText, extractScreenshotText, getImageQualityWarning, getOcrConfidence, getOcrConfidenceMessage, getScreenshotDimensions, requiresOcrReviewConfirmation, validateScreenshotFile, type OcrReviewStatus } from '../services/screenshotOcr'
 import type { AnalysisReport } from '../types/analysis'
 
 const patterns = [
@@ -166,8 +168,112 @@ export function AuthPage() {
 
 export function ScreenshotReviewPage() {
   const navigate = useNavigate()
-  const [fileName, setFileName] = useState('')
+  const [file, setFile] = useState<File | null>(() => getScreenshotDraft())
   const [text, setText] = useState('')
-  const ready = text.trim().length >= 40
-  return <SupportPage eyebrow="Analyze > Screenshot review" title="Review extracted text before analyzing" description="Confirm that Hunch read the screenshot correctly. Low-confidence text must be edited before it can be checked."><section className="review-grid"><div className="panel upload-preview"><div className="upload-icon"><Upload size={25} aria-hidden="true" /></div><h2>{fileName || 'Choose a screenshot'}</h2><p>{fileName ? 'The screenshot is available for review in this demo flow.' : 'PNG, JPG, or a pasted listing can be used.'}</p><label className="button button-secondary" htmlFor="screenshot"><Upload size={16} aria-hidden="true" />Choose image</label><input className="sr-only" id="screenshot" type="file" accept="image/png,image/jpeg" onChange={(event) => setFileName(event.target.files?.[0]?.name ?? '')} />{fileName && <button className="text-button" type="button" onClick={() => setFileName('')}><X size={14} aria-hidden="true" />Remove screenshot</button>}</div><div className="panel"><div className="panel-heading"><div><p className="eyebrow">OCR review</p><h2>Check the extracted text</h2></div><span className={`confidence-label${ready ? ' is-ready' : ''}`}>{ready ? 'Ready' : 'Needs review'}</span></div><textarea id="ocr-text" value={text} onChange={(event) => setText(event.target.value)} placeholder="For this mock flow, paste or edit the extracted text here." /><p className="trust-note">Some words may be missing. Hunch will not score low-confidence or empty extraction.</p><div className="button-row"><Link className="button button-secondary" to="/analyze">Cancel</Link><button className="button button-primary" type="button" disabled={!ready} onClick={() => navigate('/analyze', { state: { text, sourceType: 'screenshot' } })}>Use this text <ArrowRight size={16} aria-hidden="true" /></button></div></div></section></SupportPage>
+  const [status, setStatus] = useState<OcrReviewStatus>(file ? 'processing' : 'idle')
+  const [progress, setProgress] = useState(0)
+  const [confidence, setConfidence] = useState<number | null>(null)
+  const [qualityWarning, setQualityWarning] = useState('')
+  const [error, setError] = useState('')
+  const [reviewConfirmed, setReviewConfirmed] = useState(false)
+  const [attempt, setAttempt] = useState(0)
+  const [previewUrl, setPreviewUrl] = useState('')
+
+  useEffect(() => {
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => setPreviewUrl(typeof reader.result === 'string' ? reader.result : '')
+    reader.readAsDataURL(file)
+    return () => reader.abort()
+  }, [file])
+
+  useEffect(() => {
+    if (!file) return
+    let active = true
+    const runExtraction = async () => {
+      setStatus('processing')
+      setProgress(0)
+      setConfidence(null)
+      setError('')
+      setReviewConfirmed(false)
+      try {
+        const dimensions = await getScreenshotDimensions(file).catch(() => null)
+        if (active) setQualityWarning(dimensions ? getImageQualityWarning(dimensions) ?? '' : '')
+        const result = await extractScreenshotText(file, (nextProgress) => {
+          if (active) setProgress(nextProgress)
+        })
+        if (!active) return
+        setText(result.text)
+        setConfidence(result.confidence)
+        setStatus(result.text ? 'review' : 'empty')
+      } catch {
+        if (!active) return
+        setStatus('error')
+        setError('We could not read the screenshot. Try a clearer image, retry extraction, or paste the text manually.')
+      }
+    }
+    void runExtraction()
+    return () => { active = false }
+  }, [attempt, file])
+
+  const chooseScreenshot = (event: ChangeEvent<HTMLInputElement>) => {
+    const nextFile = event.target.files?.[0]
+    event.target.value = ''
+    if (!nextFile) return
+    const validation = validateScreenshotFile(nextFile)
+    if (validation) { setError(validation); return }
+    setScreenshotDraft(nextFile)
+    setFile(nextFile)
+    setPreviewUrl('')
+    setText('')
+    setConfidence(null)
+    setQualityWarning('')
+    setError('')
+    setAttempt((current) => current + 1)
+  }
+
+  const removeScreenshot = () => {
+    clearScreenshotDraft()
+    setFile(null)
+    setPreviewUrl('')
+    setText('')
+    setConfidence(null)
+    setQualityWarning('')
+    setError('')
+    setReviewConfirmed(false)
+    setStatus('idle')
+  }
+
+  const requiresConfirmation = requiresOcrReviewConfirmation(status, confidence)
+  const ready = canUseReviewedOcrText({ fileSelected: Boolean(file), status, text, confidence, reviewConfirmed })
+  const fileMeta = file ? `${file.name} · ${(file.size / (1024 * 1024)).toFixed(1)} MB` : 'PNG or JPG, up to 10 MB'
+  const confidenceLabel = confidence === null ? status === 'processing' ? `Reading ${progress}%` : 'Needs review' : `${getOcrConfidence(confidence)} confidence`
+
+  return <SupportPage eyebrow="Analyze > Screenshot review" title="Review extracted text before analyzing" description="Hunch reads the screenshot in your browser. It is not stored unless you later save a report.">
+    <section className="review-grid">
+      <div className="panel upload-preview">
+        {previewUrl ? <img className="screenshot-preview" src={previewUrl} alt={`Preview of ${file?.name ?? 'selected screenshot'}`} /> : <div className="upload-icon"><Upload size={25} aria-hidden="true" /></div>}
+        <h2>{file?.name ?? 'Choose a screenshot'}</h2>
+        <p>{fileMeta}</p>
+        <label className="button button-secondary" htmlFor="review-screenshot"><Upload size={16} aria-hidden="true" />{file ? 'Choose another' : 'Choose image'}</label>
+        <input className="sr-only" id="review-screenshot" type="file" accept="image/png,image/jpeg" aria-label="Upload screenshot of OJT post" onChange={chooseScreenshot} />
+        {file && <div className="button-row compact-actions"><button className="text-button" type="button" onClick={() => setAttempt((current) => current + 1)} disabled={status === 'processing'}><RotateCcw size={14} aria-hidden="true" />Try again</button><button className="text-button" type="button" onClick={removeScreenshot}><X size={14} aria-hidden="true" />Remove</button></div>}
+        <p className="trust-note">The screenshot stays only in this browser review. Hunch saves text only when you explicitly save a report.</p>
+      </div>
+      <div className="panel">
+        <div className="panel-heading"><div><p className="eyebrow">OCR review</p><h2>Check the extracted text</h2></div><span className={`confidence-label${ready ? ' is-ready' : ''}`}>{confidenceLabel}</span></div>
+        {status === 'processing' && <div className="ocr-progress" role="status"><LoaderCircle className="spin" size={16} aria-hidden="true" /><span>Reading visible text from the screenshot. {progress}%</span></div>}
+        {qualityWarning && <p className="field-warning"><CircleAlert size={15} aria-hidden="true" />{qualityWarning}</p>}
+        {confidence !== null && <p className="trust-note">{getOcrConfidenceMessage(confidence)}</p>}
+        {status === 'empty' && <p className="inline-error" role="alert"><CircleAlert size={16} aria-hidden="true" />No readable text was found. Paste or type the listing below.</p>}
+        {error && <p className="inline-error" role="alert"><CircleAlert size={16} aria-hidden="true" />{error}</p>}
+        <label className="field-label" htmlFor="ocr-text">Extracted listing text</label>
+        <textarea id="ocr-text" value={text} onChange={(event) => { setText(event.target.value); setReviewConfirmed(false) }} placeholder="Paste or correct the listing text here." disabled={!file || status === 'processing'} aria-describedby="ocr-help ocr-count" />
+        <div className="field-meta"><span id="ocr-help">Review names, email addresses, fees, links, and requested documents.</span><span id="ocr-count">{text.length} characters</span></div>
+        {text.length > 0 && text.trim().length < 40 && <p className="field-warning"><CircleAlert size={15} aria-hidden="true" />Add {40 - text.trim().length} more characters before continuing.</p>}
+        {requiresConfirmation && text.trim().length >= 40 && <label className="review-confirmation"><input type="checkbox" checked={reviewConfirmed} onChange={(event) => setReviewConfirmed(event.target.checked)} />I reviewed and corrected this text before Hunch checks it.</label>}
+        <div className="button-row"><button className="button button-secondary" type="button" onClick={() => navigate('/analyze', { state: { sourceType: 'screenshot', notice: 'Paste the listing text manually. The screenshot was not saved.' } })}>Paste manually</button><button className="button button-primary" type="button" disabled={!ready} onClick={() => { clearScreenshotDraft(); navigate('/analyze', { state: { text, sourceType: 'screenshot', notice: 'Screenshot text is ready. Review it once more, then analyze it.' } }) }}>Use this text <ArrowRight size={16} aria-hidden="true" /></button></div>
+      </div>
+    </section>
+  </SupportPage>
 }

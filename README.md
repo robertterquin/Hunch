@@ -4,7 +4,7 @@ Hunch is a student-focused web app for checking OJT and internship listings for 
 
 ## Current Phase
 
-Phase 9 adds secure, evidence-bound OpenAI explanations on top of the deterministic rule engine. Supabase Auth and private saved-report persistence are also present. Anonymous analysis remains available, while authenticated users can save, revisit, compare, update checklist state, delete reports, and sign out.
+Phase 11 adds browser-only screenshot OCR with an editable review gate. Hunch analyzes only text the student has reviewed; uploaded screenshots are not stored. Secure OpenAI explanations, Supabase password accounts, and private saved-report persistence are also present.
 
 ## Setup
 
@@ -17,7 +17,7 @@ npm run dev
 
 The local app is served by Vite. The project reads Supabase credentials from `.env.local`, which is ignored by git.
 
-To create the database objects, run the migrations in `supabase/migrations/` in order in the Supabase SQL Editor. The anon key cannot create tables or policies itself.
+To create the database objects, run `supabase/master.sql` in the Supabase SQL Editor. The anon key cannot create tables or policies itself.
 
 ## Commands
 
@@ -56,6 +56,10 @@ VITE_SUPABASE_ANON_KEY=your-public-anon-key
 The anon key is intended for browser use and is protected by Supabase Auth and RLS. Never put a service-role key in Vite variables or source control.
 
 Configure the Supabase Auth URL allow list to include `http://localhost:5173/auth/sign-in` during local development. Add the production URL before deployment.
+
+### Screenshot OCR
+
+Hunch accepts PNG and JPG screenshots up to 10 MB. OCR runs locally in the browser with Tesseract.js and the extracted text must be reviewed before analysis. The first use downloads OCR worker/language resources; if that fails, Hunch offers retry and manual paste recovery. See [`docs/20-screenshot-ocr.md`](C:/Hunch/Hunch/docs/20-screenshot-ocr.md).
 
 ### OpenAI explanation setup
 

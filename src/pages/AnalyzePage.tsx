@@ -1,10 +1,12 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react'
 import { ArrowRight, Check, CircleAlert, FileText, LoaderCircle, RotateCcw, Upload } from 'lucide-react'
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { AnalysisReportView } from '../components/AnalysisReportView'
 import { useAppState } from '../app/stateContext'
 import { getFixtureById } from '../data/analysisFixtures'
 import { analyzeListingWithExplanation } from '../services/openaiAnalysisService'
+import { setScreenshotDraft } from '../services/screenshotDraft'
+import { validateScreenshotFile } from '../services/screenshotOcr'
 import type { SourceType } from '../types/analysis'
 
 const sourceOptions: Array<{ value: SourceType; label: string }> = [
@@ -41,13 +43,13 @@ export function AnalyzePage() {
   }, [searchParams, setActiveReport])
 
   useEffect(() => {
-    const state = location.state as { text?: string; sourceType?: SourceType } | null
-    if (!state?.text) return
+    const state = location.state as { text?: string; sourceType?: SourceType; notice?: string } | null
+    if (!state?.sourceType && !state?.text) return
     const timer = window.setTimeout(() => {
-      setText(state.text ?? '')
+      if (state.text) setText(state.text)
       setSourceType(state.sourceType ?? 'screenshot')
       setActiveReport(null)
-      setNotice('Screenshot text is ready. Review it once more, then analyze it.')
+      setNotice(state.notice ?? 'Screenshot text is ready. Review it once more, then analyze it.')
     })
     return () => window.clearTimeout(timer)
   }, [location.state, setActiveReport])
@@ -91,6 +93,20 @@ export function AnalyzePage() {
     setActiveReport(null)
     setError('')
     setNotice('')
+  }
+
+  const handleScreenshotSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    const validation = validateScreenshotFile(file)
+    if (validation) {
+      setError(validation)
+      return
+    }
+    setScreenshotDraft(file)
+    setError('')
+    navigate('/analyze/review')
   }
 
   const characterCount = text.length
@@ -142,7 +158,8 @@ export function AnalyzePage() {
           <div className="button-row">
             <button className="button button-secondary" type="button" onClick={clearInput} disabled={!text && !activeReport}><RotateCcw size={16} aria-hidden="true" />Clear</button>
             <button className="button button-secondary" type="button" onClick={loadSample}><FileText size={16} aria-hidden="true" />Try a sample</button>
-            <Link className="button button-secondary" to="/analyze/review"><Upload size={16} aria-hidden="true" />Screenshot review</Link>
+            <label className="button button-secondary" htmlFor="screenshot-upload"><Upload size={16} aria-hidden="true" />Upload screenshot</label>
+            <input className="sr-only" id="screenshot-upload" type="file" accept="image/png,image/jpeg" aria-label="Upload screenshot of OJT post" onChange={handleScreenshotSelect} />
             <button className="button button-primary" type="submit" disabled={!canAnalyze}>{isAnalyzing ? <LoaderCircle className="spin" size={16} aria-hidden="true" /> : <ArrowRight size={16} aria-hidden="true" />}{isAnalyzing ? 'Checking' : 'Analyze post'}</button>
           </div>
           <p className="trust-note">Hunch provides an estimate based on visible signals. It does not prove whether a listing is legitimate.</p>
