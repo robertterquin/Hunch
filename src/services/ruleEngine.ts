@@ -1,5 +1,5 @@
-import { RULE_CATALOG, RULE_CATALOG_BY_ID, RULE_ENGINE_VERSION, type RuleDefinition } from '../data/ruleCatalog'
-import type { Confidence, RiskCategory, RiskLevel, ScoreBreakdownItem } from '../types/analysis'
+import { RULE_CATALOG, RULE_CATALOG_BY_ID, RULE_ENGINE_VERSION, type RuleDefinition } from '../data/ruleCatalog.js'
+import type { Confidence, RiskCategory, RiskLevel, ScoreBreakdownItem } from '../types/analysis.js'
 
 export interface NormalizedListing {
   originalText: string

@@ -1,4 +1,4 @@
-import type { RiskCategory, RedFlag } from '../types/analysis'
+import type { RiskCategory, RedFlag } from '../types/analysis.js'
 
 export interface RuleDefinition {
   id: string

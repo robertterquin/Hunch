@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { RiskCategory } from '../types/analysis'
+import type { RiskCategory } from '../types/analysis.js'
 
 const riskCategories = [
   'payment-request',

@@ -1,8 +1,8 @@
 import OpenAI from 'openai'
 import { zodTextFormat } from 'openai/helpers/zod'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { runRuleEngine, type RuleFinding } from '../src/services/ruleEngine'
-import { AnalyzeRequestSchema, OpenAIExplanationSchema, type OpenAIExplanation } from '../src/services/openaiAnalysisSchema'
+import { runRuleEngine, type RuleFinding } from '../src/services/ruleEngine.js'
+import { AnalyzeRequestSchema, OpenAIExplanationSchema, type OpenAIExplanation } from '../src/services/openaiAnalysisSchema.js'
 
 const DEFAULT_MODEL = 'gpt-5.6-luna'
 
