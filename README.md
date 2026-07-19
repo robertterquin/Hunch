@@ -59,7 +59,7 @@ Configure the Supabase Auth URL allow list to include `http://localhost:5173/aut
 
 ### Screenshot OCR
 
-Hunch accepts PNG and JPG screenshots up to 10 MB. OCR runs locally in the browser with Tesseract.js and the extracted text must be reviewed before analysis. The first use downloads OCR worker/language resources; if that fails, Hunch offers retry and manual paste recovery. See [`docs/20-screenshot-ocr.md`](C:/Hunch/Hunch/docs/20-screenshot-ocr.md).
+Hunch accepts PNG and JPG screenshots up to 10 MB. OCR runs locally in the browser with Tesseract.js, crop selection, image preprocessing, and an editable review gate. Low-confidence OCR can optionally use a consent-based Google Cloud Vision fallback; configure `GOOGLE_CLOUD_VISION_API_KEY` server-side only. See [`docs/20-screenshot-ocr.md`](C:/Hunch/Hunch/docs/20-screenshot-ocr.md).
 
 ### OpenAI explanation setup
 

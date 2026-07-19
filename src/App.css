@@ -186,10 +186,23 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .upload-preview h2 { margin: 4px 0 0; max-width: 290px; overflow-wrap: anywhere; }
 .upload-preview p { max-width: 300px; color: var(--color-text-muted); font-size: 13px; line-height: 1.5; }
 .screenshot-preview { width: 100%; max-height: 280px; object-fit: contain; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-surface-2); }
+.review-grid { grid-template-columns: minmax(300px, 0.9fr) minmax(360px, 1.1fr); }
+.crop-stage { position: relative; width: 100%; max-width: 420px; cursor: crosshair; touch-action: none; }
+.crop-stage .screenshot-preview { display: block; max-height: 360px; user-select: none; }
+.crop-selection { position: absolute; box-sizing: border-box; border: 2px solid var(--color-action); box-shadow: 0 0 0 999px rgba(5, 9, 18, 0.52); pointer-events: none; }
+.screenshot-title { font-size: 17px; }
+.upload-preview .file-name { width: min(100%, 320px); overflow: hidden; color: var(--color-text-muted); font-family: var(--font-mono); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.crop-help { margin: 2px 0 0; }
 .compact-actions { justify-content: center; }
 .ocr-progress { display: flex; align-items: center; gap: 8px; margin: 14px 0; color: var(--color-text-secondary); font-size: 13px; }
 .review-confirmation { display: flex; align-items: flex-start; gap: 8px; padding: 10px 0; color: var(--color-text-secondary); font-size: 13px; line-height: 1.45; }
 .review-confirmation input { width: 16px; min-width: 16px; height: 16px; margin: 1px 0 0; }
+.uncertain-lines { display: grid; gap: 8px; padding: 12px; margin-top: 12px; border: 1px solid var(--color-border-muted); border-radius: var(--radius-control); background: var(--color-surface-2); color: var(--color-text-secondary); font-size: 12px; }
+.uncertain-lines ul { display: grid; gap: 6px; padding: 0; margin: 0; list-style: none; }
+.uncertain-lines li { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.uncertain-lines li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.uncertain-lines small { flex: 0 0 auto; color: var(--color-risk-medium-text); }
+.cloud-consent { margin-top: 12px; color: var(--color-text-muted); font-size: 12px; line-height: 1.45; }
 .text-button { display: inline-flex; align-items: center; gap: 5px; padding: 4px; color: var(--color-text-muted); border: 0; background: transparent; cursor: pointer; font-size: 12px; }
 .text-button:hover { color: var(--color-text); }
 .checklist-panel { display: grid; gap: 18px; }

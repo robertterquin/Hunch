@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from 'react'
-import { ArrowLeft, ArrowRight, BookOpen, Check, CheckSquare, CircleAlert, FileSearch, LoaderCircle, LockKeyhole, RotateCcw, Search, Settings, ShieldCheck, Trash2, Upload, X } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
+import { ArrowLeft, ArrowRight, BookOpen, Check, CheckSquare, CircleAlert, FileSearch, LoaderCircle, LockKeyhole, RotateCcw, Search, Settings, ShieldCheck, Sparkles, Trash2, Upload, X } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAppState } from '../app/stateContext'
 import { getFixtureTitle } from '../data/analysisFixtures'
 import { AnalysisReportView } from '../components/AnalysisReportView'
 import { validateEmail, validatePassword, validateSignIn, validateSignUp } from '../services/authValidation'
 import { clearScreenshotDraft, getScreenshotDraft, setScreenshotDraft } from '../services/screenshotDraft'
-import { canUseReviewedOcrText, extractScreenshotText, getImageQualityWarning, getOcrConfidence, getOcrConfidenceMessage, getScreenshotDimensions, requiresOcrReviewConfirmation, validateScreenshotFile, type OcrReviewStatus } from '../services/screenshotOcr'
+import { canUseReviewedOcrText, extractScreenshotText, getImageQualityWarning, getOcrConfidence, getOcrConfidenceMessage, getScreenshotDimensions, prepareCloudOcrImage, prepareScreenshotForOcr, requiresOcrReviewConfirmation, validateScreenshotFile, type OcrReviewStatus, type ScreenshotCrop } from '../services/screenshotOcr'
 import type { AnalysisReport } from '../types/analysis'
 
 const patterns = [
@@ -173,11 +173,18 @@ export function ScreenshotReviewPage() {
   const [status, setStatus] = useState<OcrReviewStatus>(file ? 'processing' : 'idle')
   const [progress, setProgress] = useState(0)
   const [confidence, setConfidence] = useState<number | null>(null)
+  const [uncertainLines, setUncertainLines] = useState<Array<{ text: string; confidence: number }>>([])
   const [qualityWarning, setQualityWarning] = useState('')
   const [error, setError] = useState('')
+  const [cloudMessage, setCloudMessage] = useState('')
+  const [extractionSource, setExtractionSource] = useState<'local' | 'cloud'>('local')
+  const [isCloudEnhancing, setIsCloudEnhancing] = useState(false)
   const [reviewConfirmed, setReviewConfirmed] = useState(false)
   const [attempt, setAttempt] = useState(0)
   const [previewUrl, setPreviewUrl] = useState('')
+  const [crop, setCrop] = useState<ScreenshotCrop | null>(null)
+  const [draftCrop, setDraftCrop] = useState<ScreenshotCrop | null>(null)
+  const cropStart = useRef<{ x: number; y: number } | null>(null)
 
   useEffect(() => {
     if (!file) return
@@ -194,17 +201,22 @@ export function ScreenshotReviewPage() {
       setStatus('processing')
       setProgress(0)
       setConfidence(null)
+      setUncertainLines([])
       setError('')
+      setCloudMessage('')
+      setExtractionSource('local')
       setReviewConfirmed(false)
       try {
         const dimensions = await getScreenshotDimensions(file).catch(() => null)
         if (active) setQualityWarning(dimensions ? getImageQualityWarning(dimensions) ?? '' : '')
-        const result = await extractScreenshotText(file, (nextProgress) => {
+        const preparedFile = await prepareScreenshotForOcr(file, crop ?? undefined)
+        const result = await extractScreenshotText(preparedFile, (nextProgress) => {
           if (active) setProgress(nextProgress)
         })
         if (!active) return
         setText(result.text)
         setConfidence(result.confidence)
+        setUncertainLines(result.uncertainLines)
         setStatus(result.text ? 'review' : 'empty')
       } catch {
         if (!active) return
@@ -214,7 +226,7 @@ export function ScreenshotReviewPage() {
     }
     void runExtraction()
     return () => { active = false }
-  }, [attempt, file])
+  }, [attempt, crop, file])
 
   const chooseScreenshot = (event: ChangeEvent<HTMLInputElement>) => {
     const nextFile = event.target.files?.[0]
@@ -227,8 +239,12 @@ export function ScreenshotReviewPage() {
     setPreviewUrl('')
     setText('')
     setConfidence(null)
+    setUncertainLines([])
     setQualityWarning('')
     setError('')
+    setCloudMessage('')
+    setCrop(null)
+    setDraftCrop(null)
     setAttempt((current) => current + 1)
   }
 
@@ -238,26 +254,90 @@ export function ScreenshotReviewPage() {
     setPreviewUrl('')
     setText('')
     setConfidence(null)
+    setUncertainLines([])
     setQualityWarning('')
     setError('')
+    setCloudMessage('')
     setReviewConfirmed(false)
     setStatus('idle')
+    setCrop(null)
+    setDraftCrop(null)
   }
 
-  const requiresConfirmation = requiresOcrReviewConfirmation(status, confidence)
-  const ready = canUseReviewedOcrText({ fileSelected: Boolean(file), status, text, confidence, reviewConfirmed })
-  const fileMeta = file ? `${file.name} · ${(file.size / (1024 * 1024)).toFixed(1)} MB` : 'PNG or JPG, up to 10 MB'
-  const confidenceLabel = confidence === null ? status === 'processing' ? `Reading ${progress}%` : 'Needs review' : `${getOcrConfidence(confidence)} confidence`
+  const pointFromEvent = (event: ReactPointerEvent<HTMLImageElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect()
+    return { x: Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width)), y: Math.max(0, Math.min(1, (event.clientY - bounds.top) / bounds.height)) }
+  }
+
+  const updateDraftCrop = (event: ReactPointerEvent<HTMLImageElement>) => {
+    if (!cropStart.current) return
+    const current = pointFromEvent(event)
+    const x = Math.min(cropStart.current.x, current.x)
+    const y = Math.min(cropStart.current.y, current.y)
+    setDraftCrop({ x, y, width: Math.abs(current.x - cropStart.current.x), height: Math.abs(current.y - cropStart.current.y) })
+  }
+
+  const startCrop = (event: ReactPointerEvent<HTMLImageElement>) => {
+    if (!file || status === 'processing') return
+    event.preventDefault()
+    event.currentTarget.setPointerCapture(event.pointerId)
+    cropStart.current = pointFromEvent(event)
+    setDraftCrop({ x: cropStart.current.x, y: cropStart.current.y, width: 0, height: 0 })
+  }
+
+  const finishCrop = (event: ReactPointerEvent<HTMLImageElement>) => {
+    if (!cropStart.current) return
+    const current = pointFromEvent(event)
+    const x = Math.min(cropStart.current.x, current.x)
+    const y = Math.min(cropStart.current.y, current.y)
+    const nextCrop = { x, y, width: Math.abs(current.x - cropStart.current.x), height: Math.abs(current.y - cropStart.current.y) }
+    cropStart.current = null
+    const usableCrop = nextCrop.width >= 0.05 && nextCrop.height >= 0.05 ? nextCrop : null
+    setDraftCrop(usableCrop)
+    setCrop(usableCrop)
+  }
+
+  const enhanceWithCloudOcr = async () => {
+    if (!file) return
+    setIsCloudEnhancing(true)
+    setError('')
+    setCloudMessage('')
+    try {
+      const imageBase64 = await prepareCloudOcrImage(file, crop ?? undefined)
+      const response = await fetch('/api/ocr', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imageBase64 }) })
+      const data = await response.json() as { text?: string; message?: string }
+      if (!response.ok || !data.text) throw new Error(data.message ?? 'Cloud accuracy enhancement could not read this screenshot.')
+      setText(data.text)
+      setConfidence(null)
+      setUncertainLines([])
+      setExtractionSource('cloud')
+      setStatus('review')
+      setReviewConfirmed(false)
+      setCloudMessage('Cloud-assisted extraction is ready. Compare it with the screenshot and confirm the text before analyzing.')
+    } catch (cloudError) {
+      setError(cloudError instanceof Error ? cloudError.message : 'Cloud accuracy enhancement is unavailable. Continue with local OCR or paste manually.')
+    } finally {
+      setIsCloudEnhancing(false)
+    }
+  }
+
+  const requiresConfirmation = extractionSource === 'cloud' || requiresOcrReviewConfirmation(status, confidence)
+  const ready = canUseReviewedOcrText({ fileSelected: Boolean(file), status, text, confidence, reviewConfirmed }) && (extractionSource !== 'cloud' || reviewConfirmed)
+  const fileMeta = file ? `${(file.size / (1024 * 1024)).toFixed(1)} MB PNG/JPG` : 'PNG or JPG, up to 10 MB'
+  const confidenceLabel = extractionSource === 'cloud' ? 'Review required' : confidence === null ? status === 'processing' ? `Reading ${progress}%` : 'Needs review' : `${getOcrConfidence(confidence)} confidence`
+  const cropOverlay = draftCrop ?? crop
+  const cloudFallbackAvailable = (confidence !== null && getOcrConfidence(confidence) === 'low') || status === 'empty' || status === 'error'
 
   return <SupportPage eyebrow="Analyze > Screenshot review" title="Review extracted text before analyzing" description="Hunch reads the screenshot in your browser. It is not stored unless you later save a report.">
     <section className="review-grid">
       <div className="panel upload-preview">
-        {previewUrl ? <img className="screenshot-preview" src={previewUrl} alt={`Preview of ${file?.name ?? 'selected screenshot'}`} /> : <div className="upload-icon"><Upload size={25} aria-hidden="true" /></div>}
-        <h2>{file?.name ?? 'Choose a screenshot'}</h2>
+        {previewUrl ? <div className="crop-stage"><img className="screenshot-preview" src={previewUrl} alt={`Preview of ${file?.name ?? 'selected screenshot'}`} draggable="false" onPointerDown={startCrop} onPointerMove={updateDraftCrop} onPointerUp={finishCrop} />{cropOverlay && <span className="crop-selection" style={{ left: `${cropOverlay.x * 100}%`, top: `${cropOverlay.y * 100}%`, width: `${cropOverlay.width * 100}%`, height: `${cropOverlay.height * 100}%` }} />}</div> : <div className="upload-icon"><Upload size={25} aria-hidden="true" /></div>}
+        <h2 className="screenshot-title">{file ? 'Selected screenshot' : 'Choose a screenshot'}</h2>
+        {file && <p className="file-name" title={file.name}>{file.name}</p>}
         <p>{fileMeta}</p>
         <label className="button button-secondary" htmlFor="review-screenshot"><Upload size={16} aria-hidden="true" />{file ? 'Choose another' : 'Choose image'}</label>
         <input className="sr-only" id="review-screenshot" type="file" accept="image/png,image/jpeg" aria-label="Upload screenshot of OJT post" onChange={chooseScreenshot} />
-        {file && <div className="button-row compact-actions"><button className="text-button" type="button" onClick={() => setAttempt((current) => current + 1)} disabled={status === 'processing'}><RotateCcw size={14} aria-hidden="true" />Try again</button><button className="text-button" type="button" onClick={removeScreenshot}><X size={14} aria-hidden="true" />Remove</button></div>}
+        {file && <><p className="crop-help">Drag over the listing text to crop out decorations, then Hunch re-reads the selected area.</p><div className="button-row compact-actions"><button className="text-button" type="button" onClick={() => setAttempt((current) => current + 1)} disabled={status === 'processing'}><RotateCcw size={14} aria-hidden="true" />Try again</button>{crop && <button className="text-button" type="button" onClick={() => { setCrop(null); setDraftCrop(null) }} disabled={status === 'processing'}><RotateCcw size={14} aria-hidden="true" />Use full image</button>}<button className="text-button" type="button" onClick={removeScreenshot}><X size={14} aria-hidden="true" />Remove</button></div></>}
         <p className="trust-note">The screenshot stays only in this browser review. Hunch saves text only when you explicitly save a report.</p>
       </div>
       <div className="panel">
@@ -265,14 +345,17 @@ export function ScreenshotReviewPage() {
         {status === 'processing' && <div className="ocr-progress" role="status"><LoaderCircle className="spin" size={16} aria-hidden="true" /><span>Reading visible text from the screenshot. {progress}%</span></div>}
         {qualityWarning && <p className="field-warning"><CircleAlert size={15} aria-hidden="true" />{qualityWarning}</p>}
         {confidence !== null && <p className="trust-note">{getOcrConfidenceMessage(confidence)}</p>}
+        {cloudMessage && <div className="notice notice-success" role="status"><Check size={16} aria-hidden="true" />{cloudMessage}</div>}
         {status === 'empty' && <p className="inline-error" role="alert"><CircleAlert size={16} aria-hidden="true" />No readable text was found. Paste or type the listing below.</p>}
         {error && <p className="inline-error" role="alert"><CircleAlert size={16} aria-hidden="true" />{error}</p>}
         <label className="field-label" htmlFor="ocr-text">Extracted listing text</label>
-        <textarea id="ocr-text" value={text} onChange={(event) => { setText(event.target.value); setReviewConfirmed(false) }} placeholder="Paste or correct the listing text here." disabled={!file || status === 'processing'} aria-describedby="ocr-help ocr-count" />
+        <textarea id="ocr-text" value={text} onChange={(event) => { setText(event.target.value); setUncertainLines([]); setReviewConfirmed(false) }} placeholder="Paste or correct the listing text here." disabled={!file || status === 'processing'} aria-describedby="ocr-help ocr-count" />
         <div className="field-meta"><span id="ocr-help">Review names, email addresses, fees, links, and requested documents.</span><span id="ocr-count">{text.length} characters</span></div>
+        {uncertainLines.length > 0 && <div className="uncertain-lines"><strong>Lines that may need correction</strong><ul>{uncertainLines.map((line, index) => <li key={`${line.text}-${index}`}><span>{line.text}</span><small>{line.confidence}% confidence</small></li>)}</ul></div>}
         {text.length > 0 && text.trim().length < 40 && <p className="field-warning"><CircleAlert size={15} aria-hidden="true" />Add {40 - text.trim().length} more characters before continuing.</p>}
         {requiresConfirmation && text.trim().length >= 40 && <label className="review-confirmation"><input type="checkbox" checked={reviewConfirmed} onChange={(event) => setReviewConfirmed(event.target.checked)} />I reviewed and corrected this text before Hunch checks it.</label>}
-        <div className="button-row"><button className="button button-secondary" type="button" onClick={() => navigate('/analyze', { state: { sourceType: 'screenshot', notice: 'Paste the listing text manually. The screenshot was not saved.' } })}>Paste manually</button><button className="button button-primary" type="button" disabled={!ready} onClick={() => { clearScreenshotDraft(); navigate('/analyze', { state: { text, sourceType: 'screenshot', notice: 'Screenshot text is ready. Review it once more, then analyze it.' } }) }}>Use this text <ArrowRight size={16} aria-hidden="true" /></button></div>
+        <div className="button-row"><button className="button button-secondary" type="button" onClick={() => navigate('/analyze', { state: { sourceType: 'screenshot', notice: 'Paste the listing text manually. The screenshot was not saved.' } })}>Paste manually</button>{cloudFallbackAvailable && <button className="button button-secondary" type="button" onClick={() => void enhanceWithCloudOcr()} disabled={isCloudEnhancing}>{isCloudEnhancing ? <LoaderCircle className="spin" size={16} aria-hidden="true" /> : <Sparkles size={16} aria-hidden="true" />}{isCloudEnhancing ? 'Improving text' : 'Improve accuracy'}</button>}<button className="button button-primary" type="button" disabled={!ready} onClick={() => { clearScreenshotDraft(); navigate('/analyze', { state: { text, sourceType: 'screenshot', notice: 'Screenshot text is ready. Review it once more, then analyze it.' } }) }}>Use this text <ArrowRight size={16} aria-hidden="true" /></button></div>
+        {cloudFallbackAvailable && <p className="cloud-consent">Improve accuracy sends this screenshot once to Google Cloud Vision for OCR. Hunch does not store the image.</p>}
       </div>
     </section>
   </SupportPage>
