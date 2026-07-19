@@ -142,6 +142,7 @@ export function createMockReport(
   return {
     id: options.id ?? `mock-${fixture.id}-${Date.now()}`,
     fixtureId: fixture.id,
+    listingTitle: fixture.title,
     sourceType: options.sourceType ?? fixture.sourceType,
     originalText: options.text ?? fixture.text,
     riskScore,

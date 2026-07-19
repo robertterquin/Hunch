@@ -1,6 +1,9 @@
-import { useMemo, useState, type PropsWithChildren } from 'react'
+import { useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react'
+import type { User } from '@supabase/supabase-js'
 import { getFixtureById } from '../data/analysisFixtures'
+import { isSupabaseConfigured } from '../lib/supabase'
 import { createMockReport } from '../services/mockAnalysisService'
+import { deleteAllSavedReports, deleteSavedReport, fetchSavedReports, getCurrentUser, saveAnalysisReport, sendMagicLink, sendPasswordReset, signOut as supabaseSignOut, subscribeToAuthChanges, updateSavedChecklistItem } from '../services/supabaseAnalysisService'
 import type { AnalysisReport } from '../types/analysis'
 import { AppStateContext, type AppStateValue } from './stateContext'
 
@@ -16,29 +19,133 @@ function makeSeedReports(): AnalysisReport[] {
   })
 }
 
+function readActiveReport(): AnalysisReport | null {
+  try {
+    const stored = sessionStorage.getItem('hunch.active-report')
+    return stored ? JSON.parse(stored) as AnalysisReport : null
+  } catch {
+    return null
+  }
+}
+
 export function AppStateProvider({ children }: PropsWithChildren) {
-  const [activeReport, setActiveReport] = useState<AnalysisReport | null>(null)
-  const [savedReports, setSavedReports] = useState<AnalysisReport[]>(makeSeedReports)
+  const [activeReport, setActiveReportState] = useState<AnalysisReport | null>(readActiveReport)
+  const [savedReports, setSavedReports] = useState<AnalysisReport[]>(() => isSupabaseConfigured ? [] : makeSeedReports())
+  const [user, setUser] = useState<User | null>(null)
+  const [isAuthLoading, setIsAuthLoading] = useState(isSupabaseConfigured)
+
+  const setActiveReport = useCallback((report: AnalysisReport | null) => {
+    setActiveReportState(report)
+    try {
+      if (report) sessionStorage.setItem('hunch.active-report', JSON.stringify(report))
+      else sessionStorage.removeItem('hunch.active-report')
+    } catch {
+      // Session storage is optional; the active report still works in memory.
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) return
+    let mounted = true
+    const hydrate = async () => {
+      try {
+        const currentUser = await getCurrentUser()
+        if (!mounted) return
+        setUser(currentUser)
+        setSavedReports(currentUser ? await fetchSavedReports(currentUser.id) : [])
+      } catch {
+        if (mounted) setSavedReports([])
+      } finally {
+        if (mounted) setIsAuthLoading(false)
+      }
+    }
+    void hydrate()
+    const unsubscribe = subscribeToAuthChanges((nextUser) => {
+      setUser(nextUser)
+      if (nextUser) void fetchSavedReports(nextUser.id).then(setSavedReports).catch(() => setSavedReports([]))
+      else setSavedReports([])
+    })
+    return () => { mounted = false; unsubscribe() }
+  }, [])
 
   const value = useMemo<AppStateValue>(() => ({
     activeReport,
     savedReports,
+    user,
+    isAuthLoading,
+    isSupabaseConfigured,
     setActiveReport,
-    saveReport: (report) => {
-      setSavedReports((current) => [report, ...current.filter((item) => item.id !== report.id)])
+    saveReport: async (report) => {
+      if (!isSupabaseConfigured) {
+        setSavedReports((current) => [report, ...current.filter((item) => item.id !== report.id)])
+        return {}
+      }
+      if (!user) return { error: 'Sign in to save this report. Your current result will be preserved.' }
+      try {
+        const persistedReport = await saveAnalysisReport(report, user.id)
+        setSavedReports((current) => [persistedReport, ...current.filter((item) => item.id !== persistedReport.id)])
+        setActiveReport(persistedReport)
+        return {}
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'The report could not be saved.' }
+      }
     },
-    deleteReport: (analysisId) => {
+    deleteReport: async (analysisId) => {
+      if (isSupabaseConfigured && user) {
+        try {
+          await deleteSavedReport(analysisId, user.id)
+        } catch (error) {
+          return { error: error instanceof Error ? error.message : 'The report could not be deleted.' }
+        }
+      }
       setSavedReports((current) => current.filter((report) => report.id !== analysisId))
+      return {}
     },
-    deleteAllReports: () => setSavedReports([]),
+    deleteAllReports: async () => {
+      if (isSupabaseConfigured && user) {
+        try {
+          await deleteAllSavedReports(user.id)
+        } catch (error) {
+          return { error: error instanceof Error ? error.message : 'Saved reports could not be deleted.' }
+        }
+      }
+      setSavedReports([])
+      return {}
+    },
     toggleChecklistItem: (analysisId, checklistId) => {
       const update = (report: AnalysisReport) => report.id === analysisId
         ? { ...report, checklist: report.checklist.map((item) => item.id === checklistId ? { ...item, completed: !item.completed } : item) }
         : report
       setSavedReports((current) => current.map(update))
-      setActiveReport((current) => current && update(current))
+      setActiveReport(activeReport && update(activeReport))
+      const savedReport = savedReports.find((report) => report.id === analysisId)
+      const checklistItem = savedReport?.checklist.find((item) => item.id === checklistId)
+      if (isSupabaseConfigured && user && checklistItem) void updateSavedChecklistItem(checklistId, !checklistItem.completed)
     },
-  }), [activeReport, savedReports])
+    sendAuthEmail: async (email, mode) => {
+      try {
+        if (mode === 'reset') {
+          await sendPasswordReset(email)
+          return { message: 'Password reset instructions are on their way if this email is registered.' }
+        }
+        await sendMagicLink(email)
+        return { message: 'Check your email for a secure sign-in link. Your current report is preserved.' }
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Authentication email could not be sent.' }
+      }
+    },
+    signOut: async () => {
+      if (!isSupabaseConfigured) return {}
+      try {
+        await supabaseSignOut()
+        setUser(null)
+        setSavedReports([])
+        return {}
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : 'Could not sign out.' }
+      }
+    },
+  }), [activeReport, isAuthLoading, savedReports, setActiveReport, user])
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>
 }

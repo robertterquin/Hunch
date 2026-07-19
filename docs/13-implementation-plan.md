@@ -568,6 +568,8 @@ Dependencies: Phases 6-9.
 
 Exit gate: anonymous users can analyze, signed-in users can save and reopen, and a second user cannot read or modify the first user's reports.
 
+Implementation note: the browser client, email magic-link flow, saved-report mapper, child red-flag/checklist persistence, delete/sign-out handling, local environment template, and initial RLS migration are now present. The migration must be run in the Supabase SQL Editor before remote persistence can succeed.
+
 ### Phase 11: Screenshot OCR and input quality
 
 Outcome: students can use screenshots without trusting an unreviewed extraction.

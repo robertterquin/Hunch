@@ -4,7 +4,7 @@ Hunch is a student-focused web app for checking OJT and internship listings for 
 
 ## Current Phase
 
-Phase 7 turns that foundation into a complete mock-data product flow: polished route states, expandable reports, checklist interactions, saved-report comparison, Scam Guide content, and responsive empty/loading/error-ready surfaces.
+Phase 10 connects that product flow to Supabase Auth and private saved-report persistence. Anonymous analysis remains available, while authenticated users can save, revisit, compare, update checklist state, delete reports, and sign out.
 
 ## Setup
 
@@ -15,7 +15,9 @@ npm install
 npm run dev
 ```
 
-The local app is served by Vite. Phase 6 uses synthetic fixture data only; Supabase and server-side analysis integrations are planned for later phases.
+The local app is served by Vite. The project reads Supabase credentials from `.env.local`, which is ignored by git.
+
+To create the database objects, open the Supabase SQL Editor and run [`supabase/migrations/202607190001_initial_hunch.sql`](C:/Hunch/Hunch/supabase/migrations/202607190001_initial_hunch.sql). The anon key cannot create tables or policies itself.
 
 ## Commands
 
@@ -42,4 +44,13 @@ The current route map includes `/analyze`, `/analyze/review`, `/saved`, `/saved/
 
 ## Environment Variables
 
-No environment variables are required for Phase 6. Supabase URL and public anon key configuration belongs to the backend integration phase, and secrets must remain outside source control.
+`.env.local` should contain the project root URL without `/rest/v1/` and the public anon key:
+
+```text
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-public-anon-key
+```
+
+The anon key is intended for browser use and is protected by Supabase Auth and RLS. Never put a service-role key in Vite variables or source control.
+
+Configure the Supabase Auth URL allow list to include `http://localhost:5173/auth/sign-in` during local development. Add the production URL before deployment.

@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { ArrowRight, Check, CircleAlert, FileText, LoaderCircle, RotateCcw, Upload } from 'lucide-react'
-import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { AnalysisReportView } from '../components/AnalysisReportView'
 import { useAppState } from '../app/stateContext'
 import { getFixtureById } from '../data/analysisFixtures'
@@ -17,7 +17,8 @@ const sourceOptions: Array<{ value: SourceType; label: string }> = [
 ]
 
 export function AnalyzePage() {
-  const { activeReport, setActiveReport, saveReport, savedReports, toggleChecklistItem } = useAppState()
+  const { activeReport, setActiveReport, saveReport, savedReports, toggleChecklistItem, user } = useAppState()
+  const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const [text, setText] = useState('')
@@ -93,6 +94,16 @@ export function AnalyzePage() {
   const characterCount = text.length
   const canAnalyze = text.trim().length >= 40 && !isAnalyzing
   const isCurrentReportSaved = activeReport ? savedReports.some((report) => report.id === activeReport.id) : false
+  const handleSave = async () => {
+    if (!activeReport) return
+    if (!user) {
+      navigate('/auth/sign-in')
+      return
+    }
+    const result = await saveReport(activeReport)
+    if (result.error) setError(result.error)
+    else setNotice('Report saved privately to your Supabase account.')
+  }
 
   return (
     <div className="page-stack">
@@ -143,7 +154,7 @@ export function AnalyzePage() {
         </aside>
       </section>
 
-      {activeReport && <AnalysisReportView report={activeReport} onToggleChecklist={(checklistId) => toggleChecklistItem(activeReport.id, checklistId)} onSave={() => saveReport(activeReport)} isSaved={isCurrentReportSaved} />}
+      {activeReport && <AnalysisReportView report={activeReport} onToggleChecklist={(checklistId) => toggleChecklistItem(activeReport.id, checklistId)} onSave={() => void handleSave()} isSaved={isCurrentReportSaved} />}
     </div>
   )
 }

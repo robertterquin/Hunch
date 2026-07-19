@@ -1,5 +1,6 @@
 import { BookOpen, CheckSquare, FileSearch, Plus, Settings, ShieldCheck } from 'lucide-react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
+import { useAppState } from './stateContext'
 
 const navigation = [
   { label: 'Analyze', to: '/analyze', icon: FileSearch },
@@ -10,6 +11,7 @@ const navigation = [
 ]
 
 export function AppShell() {
+  const { user, isAuthLoading } = useAppState()
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -39,7 +41,7 @@ export function AppShell() {
             <Plus size={16} aria-hidden="true" />
             New analysis
           </Link>
-          <Link className="account-link" to="/auth/sign-in">Account</Link>
+          <Link className="account-link" to={user ? '/settings' : '/auth/sign-in'}>{isAuthLoading ? 'Checking...' : user?.email?.split('@')[0] ?? 'Sign in'}</Link>
         </div>
       </header>
 

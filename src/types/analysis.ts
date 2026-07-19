@@ -86,6 +86,7 @@ export interface ChecklistItem {
 export interface AnalysisReport {
   id: string
   fixtureId: string
+  listingTitle?: string
   sourceType: SourceType
   originalText: string
   riskScore: number
