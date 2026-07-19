@@ -67,7 +67,7 @@ export function AnalyzePage() {
       setActiveReport(nextReport)
       setNotice(nextReport.explanationSource === 'openai'
         ? 'Your report is ready with an evidence-bound explanation. Review the evidence before deciding what to do next.'
-        : 'AI explanation is unavailable, but your rule-based report is ready. Review the evidence before deciding what to do next.')
+        : `${nextReport.explanationNote ?? 'AI explanation is unavailable right now.'} Review the evidence before deciding what to do next.`)
     } catch (analysisError) {
       setError(analysisError instanceof Error ? analysisError.message : 'We could not complete this check.')
     } finally {

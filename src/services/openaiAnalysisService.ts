@@ -81,6 +81,16 @@ function mergeReport(report: AnalysisReport, explanation: OpenAIExplanation): An
   }
 }
 
+async function publicApiError(response: Response) {
+  try {
+    const body: unknown = await response.json()
+    if (body && typeof body === 'object' && 'message' in body && typeof body.message === 'string') return body.message
+  } catch {
+    // Use the generic message below when the server did not return JSON.
+  }
+  return `The explanation service returned status ${response.status}.`
+}
+
 export async function analyzeListingWithExplanation(input: AnalysisInput): Promise<AnalysisReport> {
   const normalizedText = input.text.trim()
   if (normalizedText.length < MIN_LISTING_LENGTH) {
@@ -107,13 +117,14 @@ export async function analyzeListingWithExplanation(input: AnalysisInput): Promi
       }),
       signal: controller.signal,
     })
-    if (!response.ok) throw new Error(`AI request failed with status ${response.status}`)
+    if (!response.ok) throw new Error(await publicApiError(response))
     const body: unknown = await response.json()
     const parsed = OpenAIExplanationSchema.safeParse(body)
     if (!parsed.success) throw new Error('AI explanation did not match the expected schema.')
     return mergeReport(buildRuleOnlyReport({ ...input, text: normalizedText }, ruleResult), parsed.data)
-  } catch {
-    return fallbackReport(input, ruleResult, 'AI explanation is unavailable right now; the rule-based report is still available.')
+  } catch (error) {
+    const reason = error instanceof Error && error.message.startsWith('The explanation') ? ` ${error.message}` : ''
+    return fallbackReport(input, ruleResult, `AI explanation is unavailable right now.${reason} The rule-based report is still available.`)
   } finally {
     globalThis.clearTimeout(timeoutId)
   }

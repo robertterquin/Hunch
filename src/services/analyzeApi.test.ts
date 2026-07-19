@@ -18,7 +18,7 @@ vi.mock('openai', () => ({
   },
 }))
 
-import analyze, { buildOpenAIInput, classifyOpenAIError, parseAnalyzeBody } from './analyze'
+import analyze, { buildOpenAIInput, classifyOpenAIError, parseAnalyzeBody } from '../../api/analyze'
 
 function responseDouble() {
   const output = { statusCode: 0, body: undefined as Record<string, unknown> | undefined, headers: {} as Record<string, string> }

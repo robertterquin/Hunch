@@ -24,6 +24,15 @@ function sendJson(response: VercelResponse, status: number, body: JsonResponse) 
   return response.status(status).json(body)
 }
 
+function logProviderFailure(error: unknown) {
+  const candidate = (error && typeof error === 'object' ? error : {}) as { status?: number; code?: string; name?: string }
+  console.error('[Hunch] OpenAI request failed', {
+    name: candidate.name ?? 'unknown',
+    status: candidate.status ?? null,
+    code: candidate.code ?? null,
+  })
+}
+
 export function parseAnalyzeBody(body: unknown) {
   if (typeof body !== 'string') return body
   try {
@@ -59,18 +68,21 @@ export function buildOpenAIInput(listingText: string) {
 }
 
 export function classifyOpenAIError(error: unknown) {
-  const candidate = error as { status?: number; code?: string; name?: string }
+  const candidate = (error && typeof error === 'object' ? error : {}) as { status?: number; code?: string; name?: string }
+  if (candidate.status === 401 || candidate.status === 403) return { status: 503, error: 'AI_CONFIGURATION_ERROR', message: 'The OpenAI configuration was rejected. Check the server-side API key and model.' }
+  if (candidate.status === 400 || candidate.status === 404) return { status: 502, error: 'AI_REQUEST_REJECTED', message: 'OpenAI rejected the request. Check that the configured model is available to this API key.' }
   if (candidate.status === 429) return { status: 429, error: 'AI_RATE_LIMITED', message: 'The explanation service is busy. The rule-based report is still available.' }
   if (candidate.name?.includes('Timeout') || candidate.code === 'ETIMEDOUT' || candidate.code === 'UND_ERR_CONNECT_TIMEOUT') {
     return { status: 504, error: 'AI_TIMEOUT', message: 'The explanation took too long. The rule-based report is still available.' }
   }
+  if (candidate.name === 'APIConnectionError' || candidate.code === 'ECONNRESET' || candidate.code === 'ECONNREFUSED') return { status: 502, error: 'AI_CONNECTION_ERROR', message: 'The local server could not connect to OpenAI. Check the network connection or firewall.' }
   if (candidate.name === 'InvalidStructuredOutputError' || candidate.name === 'ZodError') {
     return { status: 502, error: 'AI_INVALID_RESPONSE', message: 'The explanation service returned an unusable response.' }
   }
   return { status: 502, error: 'AI_UNAVAILABLE', message: 'The explanation service is unavailable.' }
 }
 
-export default async function analyze(request: VercelRequest, response: VercelResponse) {
+async function analyzeHandler(request: VercelRequest, response: VercelResponse) {
   if (request.method !== 'POST') {
     response.setHeader('Allow', 'POST')
     return sendJson(response, 405, { error: 'METHOD_NOT_ALLOWED', message: 'Use POST for analysis.' })
@@ -110,6 +122,20 @@ export default async function analyze(request: VercelRequest, response: VercelRe
     }
     return sendJson(response, 200, validated.data as OpenAIExplanation)
   } catch (error) {
+    logProviderFailure(error)
+    const publicError = classifyOpenAIError(error)
+    return sendJson(response, publicError.status, {
+      error: publicError.error,
+      message: publicError.message,
+    })
+  }
+}
+
+export default async function analyze(request: VercelRequest, response: VercelResponse) {
+  try {
+    return await analyzeHandler(request, response)
+  } catch (error) {
+    logProviderFailure(error)
     const publicError = classifyOpenAIError(error)
     return sendJson(response, publicError.status, {
       error: publicError.error,
