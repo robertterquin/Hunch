@@ -8,6 +8,8 @@ export type ResultState =
 
 export type Confidence = 'low' | 'medium' | 'high'
 
+export type ExplanationSource = 'rules' | 'openai' | 'rule-only-fallback'
+
 export type RiskCategory =
   | 'payment-request'
   | 'suspicious-email'
@@ -98,6 +100,9 @@ export interface AnalysisReport {
   fixtureId: string
   listingTitle?: string
   scoreBreakdown: ScoreBreakdownItem[]
+  explanationSource: ExplanationSource
+  explanationNote?: string
+  studentAdvice: string
   sourceType: SourceType
   originalText: string
   riskScore: number

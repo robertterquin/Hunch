@@ -95,6 +95,8 @@ function makeReport(result: RuleEngineResult, options: { fixture?: AnalysisFixtu
     missingInformation: result.missingInformation,
     checklist: makeChecklist(result, options.fixture),
     scoreBreakdown: result.scoreBreakdown,
+    explanationSource: 'rules',
+    studentAdvice: result.findings[0]?.nextAction ?? 'Verify the opportunity through an official company or school channel before applying.',
     analysisVersion: RULE_ENGINE_VERSION,
     createdAt: options.createdAt ?? new Date().toISOString(),
   }
@@ -114,4 +116,11 @@ export async function analyzeListing(input: AnalysisInput): Promise<AnalysisRepo
   await delay(320)
   const fixture = chooseFixture({ ...input, text: normalizedText })
   return makeReport(runRuleEngine(normalizedText), { fixture, sourceType: input.sourceType, text: normalizedText })
+}
+
+export function buildRuleOnlyReport(input: AnalysisInput, result = runRuleEngine(input.text)) {
+  const normalizedText = input.text.trim()
+  if (normalizedText.length < 40) throw new Error('Paste at least 40 characters so Hunch has enough detail to analyze.')
+  const fixture = chooseFixture({ ...input, text: normalizedText })
+  return makeReport(result, { fixture, sourceType: input.sourceType, text: normalizedText })
 }

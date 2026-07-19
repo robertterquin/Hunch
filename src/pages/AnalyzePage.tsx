@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import { AnalysisReportView } from '../components/AnalysisReportView'
 import { useAppState } from '../app/stateContext'
 import { getFixtureById } from '../data/analysisFixtures'
-import { analyzeListing } from '../services/mockAnalysisService'
+import { analyzeListingWithExplanation } from '../services/openaiAnalysisService'
 import type { SourceType } from '../types/analysis'
 
 const sourceOptions: Array<{ value: SourceType; label: string }> = [
@@ -63,9 +63,11 @@ export function AnalyzePage() {
 
     setIsAnalyzing(true)
     try {
-      const nextReport = await analyzeListing({ text, sourceType })
+      const nextReport = await analyzeListingWithExplanation({ text, sourceType })
       setActiveReport(nextReport)
-      setNotice('Your report is ready. Review the evidence before deciding what to do next.')
+      setNotice(nextReport.explanationSource === 'openai'
+        ? 'Your report is ready with an evidence-bound explanation. Review the evidence before deciding what to do next.'
+        : 'AI explanation is unavailable, but your rule-based report is ready. Review the evidence before deciding what to do next.')
     } catch (analysisError) {
       setError(analysisError instanceof Error ? analysisError.message : 'We could not complete this check.')
     } finally {

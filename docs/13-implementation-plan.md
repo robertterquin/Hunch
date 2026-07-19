@@ -545,6 +545,8 @@ Dependencies: Phases 6-8 and current official OpenAI API documentation checked a
 
 Exit gate: API keys never reach the browser, invalid or unavailable AI output leaves the report usable, and AI explanations cite only available evidence.
 
+Implementation note: Phase 9 is implemented in `api/analyze.ts`, `src/services/openaiAnalysisService.ts`, and `src/services/openaiAnalysisSchema.ts`. The server recomputes the deterministic result, uses Responses Structured Outputs, and returns only schema-safe AI explanation content. The client preserves the rule score and evidence and falls back automatically when the route or provider is unavailable. OCR remains deferred.
+
 ### Phase 10: Supabase authentication and persistence
 
 Outcome: students can privately save and revisit analysis reports.

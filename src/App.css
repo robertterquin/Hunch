@@ -63,6 +63,8 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .risk-pill-caution { color: var(--color-risk-caution-text); background: var(--color-risk-caution-surface); }
 .risk-pill-high-risk { color: var(--color-risk-high-text); background: var(--color-risk-high-surface); }
 .report-summary { max-width: 720px; color: var(--color-text-secondary); line-height: 1.55; }
+.explanation-status { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--color-text-muted); font-size: 11px; line-height: 1.4; }
+.explanation-status svg { color: var(--color-action-hover); flex: 0 0 auto; }
 .score-block { display: grid; min-width: 112px; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-control); text-align: right; }
 .score-block strong { font-family: var(--font-mono); font-size: 32px; line-height: 1; }
 .score-block span, .score-block small { color: var(--color-text-muted); font-size: 12px; }

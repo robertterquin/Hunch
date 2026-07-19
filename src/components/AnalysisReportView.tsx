@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, ChevronDown, ChevronUp, CircleAlert, LockKeyhole } from 'lucide-react'
+import { Check, ChevronDown, ChevronUp, CircleAlert, Info, LockKeyhole, Sparkles } from 'lucide-react'
 import type { AnalysisReport } from '../types/analysis'
 
 const riskLabels = {
@@ -30,6 +30,10 @@ export function AnalysisReportView({ report, onToggleChecklist, onSave, isSaved 
             <span className={`risk-pill risk-pill-${report.riskLevel}`}>{report.confidence} confidence</span>
           </div>
           <p className="report-summary">{report.summary}</p>
+          <p className="explanation-status" role="status">
+            {report.explanationSource === 'openai' ? <Sparkles size={13} aria-hidden="true" /> : <Info size={13} aria-hidden="true" />}
+            {report.explanationNote ?? (report.explanationSource === 'openai' ? 'AI explanation is grounded in the rule findings.' : 'This report uses deterministic rule analysis.')}
+          </p>
         </div>
         <div className="score-block">
           <strong>{report.riskScore}</strong>
@@ -71,6 +75,10 @@ export function AnalysisReportView({ report, onToggleChecklist, onSave, isSaved 
           <div>
             <p className="section-label">What is still unclear</p>
             {report.missingInformation.length > 0 ? <ul className="missing-list">{report.missingInformation.map((item) => <li key={item}>{item}</li>)}</ul> : <p className="muted-copy">The post includes the main details Hunch can check.</p>}
+          </div>
+          <div>
+            <p className="section-label">Practical advice</p>
+            <p className="uncertainty-copy">{report.studentAdvice}</p>
           </div>
           <div>
             <div className="section-heading-row"><p className="section-label">Before applying</p><span className="count-label">{completedCount}/{report.checklist.length}</span></div>

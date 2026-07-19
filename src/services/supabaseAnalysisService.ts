@@ -14,6 +14,9 @@ interface AnalysisRow {
   confidence: AnalysisReport['confidence']
   summary: string
   uncertainty: string
+  explanation_source: AnalysisReport['explanationSource']
+  explanation_note: string | null
+  student_advice: string
   missing_information: string[]
   score_breakdown: AnalysisReport['scoreBreakdown']
   analysis_version: string
@@ -63,6 +66,9 @@ function mapReport(row: AnalysisRow): AnalysisReport {
     confidence: row.confidence,
     summary: row.summary,
     uncertainty: row.uncertainty,
+    explanationSource: row.explanation_source,
+    explanationNote: row.explanation_note ?? undefined,
+    studentAdvice: row.student_advice,
     flags: (row.red_flags ?? []).map((flag) => ({
       id: flag.id,
       ruleId: flag.rule_id,
@@ -141,6 +147,9 @@ export async function saveAnalysisReport(report: AnalysisReport, userId: string)
     confidence: report.confidence,
     summary: report.summary,
     uncertainty: report.uncertainty,
+    explanation_source: report.explanationSource,
+    explanation_note: report.explanationNote ?? null,
+    student_advice: report.studentAdvice,
     missing_information: report.missingInformation,
     score_breakdown: report.scoreBreakdown,
     analysis_version: report.analysisVersion,
