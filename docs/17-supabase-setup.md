@@ -15,7 +15,7 @@ Use the project root URL. Do not append `/rest/v1/`; the Supabase JavaScript cli
 
 ## Database
 
-Run [`supabase/migrations/202607190001_initial_hunch.sql`](../supabase/migrations/202607190001_initial_hunch.sql) in the Supabase SQL Editor. It creates:
+Run [`supabase/master.sql`](../supabase/master.sql) in the Supabase SQL Editor. This is the single, idempotent master query for a clean project and also brings an existing project up to the current Phase 10 schema. It creates:
 
 - `profiles`
 - `analyses`
@@ -23,6 +23,9 @@ Run [`supabase/migrations/202607190001_initial_hunch.sql`](../supabase/migration
 - `checklist_items`
 - ownership indexes and row-level security policies
 - a profile row trigger for new Auth users
+- the Phase 9 AI explanation fields on saved reports
+
+The numbered files in `supabase/migrations/` remain the historical migration record. Use `master.sql` for manual Supabase Dashboard setup; do not run both approaches on a fresh project.
 
 The browser anon key cannot run migrations. A project owner must execute the migration in the dashboard or through a separately authenticated Supabase CLI workflow.
 
@@ -33,7 +36,17 @@ Add these URLs under Supabase Auth URL Configuration:
 - `http://localhost:5173/auth/sign-in`
 - The deployed production callback URL when the app is published
 
-Hunch uses email magic links. SMTP and email confirmation settings remain controlled by the Supabase project.
+## Email/Password Authentication
+
+Hunch uses Supabase email/password accounts. In Supabase Dashboard > Authentication > Providers, enable the Email provider and disable **Confirm email** so a newly registered student can sign in immediately. Hunch stores the required full name in Auth metadata and `profiles.display_name`.
+
+Add the following Redirect URLs in Supabase Dashboard > Authentication > URL Configuration:
+
+- `http://localhost:3000/auth/reset` when using `npx vercel dev`
+- `http://localhost:5173/auth/reset` when using Vite directly
+- `https://your-production-domain/auth/reset`
+
+Password reset emails return to Hunch's reset route, where the student chooses a new password. SMTP remains controlled by the Supabase project.
 
 ## Security Boundary
 

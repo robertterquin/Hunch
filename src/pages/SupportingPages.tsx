@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAppState } from '../app/stateContext'
 import { getFixtureTitle } from '../data/analysisFixtures'
 import { AnalysisReportView } from '../components/AnalysisReportView'
+import { validateEmail, validatePassword, validateSignIn, validateSignUp } from '../services/authValidation'
 import type { AnalysisReport } from '../types/analysis'
 
 const patterns = [
@@ -104,28 +105,63 @@ export function SettingsPage() {
 
 export function AuthPage() {
   const { mode = 'sign-in' } = useParams()
-  const { activeReport, savedReports, user, sendAuthEmail, saveReport } = useAppState()
+  const { activeReport, savedReports, user, signIn, signUp, requestPasswordReset, updatePassword, saveReport } = useAppState()
+  const [displayName, setDisplayName] = useState('')
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const authMode = mode === 'reset' ? 'reset' : mode === 'sign-up' ? 'sign-up' : 'sign-in'
-  const title = mode === 'sign-up' ? 'Create an account' : mode === 'reset' ? 'Reset your password' : 'Sign in to save reports'
+  const isRecovery = authMode === 'reset' && Boolean(user)
+  const title = authMode === 'sign-up' ? 'Create an account' : isRecovery ? 'Choose a new password' : authMode === 'reset' ? 'Reset your password' : 'Sign in to save reports'
   useEffect(() => {
     if (!user || !activeReport || savedReports.some((report) => report.id === activeReport.id)) return
     void saveReport(activeReport)
   }, [activeReport, saveReport, savedReports, user])
   const submit = async () => {
-    if (!email.includes('@')) { setError('Enter a valid email address to continue.'); return }
+    const validation = isRecovery
+      ? validatePassword(password) ?? (password === confirmPassword ? null : 'Passwords do not match.')
+      : authMode === 'sign-up'
+        ? validateSignUp({ displayName, email, password, confirmPassword })
+        : authMode === 'sign-in'
+          ? validateSignIn(email, password)
+          : validateEmail(email)
+    if (validation) { setError(validation); return }
     setError('')
     setMessage('')
     setIsSubmitting(true)
-    const result = await sendAuthEmail(email, authMode)
+    const result = isRecovery
+      ? await updatePassword(password)
+      : authMode === 'sign-up'
+        ? await signUp(displayName, email, password)
+        : authMode === 'sign-in'
+          ? await signIn(email, password)
+          : await requestPasswordReset(email)
     setIsSubmitting(false)
     if (result.error) setError(result.error)
-    else setMessage(result.message ?? 'Check your email to continue.')
+    else setMessage(result.message ?? 'Your account has been updated.')
   }
-  return <SupportPage eyebrow="Account" title={title} description={activeReport ? 'Your current report will stay available while you sign in. After authentication, it can be saved privately.' : 'Create a private account to save and revisit your reports.'}><section className="panel auth-panel"><div className="auth-heading"><div className="settings-icon"><LockKeyhole size={19} aria-hidden="true" /></div><div><strong>{activeReport ? 'Your report is preserved' : 'Private reports, when you are ready'}</strong><p className="muted-copy">No report is saved until you choose to continue.</p></div></div>{user ? <div className="auth-success"><Check size={22} aria-hidden="true" /><h2>You are signed in.</h2><p>{user.email ?? 'Your account'} can now access private reports.</p><Link className="button button-primary" to={activeReport ? "/analyze" : "/saved"}>{activeReport ? 'Return to Analyze' : 'Open Saved'} <ArrowRight size={16} aria-hidden="true" /></Link></div> : <div className="auth-form"><label className="field-label" htmlFor="email">Email address</label><input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" autoComplete="email" />{error && <p className="inline-error" role="alert"><CircleAlert size={16} aria-hidden="true" />{error}</p>}{message && <div className="notice notice-success" role="status"><Check size={16} aria-hidden="true" />{message}</div>}<button className="button button-primary" type="button" onClick={() => void submit()} disabled={isSubmitting}>{isSubmitting ? 'Sending link...' : mode === 'reset' ? 'Send reset email' : 'Email me a sign-in link'} <ArrowRight size={16} aria-hidden="true" /></button><p className="muted-copy">We use a secure magic link. Supabase will handle the session after you confirm your email.</p></div>}<Link className="text-link" to="/analyze"><ArrowLeft size={14} aria-hidden="true" />Return to Analyze</Link></section></SupportPage>
+  const submitLabel = isRecovery ? 'Update password' : authMode === 'sign-up' ? 'Create account' : authMode === 'reset' ? 'Send reset email' : 'Sign in'
+  const showSignedIn = Boolean(user) && !isRecovery
+  return <SupportPage eyebrow="Account" title={title} description={activeReport ? 'Your current report will stay available while you sign in. After authentication, it can be saved privately.' : 'Create a private account to save and revisit your reports.'}>
+    <section className="panel auth-panel">
+      <div className="auth-heading"><div className="settings-icon"><LockKeyhole size={19} aria-hidden="true" /></div><div><strong>{activeReport ? 'Your report is preserved' : 'Private reports, when you are ready'}</strong><p className="muted-copy">No report is saved until you choose to continue.</p></div></div>
+      {showSignedIn ? <div className="auth-success"><Check size={22} aria-hidden="true" /><h2>You are signed in.</h2><p>{user?.email ?? 'Your account'} can now access private reports.</p><Link className="button button-primary" to={activeReport ? '/analyze' : '/saved'}>{activeReport ? 'Return to Analyze' : 'Open Saved'} <ArrowRight size={16} aria-hidden="true" /></Link></div> : <form className="auth-form" onSubmit={(event) => { event.preventDefault(); void submit() }}>
+        {authMode === 'sign-up' && <><label className="field-label" htmlFor="display-name">Full name</label><input id="display-name" type="text" value={displayName} onChange={(event) => setDisplayName(event.target.value)} placeholder="Juan dela Cruz" autoComplete="name" maxLength={100} /></>}
+        {!isRecovery && <><label className="field-label" htmlFor="email">Email address</label><input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" autoComplete="email" /></>}
+        {authMode !== 'reset' || isRecovery ? <><label className="field-label" htmlFor="password">{isRecovery ? 'New password' : 'Password'}</label><input id="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={isRecovery || authMode === 'sign-up' ? 'new-password' : 'current-password'} />{(authMode === 'sign-up' || isRecovery) && <><label className="field-label" htmlFor="confirm-password">Confirm password</label><input id="confirm-password" type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" /></>}</> : null}
+        {error && <p className="inline-error" role="alert"><CircleAlert size={16} aria-hidden="true" />{error}</p>}
+        {message && <div className="notice notice-success" role="status"><Check size={16} aria-hidden="true" />{message}</div>}
+        <button className="button button-primary" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Please wait...' : submitLabel} <ArrowRight size={16} aria-hidden="true" /></button>
+        {authMode === 'sign-in' && <div className="auth-links"><Link className="text-link" to="/auth/reset">Forgot password?</Link><Link className="text-link" to="/auth/sign-up">Create an account</Link></div>}
+        {authMode === 'sign-up' && <p className="muted-copy">Already have an account? <Link className="text-link" to="/auth/sign-in">Sign in</Link></p>}
+        {authMode === 'reset' && <p className="muted-copy">{isRecovery ? 'Use at least 8 characters for your new password.' : 'We will email a secure link to choose a new password.'}</p>}
+      </form>}
+      <Link className="text-link" to="/analyze"><ArrowLeft size={14} aria-hidden="true" />Return to Analyze</Link>
+    </section>
+  </SupportPage>
 }
 
 export function ScreenshotReviewPage() {

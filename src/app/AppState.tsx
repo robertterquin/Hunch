@@ -3,7 +3,7 @@ import type { User } from '@supabase/supabase-js'
 import { getFixtureById } from '../data/analysisFixtures'
 import { isSupabaseConfigured } from '../lib/supabase'
 import { createMockReport } from '../services/mockAnalysisService'
-import { deleteAllSavedReports, deleteSavedReport, fetchSavedReports, getCurrentUser, saveAnalysisReport, sendMagicLink, sendPasswordReset, signOut as supabaseSignOut, subscribeToAuthChanges, updateSavedChecklistItem } from '../services/supabaseAnalysisService'
+import { deleteAllSavedReports, deleteSavedReport, fetchSavedReports, getCurrentUser, saveAnalysisReport, sendPasswordReset, signInWithPassword, signOut as supabaseSignOut, signUpWithPassword, subscribeToAuthChanges, updatePassword as updateSupabasePassword, updateSavedChecklistItem } from '../services/supabaseAnalysisService'
 import type { AnalysisReport } from '../types/analysis'
 import { AppStateContext, type AppStateValue } from './stateContext'
 
@@ -26,6 +26,14 @@ function readActiveReport(): AnalysisReport | null {
   } catch {
     return null
   }
+}
+
+function authErrorMessage(error: unknown, fallback: string) {
+  const message = error instanceof Error ? error.message : ''
+  if (/invalid login credentials/i.test(message)) return 'Email or password is incorrect.'
+  if (/user already registered/i.test(message)) return 'An account with this email already exists. Sign in instead.'
+  if (/email not confirmed/i.test(message)) return 'Email confirmation is enabled in Supabase. Disable it for immediate account access.'
+  return message || fallback
 }
 
 export function AppStateProvider({ children }: PropsWithChildren) {
@@ -122,16 +130,36 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       const checklistItem = savedReport?.checklist.find((item) => item.id === checklistId)
       if (isSupabaseConfigured && user && checklistItem) void updateSavedChecklistItem(checklistId, !checklistItem.completed)
     },
-    sendAuthEmail: async (email, mode) => {
+    signUp: async (displayName, email, password) => {
       try {
-        if (mode === 'reset') {
-          await sendPasswordReset(email)
-          return { message: 'Password reset instructions are on their way if this email is registered.' }
-        }
-        await sendMagicLink(email)
-        return { message: 'Check your email for a secure sign-in link. Your current report is preserved.' }
+        await signUpWithPassword(displayName, email, password)
+        return { message: 'Your account is ready. Your private report will be saved now.' }
       } catch (error) {
-        return { error: error instanceof Error ? error.message : 'Authentication email could not be sent.' }
+        return { error: authErrorMessage(error, 'Your account could not be created.') }
+      }
+    },
+    signIn: async (email, password) => {
+      try {
+        await signInWithPassword(email, password)
+        return { message: 'You are signed in. Your private reports are loading.' }
+      } catch (error) {
+        return { error: authErrorMessage(error, 'Could not sign in.') }
+      }
+    },
+    requestPasswordReset: async (email) => {
+      try {
+        await sendPasswordReset(email)
+        return { message: 'Password reset instructions are on their way if this email is registered.' }
+      } catch (error) {
+        return { error: authErrorMessage(error, 'Password reset instructions could not be sent.') }
+      }
+    },
+    updatePassword: async (password) => {
+      try {
+        await updateSupabasePassword(password)
+        return { message: 'Your password has been updated.' }
+      } catch (error) {
+        return { error: authErrorMessage(error, 'Your password could not be updated.') }
       }
     },
     signOut: async () => {

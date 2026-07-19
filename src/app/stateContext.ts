@@ -13,7 +13,10 @@ export interface AppStateValue {
   deleteReport: (analysisId: string) => Promise<{ error?: string }>
   deleteAllReports: () => Promise<{ error?: string }>
   toggleChecklistItem: (analysisId: string, checklistId: string) => void
-  sendAuthEmail: (email: string, mode: 'sign-in' | 'sign-up' | 'reset') => Promise<{ message?: string; error?: string }>
+  signUp: (displayName: string, email: string, password: string) => Promise<{ message?: string; error?: string }>
+  signIn: (email: string, password: string) => Promise<{ message?: string; error?: string }>
+  requestPasswordReset: (email: string) => Promise<{ message?: string; error?: string }>
+  updatePassword: (password: string) => Promise<{ message?: string; error?: string }>
   signOut: () => Promise<{ error?: string }>
 }
 

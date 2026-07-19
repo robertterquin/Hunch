@@ -109,15 +109,38 @@ export function subscribeToAuthChanges(onUser: (user: User | null) => void) {
   return () => data.subscription.unsubscribe()
 }
 
-export async function sendMagicLink(email: string) {
+export async function signUpWithPassword(displayName: string, email: string, password: string) {
   const client = requireClient()
-  const { error } = await client.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin + '/auth/sign-in' } })
+  const { data, error } = await client.auth.signUp({
+    email: email.trim(),
+    password,
+    options: { data: { display_name: displayName.trim() } },
+  })
+  if (error) throw error
+
+  if (!data.user || !data.session) {
+    throw new Error('Account created, but it cannot be used yet. Disable Confirm email in Supabase Auth settings, then try again.')
+  }
+
+  const { error: profileError } = await client.from('profiles').upsert({ id: data.user.id, display_name: displayName.trim() })
+  if (profileError) throw profileError
+}
+
+export async function signInWithPassword(email: string, password: string) {
+  const client = requireClient()
+  const { error } = await client.auth.signInWithPassword({ email: email.trim(), password })
   if (error) throw error
 }
 
 export async function sendPasswordReset(email: string) {
   const client = requireClient()
   const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/auth/reset' })
+  if (error) throw error
+}
+
+export async function updatePassword(password: string) {
+  const client = requireClient()
+  const { error } = await client.auth.updateUser({ password })
   if (error) throw error
 }
 
