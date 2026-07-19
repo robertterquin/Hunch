@@ -54,6 +54,14 @@ function requireClient() {
   return supabase
 }
 
+function saveErrorMessage(error: { message?: string } | null) {
+  const message = error?.message ?? ''
+  if (/source_url/i.test(message) && /(column|schema cache|could not find)/i.test(message)) {
+    return 'Your Supabase database needs the Phase 11 update before public-link reports can be saved. Run supabase/master.sql in the Supabase SQL Editor, then try again.'
+  }
+  return message || 'The report could not be saved.'
+}
+
 function mapReport(row: AnalysisRow): AnalysisReport {
   return {
     id: row.id,
@@ -161,10 +169,9 @@ export async function fetchSavedReports(userId: string): Promise<AnalysisReport[
 
 export async function saveAnalysisReport(report: AnalysisReport, userId: string): Promise<AnalysisReport> {
   const client = requireClient()
-  const { data: analysis, error: analysisError } = await client.from('analyses').insert({
+  const analysisPayload = {
     user_id: userId,
     listing_title: report.listingTitle ?? 'Saved Hunch report',
-    source_url: report.sourceUrl ?? null,
     source_type: report.sourceType,
     original_text: report.originalText,
     risk_score: report.riskScore,
@@ -179,38 +186,44 @@ export async function saveAnalysisReport(report: AnalysisReport, userId: string)
     missing_information: report.missingInformation,
     score_breakdown: report.scoreBreakdown,
     analysis_version: report.analysisVersion,
-  }).select().single()
-  if (analysisError) throw analysisError
+  }
+  const payloadWithSourceUrl = report.sourceUrl ? { ...analysisPayload, source_url: report.sourceUrl } : analysisPayload
+  const { data: analysis, error: analysisError } = await client.from('analyses').insert(payloadWithSourceUrl).select().single()
+  if (analysisError) throw new Error(saveErrorMessage(analysisError))
 
-  const { error: flagsError } = await client.from('red_flags').insert(report.flags.map((flag) => ({
-    analysis_id: analysis.id,
-    rule_id: flag.ruleId,
-    category: flag.category,
-    title: flag.title,
-    severity: flag.severity,
-    explanation: flag.explanation,
-    evidence: flag.evidence,
-    score_impact: flag.scoreImpact,
-    confidence: flag.confidence,
-    next_action: flag.nextAction,
-    source: flag.source,
-  })))
-  if (flagsError) {
-    await client.from('analyses').delete().eq('id', analysis.id)
-    throw flagsError
+  if (report.flags.length > 0) {
+    const { error: flagsError } = await client.from('red_flags').insert(report.flags.map((flag) => ({
+      analysis_id: analysis.id,
+      rule_id: flag.ruleId,
+      category: flag.category,
+      title: flag.title,
+      severity: flag.severity,
+      explanation: flag.explanation,
+      evidence: flag.evidence,
+      score_impact: flag.scoreImpact,
+      confidence: flag.confidence,
+      next_action: flag.nextAction,
+      source: flag.source,
+    })))
+    if (flagsError) {
+      await client.from('analyses').delete().eq('id', analysis.id)
+      throw flagsError
+    }
   }
 
-  const { error: checklistError } = await client.from('checklist_items').insert(report.checklist.map((item, position) => ({
-    analysis_id: analysis.id,
-    label: item.label,
-    reason: item.reason,
-    completed: item.completed,
-    related_category: item.relatedCategory ?? null,
-    position,
-  })))
-  if (checklistError) {
-    await client.from('analyses').delete().eq('id', analysis.id)
-    throw checklistError
+  if (report.checklist.length > 0) {
+    const { error: checklistError } = await client.from('checklist_items').insert(report.checklist.map((item, position) => ({
+      analysis_id: analysis.id,
+      label: item.label,
+      reason: item.reason,
+      completed: item.completed,
+      related_category: item.relatedCategory ?? null,
+      position,
+    })))
+    if (checklistError) {
+      await client.from('analyses').delete().eq('id', analysis.id)
+      throw checklistError
+    }
   }
 
   const saved = await fetchSavedReports(userId)
