@@ -65,6 +65,8 @@ export interface AnalysisInput {
 
 export interface RedFlag {
   id: string
+  ruleId: string
+  source: 'rule' | 'ai-supported' | 'user-confirmed'
   category: RiskCategory
   title: string
   severity: 'medium' | 'high'
@@ -83,10 +85,19 @@ export interface ChecklistItem {
   relatedCategory?: RiskCategory
 }
 
+export interface ScoreBreakdownItem {
+  ruleId: string
+  category?: RiskCategory
+  label: string
+  scoreImpact: number
+  evidence?: string
+}
+
 export interface AnalysisReport {
   id: string
   fixtureId: string
   listingTitle?: string
+  scoreBreakdown: ScoreBreakdownItem[]
   sourceType: SourceType
   originalText: string
   riskScore: number

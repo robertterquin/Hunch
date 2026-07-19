@@ -517,6 +517,8 @@ Dependencies: Phases 1, 3, 6, and 7.
 
 Exit gate: every score-changing result is explainable, known fixtures trigger expected findings, and the engine behaves safely on empty or very long input.
 
+Implementation note: the deterministic engine is implemented in `src/services/ruleEngine.ts` with the catalog in `src/data/ruleCatalog.ts`. It normalizes text, records matched spans, suppresses explicit negation, handles personal-email context, deduplicates categories, caps scores at 100, and is covered by executable fixture calibration tests.
+
 ### Phase 9: OpenAI analysis API
 
 Outcome: AI adds useful, evidence-bound explanation without becoming the source of truth for the score.

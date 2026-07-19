@@ -65,6 +65,10 @@ export function AnalysisReportView({ report, onToggleChecklist, onSave, isSaved 
 
         <div className="report-side-column">
           <div>
+            <div className="section-heading-row"><p className="section-label">Score breakdown</p><span className="count-label">capped at 100</span></div>
+            <div className="breakdown-list">{report.scoreBreakdown.map((item) => <div className="breakdown-row" key={item.ruleId}><span>{item.label}</span><strong>+{item.scoreImpact}</strong></div>)}</div>
+          </div>
+          <div>
             <p className="section-label">What is still unclear</p>
             {report.missingInformation.length > 0 ? <ul className="missing-list">{report.missingInformation.map((item) => <li key={item}>{item}</li>)}</ul> : <p className="muted-copy">The post includes the main details Hunch can check.</p>}
           </div>

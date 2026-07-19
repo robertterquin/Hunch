@@ -1,6 +1,7 @@
 import { BookOpen, CheckSquare, FileSearch, Plus, Settings, ShieldCheck } from 'lucide-react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useAppState } from './stateContext'
+import hunchLogo from '../assets/hunch-logo.svg'
 
 const navigation = [
   { label: 'Analyze', to: '/analyze', icon: FileSearch },
@@ -16,11 +17,8 @@ export function AppShell() {
     <div className="app-shell">
       <header className="topbar">
         <Link className="brand" to="/analyze" aria-label="Hunch Analyze">
-          <span className="brand-mark" aria-hidden="true">H</span>
-          <span>
-            <strong>Hunch</strong>
-            <small>Your second opinion before applying.</small>
-          </span>
+          <img className="brand-logo" src={hunchLogo} alt="Hunch" />
+          <span className="sr-only">Your second opinion before applying.</span>
         </Link>
 
         <nav className="desktop-nav" aria-label="Primary navigation">

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="176" height="48" viewBox="0 0 176 48" fill="none">
+  <rect x="1" y="1" width="46" height="46" rx="13" fill="#111827" stroke="#2B364A" stroke-width="2"/>
+  <path d="M13.5 31V21.5C13.5 17.082 17.082 13.5 21.5 13.5C25.918 13.5 29.5 17.082 29.5 21.5V31" stroke="#F8FAFC" stroke-width="3.25" stroke-linecap="round"/>
+  <path d="M13.5 25.2C17.35 23.2 21.95 23 26.05 24.55C27.3 25.03 28.45 25.7 29.5 26.5" stroke="#4F8CFF" stroke-width="3.25" stroke-linecap="round"/>
+  <path d="M29.5 26.5L32.3 23.7" stroke="#4F8CFF" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="31.7" cy="15.2" r="2" fill="#4F8CFF"/>
+  <text x="59" y="31" fill="#F8FAFC" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="24" font-weight="750" letter-spacing="-0.4">Hunch</text>
+</svg>

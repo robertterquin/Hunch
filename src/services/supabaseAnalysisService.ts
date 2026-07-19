@@ -15,6 +15,7 @@ interface AnalysisRow {
   summary: string
   uncertainty: string
   missing_information: string[]
+  score_breakdown: AnalysisReport['scoreBreakdown']
   analysis_version: string
   created_at: string
   red_flags?: RedFlagRow[]
@@ -23,6 +24,7 @@ interface AnalysisRow {
 
 interface RedFlagRow {
   id: string
+  rule_id: string
   category: RedFlag['category']
   title: string
   severity: RedFlag['severity']
@@ -31,6 +33,7 @@ interface RedFlagRow {
   score_impact: number
   confidence: RedFlag['confidence']
   next_action: string
+  source: RedFlag['source']
 }
 
 interface ChecklistRow {
@@ -62,6 +65,8 @@ function mapReport(row: AnalysisRow): AnalysisReport {
     uncertainty: row.uncertainty,
     flags: (row.red_flags ?? []).map((flag) => ({
       id: flag.id,
+      ruleId: flag.rule_id,
+      source: flag.source,
       category: flag.category,
       title: flag.title,
       severity: flag.severity,
@@ -80,6 +85,7 @@ function mapReport(row: AnalysisRow): AnalysisReport {
       relatedCategory: item.related_category,
     })),
     analysisVersion: row.analysis_version,
+    scoreBreakdown: row.score_breakdown ?? [],
     createdAt: row.created_at,
   }
 }
@@ -136,12 +142,14 @@ export async function saveAnalysisReport(report: AnalysisReport, userId: string)
     summary: report.summary,
     uncertainty: report.uncertainty,
     missing_information: report.missingInformation,
+    score_breakdown: report.scoreBreakdown,
     analysis_version: report.analysisVersion,
   }).select().single()
   if (analysisError) throw analysisError
 
   const { error: flagsError } = await client.from('red_flags').insert(report.flags.map((flag) => ({
     analysis_id: analysis.id,
+    rule_id: flag.ruleId,
     category: flag.category,
     title: flag.title,
     severity: flag.severity,
@@ -150,6 +158,7 @@ export async function saveAnalysisReport(report: AnalysisReport, userId: string)
     score_impact: flag.scoreImpact,
     confidence: flag.confidence,
     next_action: flag.nextAction,
+    source: flag.source,
   })))
   if (flagsError) {
     await client.from('analyses').delete().eq('id', analysis.id)

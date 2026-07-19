@@ -19,6 +19,7 @@ create table if not exists public.analyses (
   summary text not null,
   uncertainty text not null,
   missing_information jsonb not null default '[]'::jsonb,
+  score_breakdown jsonb not null default '[]'::jsonb,
   analysis_version text not null,
   created_at timestamptz not null default now()
 );
@@ -26,6 +27,7 @@ create table if not exists public.analyses (
 create table if not exists public.red_flags (
   id uuid primary key default gen_random_uuid(),
   analysis_id uuid not null references public.analyses(id) on delete cascade,
+  rule_id text not null,
   category text not null,
   title text not null,
   severity text not null check (severity in ('medium', 'high')),
@@ -33,7 +35,8 @@ create table if not exists public.red_flags (
   evidence text not null,
   score_impact integer not null,
   confidence text not null check (confidence in ('low', 'medium', 'high')),
-  next_action text not null
+  next_action text not null,
+  source text not null default 'rule' check (source in ('rule', 'ai-supported', 'user-confirmed'))
 );
 
 create table if not exists public.checklist_items (

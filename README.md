@@ -24,6 +24,7 @@ To create the database objects, open the Supabase SQL Editor and run [`supabase/
 ```bash
 npm run dev       # Start the local development server
 npm run lint      # Run ESLint
+npm run test      # Run rule and fixture tests
 npm run typecheck # Run the TypeScript project check
 npm run build     # Run typecheck and create a production build
 npm run preview   # Preview the production build locally
