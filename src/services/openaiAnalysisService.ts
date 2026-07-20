@@ -76,7 +76,7 @@ function mergeReport(report: AnalysisReport, explanation: OpenAIExplanation): An
     checklist: mergeChecklist(report, explanation),
     studentAdvice: explanation.studentAdvice,
     explanationSource: 'openai',
-    explanationNote: 'OpenAI explanation is available; the score and warning evidence remain rule-based.',
+    explanationNote: 'The score and warning evidence are based on the details Hunch found in the listing.',
     analysisVersion: ANALYSIS_VERSION,
   }
 }
@@ -88,7 +88,7 @@ async function publicApiError(response: Response) {
   } catch {
     // Use the generic message below when the server did not return JSON.
   }
-  return `The explanation service returned status ${response.status}.`
+  return 'We could not prepare the full explanation right now.'
 }
 
 export async function analyzeListingWithExplanation(input: AnalysisInput): Promise<AnalysisReport> {
@@ -99,7 +99,7 @@ export async function analyzeListingWithExplanation(input: AnalysisInput): Promi
 
   const ruleResult = runRuleEngine(normalizedText)
   if (normalizedText.length > MAX_LISTING_LENGTH) {
-    return fallbackReport(input, ruleResult, 'AI explanation is unavailable for listings over 12,000 characters; the rule-based report is still available.')
+    return fallbackReport(input, ruleResult, 'This listing is longer than Hunch can explain at once, so the confirmed findings are shown below.')
   }
 
   const controller = new AbortController()
@@ -120,11 +120,11 @@ export async function analyzeListingWithExplanation(input: AnalysisInput): Promi
     if (!response.ok) throw new Error(await publicApiError(response))
     const body: unknown = await response.json()
     const parsed = OpenAIExplanationSchema.safeParse(body)
-    if (!parsed.success) throw new Error('AI explanation did not match the expected schema.')
+    if (!parsed.success) throw new Error('The explanation could not be prepared in the expected format.')
     return mergeReport(buildRuleOnlyReport({ ...input, text: normalizedText }, ruleResult), parsed.data)
   } catch (error) {
     const reason = error instanceof Error && error.message.startsWith('The explanation') ? ` ${error.message}` : ''
-    return fallbackReport(input, ruleResult, `AI explanation is unavailable right now.${reason} The rule-based report is still available.`)
+    return fallbackReport(input, ruleResult, `Some wording support was unavailable right now.${reason} The confirmed findings are still available.`)
   } finally {
     globalThis.clearTimeout(timeoutId)
   }

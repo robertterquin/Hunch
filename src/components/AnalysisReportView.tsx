@@ -32,8 +32,8 @@ export function AnalysisReportView({ report, onToggleChecklist, onSave, isSaved 
           <p className="report-summary">{report.summary}</p>
           {report.sourceUrl && <a className="report-source-link" href={report.sourceUrl} target="_blank" rel="noreferrer"><ExternalLink size={14} aria-hidden="true" />Open analyzed source</a>}
           <p className="explanation-status" role="status">
-            {report.explanationSource === 'openai' ? <Sparkles size={13} aria-hidden="true" /> : <Info size={13} aria-hidden="true" />}
-            {report.explanationNote ?? (report.explanationSource === 'openai' ? 'AI explanation is grounded in the rule findings.' : 'This report uses deterministic rule analysis.')}
+            <Info size={13} aria-hidden="true" />
+            {report.explanationNote ?? 'This guidance is based on the details Hunch could confirm in the listing.'}
           </p>
         </div>
         <div className="score-block">
@@ -65,7 +65,7 @@ export function AnalysisReportView({ report, onToggleChecklist, onSave, isSaved 
                 )
               })}
             </div>
-          ) : <p className="muted-copy">No major warning categories were matched in this mock result.</p>}
+          ) : <p className="muted-copy">No major warning categories were found in this listing.</p>}
         </div>
 
         <div className="report-side-column">

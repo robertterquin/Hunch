@@ -48,8 +48,8 @@ export function AnalyzePage() {
   const showReport = (nextReport: AnalysisReport) => {
     setActiveReport(nextReport)
     setNotice(nextReport.explanationSource === 'openai'
-      ? 'Your report is ready with an evidence-bound explanation. Review the evidence before deciding what to do next.'
-      : `${nextReport.explanationNote ?? 'AI explanation is unavailable right now.'} Review the evidence before deciding what to do next.`)
+      ? 'Your check is ready. Review the details before deciding what to do next.'
+      : `${nextReport.explanationNote ?? 'Your check is ready with the findings Hunch could confirm.'} Review the details before deciding what to do next.`)
   }
 
   const handleAnalyze = async (event: FormEvent<HTMLFormElement>) => {
