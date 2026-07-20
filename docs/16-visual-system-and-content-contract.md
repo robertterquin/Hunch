@@ -164,7 +164,7 @@ Do not use a circular gauge without labels, color-only dots, or a score displaye
 | Component | Variants | Required content | Interaction rule |
 | --- | --- | --- | --- |
 | App shell | Desktop, tablet, mobile | Wordmark, primary nav, account action, New Analysis. | Active navigation is visible through text and blue emphasis. |
-| Analyzer input | Empty, ready, too-short, loading, error | Label, source selector, textarea, count, upload, sample, clear, Analyze. | Analyze is disabled below 40 characters. |
+| Analyzer input | Empty, ready, too-short, loading, error | Label, source selector, textarea, count, public-link mode, sample, clear, Analyze. | Analyze is disabled below 40 characters. |
 | Source selector | Facebook, LinkedIn, email, Messenger, school group, other | Visible label and selected source. | Changing source does not delete text. |
 | Public-link input | Idle, ready, extracting, failed | Segmented mode, URL field, status, and manual-paste recovery. | Keyboard-accessible and never silently scores unavailable content. |
 | Risk summary | Low risk, Caution, High risk, Partial result | Score, risk label, summary, warning count, uncertainty, Save. | Score stays beside explanation. |

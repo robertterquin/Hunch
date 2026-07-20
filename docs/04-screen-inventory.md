@@ -167,7 +167,7 @@ Phase 4 wireframes, responsive rules, interaction behavior, and state copy are d
 | InputState | Link-ready | Valid public URL and Analyze link action. | Edit URL, change mode, analyze. | Loading, error, or result. |
 | InputState | Link-error | Clear extraction failure and manual-paste recovery. | Edit URL or switch to paste. | Link-ready or paste input. |
 | InputState | Invalid | Field-level explanation of the input problem. | Correct, clear, or paste manually. | Ready, Empty, or `/analyze`. |
-| AnalysisState | Idle | No active analysis status. | Edit input, sample, upload, analyze. | Input state. |
+| AnalysisState | Idle | No active analysis status. | Edit input, sample, switch input mode, analyze. | Input state. |
 | AnalysisState | Loading | Current stage text and disabled duplicate submission. | Wait or cancel when supported. | Complete, fallback, or Error. |
 | AnalysisState | Complete | Score, label, summary, evidence, warnings, and checklist. | Expand warnings, complete checklist, save, new analysis. | Active result, saved detail, or Analyze. |
 | AnalysisState | Uncertain | Medium-risk or partial result with missing-information explanation. | Review evidence, verify independently, complete checklist. | Active result or Analyze. |

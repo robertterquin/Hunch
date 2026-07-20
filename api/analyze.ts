@@ -3,6 +3,7 @@ import { zodTextFormat } from 'openai/helpers/zod'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { runRuleEngine, type RuleFinding } from '../src/services/ruleEngine.js'
 import { AnalyzeRequestSchema, OpenAIExplanationSchema, type OpenAIExplanation } from '../src/services/openaiAnalysisSchema.js'
+import { isRequestBodyTooLarge, MAX_ANALYZE_BODY_BYTES } from './request-body.js'
 import { consumeRateLimit, sendRateLimited } from './rate-limit.js'
 
 const DEFAULT_MODEL = 'gpt-5.6-luna'
@@ -90,7 +91,11 @@ async function analyzeHandler(request: VercelRequest, response: VercelResponse) 
     return sendJson(response, 405, { error: 'METHOD_NOT_ALLOWED', message: 'Use POST for analysis.' })
   }
 
-  const rateLimit = consumeRateLimit(request, ANALYZE_RATE_LIMIT)
+  if (isRequestBodyTooLarge(request, MAX_ANALYZE_BODY_BYTES)) {
+    return sendJson(response, 413, { error: 'REQUEST_TOO_LARGE', message: 'The analysis request is too large.' })
+  }
+
+  const rateLimit = await consumeRateLimit(request, ANALYZE_RATE_LIMIT)
   if (!rateLimit.allowed) return sendRateLimited(response, rateLimit.retryAfterSeconds)
 
   const parsedBody = AnalyzeRequestSchema.safeParse(parseAnalyzeBody(request.body))

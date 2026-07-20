@@ -15,6 +15,7 @@
 .topbar-actions { display: flex; align-items: center; gap: 8px; }
 .account-link { display: inline-flex; align-items: center; min-height: 34px; color: var(--color-text-secondary); font-size: 14px; line-height: 1; text-decoration: none; }
 .app-main { width: min(1180px, 100%); margin: 0 auto; padding: 42px 32px 96px; }
+.route-loading { display: grid; min-height: 320px; place-items: center; color: var(--color-text-muted); font-size: 14px; }
 .page-stack, .support-page { display: grid; gap: 24px; }
 .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
 .page-heading h1 { max-width: 700px; margin: 4px 0 10px; font-size: clamp(30px, 4vw, 46px); line-height: 1.05; letter-spacing: 0; }
@@ -187,7 +188,7 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .comparison-signal-list span { padding-left: 9px; border-left: 2px solid var(--color-border-muted); }
 .guide-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .guide-card { display: block; }
-.guide-icon, .settings-icon, .upload-icon { display: grid; width: 38px; height: 38px; place-items: center; color: var(--color-action-hover); border: 1px solid rgba(138, 180, 255, 0.3); border-radius: 11px; background: var(--color-action-surface); }
+.guide-icon, .settings-icon { display: grid; width: 38px; height: 38px; place-items: center; color: var(--color-action-hover); border: 1px solid rgba(138, 180, 255, 0.3); border-radius: 11px; background: var(--color-action-surface); }
 .support-card:hover { border-color: var(--color-action-hover); transform: translateY(-2px); transition: border-color var(--motion-fast) ease, transform var(--motion-fast) ease; }
 .guide-detail-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr); gap: 20px; }
 .guide-detail, .guide-next { display: grid; align-content: start; gap: 14px; }

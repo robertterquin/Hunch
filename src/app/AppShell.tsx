@@ -1,4 +1,5 @@
 import { BookOpen, CheckSquare, FileSearch, Settings, ShieldCheck } from 'lucide-react'
+import { Suspense } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useAppState } from './stateContext'
 import hunchLogo from '../assets/hunch-logo.svg'
@@ -41,7 +42,9 @@ export function AppShell() {
       </header>
 
       <main className="app-main" id="main-content" tabIndex={-1}>
-        <Outlet />
+        <Suspense fallback={<div className="route-loading" role="status" aria-live="polite">Loading this page...</div>}>
+          <Outlet />
+        </Suspense>
       </main>
 
       <nav className="mobile-nav" aria-label="Mobile navigation">

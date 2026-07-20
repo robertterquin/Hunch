@@ -32,16 +32,14 @@ Allow students to submit a public HTTP or HTTPS listing page for server-side rea
 
 Elements:
 
-- Upload dropzone
-- File preview
+- URL field
 - Link extraction status
-- Extracted text review
+- Manual-paste recovery message
 
 States:
 
-- Idle
-- Dragging
-- Uploading
+- Empty
+- URL ready
 - Extracting page
 - Extraction success
 - Extraction failed with manual-paste recovery

@@ -40,7 +40,7 @@ Recommended structure:
 
 Mobile priorities:
 
-1. Paste/upload input
+1. Paste-text or public-link input
 2. Analyze button
 3. Risk result
 4. Red flag explanations

@@ -22,15 +22,15 @@ This review records the Phase 13 hardening pass for Hunch. It covers safety lang
 ## Public-Link Boundary
 
 - `api/extract-link.ts` fetches only public HTTP(S) HTML, sends no cookies or user-supplied headers, does not execute JavaScript, limits bodies to 1 MB, times out after ten seconds, and follows at most three redirects.
-- The extractor resolves hostnames before the initial request and every redirect, rejecting loopback, private, link-local, multicast, reserved, and internal-network addresses.
+- The extractor resolves hostnames before the initial request and every redirect, rejecting loopback, private, link-local, multicast, reserved, and internal-network addresses. The outbound connection is pinned to the validated public address while retaining the original hostname for TLS validation, preventing DNS-rebinding bypasses.
 - Unsupported pages return manual-paste recovery messages instead of attempting private, login-protected, JavaScript-only, non-HTML, or oversized extraction.
 
 ## Abuse Controls
 
-- `api/analyze.ts` applies an in-memory per-connection limit of 12 explanation requests per minute.
-- `api/extract-link.ts` applies an in-memory per-connection limit of 8 extraction requests per minute.
+- `api/analyze.ts` rejects JSON request bodies larger than 256 KB and applies a shared fixed-window limit of 12 explanation requests per minute when Upstash is configured.
+- `api/extract-link.ts` rejects JSON request bodies larger than 16 KB and applies a shared fixed-window limit of 8 extraction requests per minute when Upstash is configured.
 - Rate-limited responses return HTTP 429, a `Retry-After` header, and a generic recovery message.
-- The limiter is intentionally lightweight for Phase 13. Production can later move this to Vercel KV, Upstash, Supabase edge rate limits, or another shared store if abuse volume grows.
+- Without `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`, the APIs use a bounded in-memory fallback for local development or temporary provider outages. Configure both variables in Vercel for cross-instance production limits.
 
 ## Accessibility Fixes
 

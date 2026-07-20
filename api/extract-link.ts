@@ -4,6 +4,8 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Readability } from '@mozilla/readability'
 import { parseHTML } from 'linkedom'
 import { z } from 'zod'
+import { Agent, interceptors } from 'undici'
+import { isRequestBodyTooLarge, MAX_LINK_BODY_BYTES } from './request-body.js'
 import { consumeRateLimit, sendRateLimited } from './rate-limit.js'
 
 const MAX_BODY_BYTES = 1_000_000
@@ -110,7 +112,12 @@ export function parsePublicUrl(input: string) {
   return url
 }
 
-export async function verifyPublicHost(url: URL) {
+interface VerifiedHost {
+  address: string
+  family: 4 | 6
+}
+
+export async function verifyPublicHost(url: URL): Promise<VerifiedHost> {
   let records
   try {
     records = await lookup(url.hostname, { all: true, verbatim: true })
@@ -120,6 +127,8 @@ export async function verifyPublicHost(url: URL) {
   if (!records.length || records.some((record) => isBlockedIpAddress(record.address))) {
     throw new LinkExtractionError('BLOCKED_ADDRESS', 400, 'That link resolves to a private or reserved address and cannot be analyzed.')
   }
+  const record = records[0]
+  return { address: record.address, family: record.family === 6 ? 6 : 4 }
 }
 
 async function readLimitedBody(response: Response) {
@@ -190,7 +199,28 @@ export function extractReadableHtml(html: string, pageUrl: string) {
 
 interface ExtractionDependencies {
   fetchFn?: typeof fetch
-  verifyHost?: (url: URL) => Promise<void>
+  verifyHost?: (url: URL) => Promise<VerifiedHost | void>
+}
+
+async function fetchPinnedUrl(url: URL, verifiedHost: VerifiedHost | void, fetchFn: typeof fetch, init: RequestInit) {
+  if (fetchFn !== fetch || !verifiedHost) return { response: await fetchFn(url, init), close: undefined }
+
+  const dispatcher = new Agent({
+    interceptors: {
+      Client: [interceptors.dns({
+        lookup: (_origin, _options, callback) => {
+          callback(null, [{ address: verifiedHost.address, family: verifiedHost.family, ttl: 0 }])
+        },
+      })],
+    },
+  })
+  try {
+    const response = await (fetchFn as unknown as (input: URL, options: RequestInit & { dispatcher: Agent }) => Promise<Response>)(url, { ...init, dispatcher })
+    return { response, close: () => dispatcher.close() }
+  } catch (error) {
+    await dispatcher.close()
+    throw error
+  }
 }
 
 export async function extractPublicLink(input: string, dependencies: ExtractionDependencies = {}) {
@@ -198,12 +228,13 @@ export async function extractPublicLink(input: string, dependencies: ExtractionD
   const verifyHost = dependencies.verifyHost ?? verifyPublicHost
   let currentUrl = parsePublicUrl(input)
   for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
-    await verifyHost(currentUrl)
+    const verifiedHost = await verifyHost(currentUrl)
     const controller = new AbortController()
     const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
     let response: Response
+    let closeDispatcher: (() => Promise<void>) | undefined
     try {
-      response = await fetchFn(currentUrl, {
+      const fetched = await fetchPinnedUrl(currentUrl, verifiedHost, fetchFn, {
         method: 'GET',
         redirect: 'manual',
         credentials: 'omit',
@@ -213,31 +244,35 @@ export async function extractPublicLink(input: string, dependencies: ExtractionD
         },
         signal: controller.signal,
       })
+      response = fetched.response
+      closeDispatcher = fetched.close
     } catch (error) {
       if ((error as { name?: string }).name === 'AbortError') {
         throw new LinkExtractionError('FETCH_TIMEOUT', 504, 'This page took too long to load. Paste the listing text manually instead.')
       }
       throw new LinkExtractionError('FETCH_FAILED', 422, 'Hunch could not fetch that public page. Paste the listing text manually instead.')
+    }
+    try {
+      if (response.status >= 300 && response.status < 400) {
+        const location = response.headers.get('location')
+        if (!location) throw new LinkExtractionError('BAD_REDIRECT', 422, 'This page returned an unusable redirect. Paste the listing text manually instead.')
+        if (redirectCount === MAX_REDIRECTS) throw new LinkExtractionError('TOO_MANY_REDIRECTS', 422, 'This link redirected too many times. Paste the listing text manually instead.')
+        currentUrl = parsePublicUrl(new URL(location, currentUrl).toString())
+        continue
+      }
+      if (!response.ok) {
+        throw new LinkExtractionError('PAGE_UNAVAILABLE', 422, 'This public page is unavailable or blocked. Paste the listing text manually instead.')
+      }
+      const contentType = response.headers.get('content-type')?.toLowerCase() ?? ''
+      if (!contentType.includes('text/html') && !contentType.includes('application/xhtml+xml')) {
+        throw new LinkExtractionError('NOT_HTML', 422, 'This link does not return an HTML page. Paste the listing text manually instead.')
+      }
+      const html = await readLimitedBody(response)
+      return extractReadableHtml(html, currentUrl.toString())
     } finally {
       clearTimeout(timer)
+      if (closeDispatcher) await closeDispatcher()
     }
-
-    if (response.status >= 300 && response.status < 400) {
-      const location = response.headers.get('location')
-      if (!location) throw new LinkExtractionError('BAD_REDIRECT', 422, 'This page returned an unusable redirect. Paste the listing text manually instead.')
-      if (redirectCount === MAX_REDIRECTS) throw new LinkExtractionError('TOO_MANY_REDIRECTS', 422, 'This link redirected too many times. Paste the listing text manually instead.')
-      currentUrl = parsePublicUrl(new URL(location, currentUrl).toString())
-      continue
-    }
-    if (!response.ok) {
-      throw new LinkExtractionError('PAGE_UNAVAILABLE', 422, 'This public page is unavailable or blocked. Paste the listing text manually instead.')
-    }
-    const contentType = response.headers.get('content-type')?.toLowerCase() ?? ''
-    if (!contentType.includes('text/html') && !contentType.includes('application/xhtml+xml')) {
-      throw new LinkExtractionError('NOT_HTML', 422, 'This link does not return an HTML page. Paste the listing text manually instead.')
-    }
-    const html = await readLimitedBody(response)
-    return extractReadableHtml(html, currentUrl.toString())
   }
   throw new LinkExtractionError('TOO_MANY_REDIRECTS', 422, 'This link redirected too many times. Paste the listing text manually instead.')
 }
@@ -247,7 +282,10 @@ export default async function extractLink(request: VercelRequest, response: Verc
     response.setHeader('Allow', 'POST')
     return response.status(405).json({ error: 'METHOD_NOT_ALLOWED', message: 'Use POST to analyze a public link.' })
   }
-  const rateLimit = consumeRateLimit(request, EXTRACT_LINK_RATE_LIMIT)
+  if (isRequestBodyTooLarge(request, MAX_LINK_BODY_BYTES)) {
+    return response.status(413).json({ error: 'REQUEST_TOO_LARGE', message: 'The link request is too large.' })
+  }
+  const rateLimit = await consumeRateLimit(request, EXTRACT_LINK_RATE_LIMIT)
   if (!rateLimit.allowed) return sendRateLimited(response, rateLimit.retryAfterSeconds)
 
   const parsed = LinkRequestSchema.safeParse(parseExtractLinkBody(request.body))

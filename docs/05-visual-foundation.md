@@ -23,7 +23,7 @@ The visual direction is dark-first. Use deep neutral backgrounds, quiet borders,
 When users open Hunch, they should immediately understand:
 
 - This app checks OJT and internship posts.
-- They can paste or upload something right away.
+- They can paste listing text or enter a public link right away.
 - The output will be a risk score with explanations.
 
 ## Visual Priorities

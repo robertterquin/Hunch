@@ -59,8 +59,8 @@ Show a calm error message and retry action.
 
 ## Public-Link States
 
-- Idle upload
-- File selected
+- Idle public-link mode
+- URL entered
 - Link extraction in progress
 - Text extracted
 - Extraction failed

@@ -61,6 +61,17 @@ describe('analyze API contract', () => {
     }
   })
 
+  it('rejects oversized JSON bodies before parsing the analysis request', async () => {
+    const { response, output } = responseDouble()
+    await analyze({
+      method: 'POST',
+      headers: { 'content-length': '300000' },
+      body: { listingText: validText },
+    } as VercelRequest, response)
+    expect(output.statusCode).toBe(413)
+    expect(output.body?.error).toBe('REQUEST_TOO_LARGE')
+  })
+
   it('returns a safe configuration response when the API key is missing', async () => {
     const { response, output } = responseDouble()
     await analyze({ method: 'POST', body: { listingText: validText, ruleFindings: [], riskScore: 0, riskLevel: 'low-risk', missingInformation: [] } } as VercelRequest, response)

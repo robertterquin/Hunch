@@ -64,7 +64,7 @@ Hunch accepts one public HTTP or HTTPS URL and fetches static readable HTML serv
 
 ### Safety and privacy review
 
-Hunch is a safety-screening aid, not proof that a listing is fake or safe. The app now includes a skip link, live status regions, reduced-motion support, clearer deletion/privacy copy, and lightweight anonymous rate limits for OpenAI explanations and public-link extraction. See [`docs/21-safety-privacy-accessibility.md`](C:/Hunch/Hunch/docs/21-safety-privacy-accessibility.md).
+Hunch is a safety-screening aid, not proof that a listing is fake or safe. The app now includes a skip link, live status regions, reduced-motion support, clearer deletion/privacy copy, explicit API request limits, and anonymous rate limits for OpenAI explanations and public-link extraction. See [`docs/21-safety-privacy-accessibility.md`](C:/Hunch/Hunch/docs/21-safety-privacy-accessibility.md).
 
 ### OpenAI explanation setup
 
@@ -80,5 +80,9 @@ OPENAI_MODEL=gpt-5.6-luna
 Never use `VITE_OPENAI_API_KEY`. The API key must not be in browser code, Supabase, source control, or a public environment variable. Configure the same variables as encrypted environment variables in Vercel for deployed explanations.
 
 Vite alone serves the React app and does not execute `api/analyze.ts` or `api/extract-link.ts`. Running `npm run dev` without a Vercel function automatically falls back to the deterministic rule-only report, but public-link analysis needs a Vercel-compatible local server such as `vercel dev`.
+
+### Shared API rate limiting
+
+For production Vercel deployments, add `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` as encrypted server-side environment variables. Hunch uses them for shared fixed-window limits across serverless instances. When they are absent or temporarily unavailable, local development and requests continue through a bounded in-memory fallback.
 
 See [`docs/19-openai-integration.md`](C:/Hunch/Hunch/docs/19-openai-integration.md) for the request contract, fallback behavior, security rules, and test instructions.

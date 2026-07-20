@@ -81,6 +81,26 @@ describe('public-link extractor safeguards', () => {
     expect(invalid.output.statusCode).toBe(400)
   })
 
+  it('rejects oversized link request bodies before extraction', async () => {
+    const oversized = responseDouble()
+    await extractLink({ method: 'POST', headers: { 'content-length': '20000' }, body: { url: 'https://jobs.example.test/ojt' } } as VercelRequest, oversized.response)
+    expect(oversized.output.statusCode).toBe(413)
+    expect(oversized.output.body?.error).toBe('REQUEST_TOO_LARGE')
+  })
+
+  it('revalidates every redirect destination before fetching it', async () => {
+    const checked: string[] = []
+    const fetchFn = async () => new Response(null, { status: 302, headers: { location: 'https://internal.example.test/secret' } })
+    const verifyHost = async (url: URL) => {
+      checked.push(url.hostname)
+      if (url.hostname === 'internal.example.test') throw new LinkExtractionError('BLOCKED_ADDRESS', 400, 'blocked')
+      return undefined
+    }
+
+    await expect(extractPublicLink('https://jobs.example.test/ojt', { fetchFn, verifyHost })).rejects.toMatchObject({ code: 'BLOCKED_ADDRESS' })
+    expect(checked).toEqual(['jobs.example.test', 'internal.example.test'])
+  })
+
   it('rate limits repeated public-link extraction requests', async () => {
     for (let index = 0; index < 8; index += 1) {
       const { response, output } = responseDouble()

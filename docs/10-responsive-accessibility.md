@@ -60,7 +60,7 @@ Mobile rules:
 
 Required keyboard behavior:
 
-- Tab through input, upload, analyze, results, and checklist.
+- Tab through input, public-link, analyze, results, and checklist.
 - Enter or Space toggles checklist items.
 - Escape closes dialogs.
 - Focus moves to results after analysis completes.
