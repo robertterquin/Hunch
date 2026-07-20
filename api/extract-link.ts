@@ -4,10 +4,12 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { Readability } from '@mozilla/readability'
 import { parseHTML } from 'linkedom'
 import { z } from 'zod'
+import { consumeRateLimit, sendRateLimited } from './rate-limit.js'
 
 const MAX_BODY_BYTES = 1_000_000
 const MAX_REDIRECTS = 3
 const FETCH_TIMEOUT_MS = 10_000
+const EXTRACT_LINK_RATE_LIMIT = { prefix: 'extract-link', limit: 8, windowMs: 60_000 }
 
 const LinkRequestSchema = z.object({
   url: z.string().trim().min(1).max(2_048),
@@ -205,7 +207,10 @@ export async function extractPublicLink(input: string, dependencies: ExtractionD
         method: 'GET',
         redirect: 'manual',
         credentials: 'omit',
-        headers: { accept: 'text/html,application/xhtml+xml' },
+        headers: {
+          accept: 'text/html,application/xhtml+xml',
+          'user-agent': 'HunchPublicLinkAnalyzer/1.0',
+        },
         signal: controller.signal,
       })
     } catch (error) {
@@ -242,6 +247,9 @@ export default async function extractLink(request: VercelRequest, response: Verc
     response.setHeader('Allow', 'POST')
     return response.status(405).json({ error: 'METHOD_NOT_ALLOWED', message: 'Use POST to analyze a public link.' })
   }
+  const rateLimit = consumeRateLimit(request, EXTRACT_LINK_RATE_LIMIT)
+  if (!rateLimit.allowed) return sendRateLimited(response, rateLimit.retryAfterSeconds)
+
   const parsed = LinkRequestSchema.safeParse(parseExtractLinkBody(request.body))
   if (!parsed.success) return response.status(400).json({ error: 'INVALID_REQUEST', message: 'Provide one public HTTP or HTTPS URL.' })
 

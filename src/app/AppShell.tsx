@@ -15,6 +15,7 @@ export function AppShell() {
   const { user, isAuthLoading } = useAppState()
   return (
     <div className="app-shell">
+      <a className="skip-link" href="#main-content">Skip to main content</a>
       <header className="topbar">
         <Link className="brand" to="/analyze" aria-label="Hunch Analyze">
           <img className="brand-logo" src={hunchLogo} alt="Hunch" />
@@ -39,7 +40,7 @@ export function AppShell() {
         </div>
       </header>
 
-      <main className="app-main">
+      <main className="app-main" id="main-content" tabIndex={-1}>
         <Outlet />
       </main>
 

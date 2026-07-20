@@ -4,7 +4,7 @@ Hunch is a student-focused web app for checking OJT and internship listings for 
 
 ## Current Phase
 
-Phase 11 replaces image-text extraction with a public-link analyzer. Hunch can fetch readable public HTML from a supplied URL, then analyze it with the existing rule-first pipeline. Secure OpenAI explanations, Supabase password accounts, and private saved-report persistence are also present.
+Phase 13 hardens safety, privacy, accessibility, and anonymous abuse controls. Hunch can fetch readable public HTML from a supplied URL, then analyze it with the existing rule-first pipeline. Secure OpenAI explanations, Supabase password accounts, and private saved-report persistence are also present.
 
 ## Setup
 
@@ -61,6 +61,10 @@ Configure the Supabase Auth URL allow list to include `http://localhost:5173/aut
 ### Public-link analysis
 
 Hunch accepts one public HTTP or HTTPS URL and fetches static readable HTML server-side. It rejects private and local addresses, follows at most three redirects, uses a ten-second timeout, limits pages to 1 MB, and never sends browser cookies or executes page JavaScript. Private, login-protected, JavaScript-only, blocked, non-HTML, short, or oversized pages must be pasted manually. See [`docs/20-public-link-analyzer.md`](C:/Hunch/Hunch/docs/20-public-link-analyzer.md).
+
+### Safety and privacy review
+
+Hunch is a safety-screening aid, not proof that a listing is fake or safe. The app now includes a skip link, live status regions, reduced-motion support, clearer deletion/privacy copy, and lightweight anonymous rate limits for OpenAI explanations and public-link extraction. See [`docs/21-safety-privacy-accessibility.md`](C:/Hunch/Hunch/docs/21-safety-privacy-accessibility.md).
 
 ### OpenAI explanation setup
 

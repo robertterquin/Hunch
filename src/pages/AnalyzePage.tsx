@@ -122,13 +122,13 @@ export function AnalyzePage() {
           <h1>Check a listing before you apply.</h1>
           <p className="page-intro">Paste an OJT or internship post, or analyze a readable public listing link, to find visible risk signals and practical next steps.</p>
         </div>
-        <div className="status-note"><span className="status-dot" aria-hidden="true" /><span>{isAnalyzing ? 'Checking your listing' : 'Anonymous analysis is available'}</span></div>
+        <div className="status-note" role="status" aria-live="polite"><span className="status-dot" aria-hidden="true" /><span>{isAnalyzing ? 'Checking your listing' : 'Anonymous analysis is available'}</span></div>
       </section>
 
-      {notice && <div className="notice notice-success" role="status"><Check size={16} aria-hidden="true" />{notice}</div>}
+      {notice && <div className="notice notice-success" role="status" aria-live="polite"><Check size={16} aria-hidden="true" />{notice}</div>}
 
       <section className="analyzer-layout">
-        <form className="panel analyzer-panel" onSubmit={handleAnalyze}>
+        <form className="panel analyzer-panel" onSubmit={handleAnalyze} aria-busy={isAnalyzing}>
           <div className="panel-heading">
             <div><p className="eyebrow">Step 1 of 2</p><h2>{inputMode === 'paste' ? 'Paste the listing' : 'Analyze a public link'}</h2></div>
             <span className="panel-kicker">{inputMode === 'paste' ? 'Text check' : 'Public page'}</span>
@@ -145,12 +145,12 @@ export function AnalyzePage() {
               {sourceOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>
             <label className="field-label" htmlFor="listing">Listing or recruiter message</label>
-            <textarea id="listing" value={text} onChange={(event) => setText(event.target.value)} placeholder="Paste the listing, recruiter message, or forwarded post here." aria-describedby="listing-help listing-count" />
+            <textarea id="listing" value={text} onChange={(event) => setText(event.target.value)} placeholder="Paste the listing, recruiter message, or forwarded post here." aria-describedby="listing-help listing-count" aria-invalid={Boolean(error && inputMode === 'paste')} />
             <div className="field-meta"><span id="listing-help">Use at least 40 characters for a meaningful check.</span><span id="listing-count">{characterCount} characters</span></div>
             {text.length > 0 && text.trim().length < 40 && <p className="field-warning"><CircleAlert size={15} aria-hidden="true" />Paste {40 - text.trim().length} more characters to continue.</p>}
           </> : <>
             <label className="field-label" htmlFor="public-link">Public listing URL</label>
-            <input id="public-link" type="url" value={linkUrl} onChange={(event) => setLinkUrl(event.target.value)} placeholder="https://example.com/internship" autoComplete="url" inputMode="url" aria-describedby="public-link-help" />
+            <input id="public-link" type="url" value={linkUrl} onChange={(event) => setLinkUrl(event.target.value)} placeholder="https://example.com/internship" autoComplete="url" inputMode="url" aria-describedby="public-link-help" aria-invalid={Boolean(error && inputMode === 'link')} />
             <p className="field-help" id="public-link-help">Hunch can read public HTML pages only. Login-protected, private, JavaScript-only, blocked, or non-HTML pages need to be pasted manually.</p>
           </>}
 

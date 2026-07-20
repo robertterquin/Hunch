@@ -650,6 +650,8 @@ Dependencies: Phases 9-12.
 
 Exit gate: the app gives cautious guidance, protects user-owned data, and has no critical keyboard, contrast, privacy, or unsupported-claim issue.
 
+Implementation note: Phase 13 adds server-side abuse controls for anonymous OpenAI explanation and public-link extraction requests, clarifies privacy/deletion copy, adds skip-link and live-status accessibility support, honors reduced-motion preferences, and records the safety review in [`docs/21-safety-privacy-accessibility.md`](21-safety-privacy-accessibility.md). No Supabase schema change is required.
+
 ### Phase 14: Testing, QA, deployment, and portfolio proof
 
 Outcome: a stable, explainable, live project that can be evaluated in a short demo.

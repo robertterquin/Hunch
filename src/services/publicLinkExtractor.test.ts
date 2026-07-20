@@ -1,9 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import extractLink, { LinkExtractionError, extractPublicLink, extractReadableHtml, isBlockedIpAddress, parsePublicUrl } from '../../api/extract-link'
+import { resetRateLimitForTests } from '../../api/rate-limit'
 
 const pageHtml = '<html><head><title>Public Marketing OJT</title></head><body><main><h1>Marketing OJT</h1><p>Join a named company for an internship with a supervisor, clear work details, and an official application route.</p></main><script>ignore me</script></body></html>'
 const publicHost = async () => undefined
+
+afterEach(() => {
+  resetRateLimitForTests()
+})
 
 function responseDouble() {
   const output = { statusCode: 0, body: undefined as Record<string, unknown> | undefined, headers: {} as Record<string, string> }
@@ -74,5 +79,18 @@ describe('public-link extractor safeguards', () => {
     const invalid = responseDouble()
     await extractLink({ method: 'POST', body: {} } as VercelRequest, invalid.response)
     expect(invalid.output.statusCode).toBe(400)
+  })
+
+  it('rate limits repeated public-link extraction requests', async () => {
+    for (let index = 0; index < 8; index += 1) {
+      const { response, output } = responseDouble()
+      await extractLink({ method: 'POST', headers: {}, body: { url: 'not-a-url' } } as VercelRequest, response)
+      expect(output.statusCode).toBe(400)
+    }
+
+    const limited = responseDouble()
+    await extractLink({ method: 'POST', headers: {}, body: { url: 'not-a-url' } } as VercelRequest, limited.response)
+    expect(limited.output.statusCode).toBe(429)
+    expect(limited.output.headers['Retry-After']).toBeDefined()
   })
 })

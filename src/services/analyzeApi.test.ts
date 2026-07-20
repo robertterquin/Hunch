@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { resetRateLimitForTests } from '../../api/rate-limit'
 
 vi.mock('openai', () => ({
   default: class MockOpenAI {
@@ -35,6 +36,7 @@ const validText = 'A school placement listing with a named supervisor and a clea
 afterEach(() => {
   delete process.env.OPENAI_API_KEY
   delete process.env.OPENAI_MODEL
+  resetRateLimitForTests()
 })
 
 describe('analyze API contract', () => {
@@ -78,5 +80,20 @@ describe('analyze API contract', () => {
     expect(classifyOpenAIError({ name: 'APIConnectionTimeoutError' }).status).toBe(504)
     expect(classifyOpenAIError({ status: 429 }).status).toBe(429)
     expect(classifyOpenAIError({ name: 'InvalidStructuredOutputError', message: 'secret prompt' }).message).not.toContain('secret')
+  })
+
+  it('rate limits repeated anonymous explanation requests', async () => {
+    process.env.OPENAI_API_KEY = 'test-key-not-a-secret'
+    for (let index = 0; index < 12; index += 1) {
+      const { response, output } = responseDouble()
+      await analyze({ method: 'POST', headers: {}, body: { listingText: validText, ruleFindings: [], riskScore: 0, riskLevel: 'low-risk', missingInformation: [] } } as VercelRequest, response)
+      expect(output.statusCode).toBe(200)
+    }
+
+    const limited = responseDouble()
+    await analyze({ method: 'POST', headers: {}, body: { listingText: validText, ruleFindings: [], riskScore: 0, riskLevel: 'low-risk', missingInformation: [] } } as VercelRequest, limited.response)
+    expect(limited.output.statusCode).toBe(429)
+    expect(limited.output.headers['Retry-After']).toBeDefined()
+    expect(limited.output.body?.message).not.toContain('test-key')
   })
 })
