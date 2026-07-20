@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { ArrowRight, Check, CircleAlert, FileText, Link as LinkIcon, LoaderCircle, RotateCcw } from 'lucide-react'
+import { ArrowRight, Check, CircleAlert, FileText, Link as LinkIcon, LoaderCircle, RotateCcw, Sparkles } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { AnalysisReportView } from '../components/AnalysisReportView'
 import { useAppState } from '../app/stateContext'
@@ -119,8 +119,8 @@ export function AnalyzePage() {
       <section className="page-heading">
         <div>
           <p className="eyebrow">Analyze</p>
-          <h1>Check a listing before you apply.</h1>
-          <p className="page-intro">Paste an OJT or internship post, or analyze a readable public listing link, to find visible risk signals and practical next steps.</p>
+          <h1>Let’s check this opportunity.</h1>
+          <p className="page-intro">Bring an OJT or internship post, and Hunch will help you spot signals, ask better questions, and choose your next step.</p>
         </div>
         <div className="status-note" role="status" aria-live="polite"><span className="status-dot" aria-hidden="true" /><span>{isAnalyzing ? 'Checking your listing' : 'Anonymous analysis is available'}</span></div>
       </section>
@@ -165,10 +165,11 @@ export function AnalyzePage() {
         </form>
 
         <aside className="panel checks-panel" aria-label="What Hunch checks">
+          <div className="signal-motif" aria-hidden="true"><Sparkles size={16} /><span /><span /><span /></div>
           <p className="eyebrow">Step 2 of 2</p>
           <h2>Understand the signal, then choose your next step.</h2>
           <ul className="signal-list">{['Payment requests', 'Recruiter email details', 'Company and role clarity', 'Urgency and chat-only hiring', 'Early sensitive-data requests'].map((item) => <li key={item}><Check size={16} aria-hidden="true" />{item}</li>)}</ul>
-          <div className="preview-note"><span className="preview-score">--</span><span><strong>Your result appears here.</strong><br />The score stays next to its evidence and checklist.</span></div>
+          <div className="preview-note"><span className="preview-score">--</span><span><strong>Your result will appear here.</strong><br />Hunch keeps the score next to its evidence and checklist.</span></div>
         </aside>
       </section>
 

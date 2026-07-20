@@ -24,7 +24,7 @@ export function AnalysisReportView({ report, onToggleChecklist, onSave, isSaved 
     <section className={`panel report-panel risk-${report.riskLevel}${compact ? ' report-compact' : ''}`} aria-labelledby={`report-${report.id}`}>
       <div className="report-header">
         <div>
-          <p className="eyebrow">Result</p>
+          <p className="eyebrow eyebrow-with-mark"><Sparkles size={13} aria-hidden="true" />Your check-in</p>
           <div className="result-title-row">
             <h2 id={`report-${report.id}`}>{riskLabels[report.riskLevel]}</h2>
             <span className={`risk-pill risk-pill-${report.riskLevel}`}>{report.confidence} confidence</span>
@@ -69,6 +69,10 @@ export function AnalysisReportView({ report, onToggleChecklist, onSave, isSaved 
         </div>
 
         <div className="report-side-column">
+          <div className="report-guidance">
+            <div className="guidance-icon" aria-hidden="true"><Check size={16} /></div>
+            <div><p className="section-label">Your next step</p><p className="uncertainty-copy">Use the evidence below to decide what to verify before you apply.</p></div>
+          </div>
           <div>
             <div className="section-heading-row"><p className="section-label">Score breakdown</p><span className="count-label">capped at 100</span></div>
             <div className="breakdown-list">{report.scoreBreakdown.map((item) => <div className="breakdown-row" key={item.ruleId}><span>{item.label}</span><strong>+{item.scoreImpact}</strong></div>)}</div>
