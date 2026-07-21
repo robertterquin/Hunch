@@ -1,15 +1,15 @@
-import { BookOpen, CheckSquare, FileSearch, Settings, ShieldCheck } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import { Suspense } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useAppState } from './stateContext'
 import hunchLogo from '../assets/hunch-logo.svg'
 
 const navigation = [
-  { label: 'Analyze', to: '/analyze', icon: FileSearch },
-  { label: 'Saved', to: '/saved', icon: ShieldCheck },
-  { label: 'Scam Guide', to: '/guide', icon: BookOpen },
-  { label: 'Checklist', to: '/checklist', icon: CheckSquare },
-  { label: 'Settings', to: '/settings', icon: Settings },
+  { label: 'Analyze', to: '/analyze', icon: 'mdi:file-search-outline' },
+  { label: 'Saved', to: '/saved', icon: 'mdi:shield-check-outline' },
+  { label: 'Scam Guide', to: '/guide', icon: 'mdi:book-open-page-variant-outline' },
+  { label: 'Checklist', to: '/checklist', icon: 'mdi:checkbox-marked-outline' },
+  { label: 'Settings', to: '/settings', icon: 'mdi:cog-outline' },
 ]
 
 export function AppShell() {
@@ -24,13 +24,13 @@ export function AppShell() {
         </Link>
 
         <nav className="desktop-nav" aria-label="Primary navigation">
-          {navigation.map(({ label, to, icon: Icon }) => (
+          {navigation.map(({ label, to, icon }) => (
             <NavLink
               key={to}
               to={to}
               className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             >
-              <span className="nav-icon"><Icon size={16} aria-hidden="true" /></span>
+              <span className="nav-icon"><Icon icon={icon} width="16" height="16" aria-hidden="true" /></span>
               {label}
             </NavLink>
           ))}
@@ -48,13 +48,13 @@ export function AppShell() {
       </main>
 
       <nav className="mobile-nav" aria-label="Mobile navigation">
-        {navigation.slice(0, 4).map(({ label, to, icon: Icon }) => (
+        {navigation.slice(0, 4).map(({ label, to, icon }) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) => `mobile-nav-link${isActive ? ' active' : ''}`}
           >
-            <Icon size={18} aria-hidden="true" />
+            <Icon icon={icon} width="18" height="18" aria-hidden="true" />
             <span>{label}</span>
           </NavLink>
         ))}
