@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { validateSignIn, validateSignUp } from './authValidation'
+import { validateSignIn, validateSignUp } from '../services/authValidation'
 
 describe('password account validation', () => {
   it('requires a name, email, an eight-character password, and matching confirmation when registering', () => {

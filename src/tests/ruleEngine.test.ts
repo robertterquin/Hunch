@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { analysisFixtures } from '../data/analysisFixtures'
-import { runRuleEngine } from './ruleEngine'
+import { runRuleEngine } from '../services/ruleEngine'
 
 describe('rule engine fixture calibration', () => {
   for (const fixture of analysisFixtures) {

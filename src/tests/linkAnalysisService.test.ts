@@ -2,9 +2,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const { analyzeListingWithExplanation } = vi.hoisted(() => ({ analyzeListingWithExplanation: vi.fn() }))
 
-vi.mock('./openaiAnalysisService', () => ({ analyzeListingWithExplanation }))
+vi.mock('../services/openaiAnalysisService', () => ({ analyzeListingWithExplanation }))
 
-import { analyzePublicLink } from './linkAnalysisService'
+import { analyzePublicLink } from '../services/linkAnalysisService'
 
 afterEach(() => {
   vi.unstubAllGlobals()

@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { analysisFixtures } from '../data/analysisFixtures'
-import { analyzeListingWithExplanation } from './openaiAnalysisService'
-import { OpenAIExplanationSchema } from './openaiAnalysisSchema'
-import { runRuleEngine } from './ruleEngine'
+import { analyzeListingWithExplanation } from '../services/openaiAnalysisService'
+import { OpenAIExplanationSchema } from '../services/openaiAnalysisSchema'
+import { runRuleEngine } from '../services/ruleEngine'
 
 const suspiciousFixture = analysisFixtures.find((fixture) => fixture.id === 'suspicious-01')
 
