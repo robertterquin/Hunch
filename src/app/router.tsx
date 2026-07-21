@@ -3,15 +3,14 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { AppShell } from './AppShell'
 import { AnalyzePage } from '../pages/AnalyzePage'
 
-const supportingPages = () => import('../pages/SupportingPages')
 const pages = {
-  AuthPage: lazy(async () => ({ default: (await supportingPages()).AuthPage })),
-  ComparePage: lazy(async () => ({ default: (await supportingPages()).ComparePage })),
-  GuidePage: lazy(async () => ({ default: (await supportingPages()).GuidePage })),
-  ChecklistPage: lazy(async () => ({ default: (await supportingPages()).ChecklistPage })),
-  SavedAnalysisPage: lazy(async () => ({ default: (await supportingPages()).SavedAnalysisPage })),
-  SavedPage: lazy(async () => ({ default: (await supportingPages()).SavedPage })),
-  SettingsPage: lazy(async () => ({ default: (await supportingPages()).SettingsPage })),
+  AuthPage: lazy(() => import('../pages/AuthPage').then((module) => ({ default: module.AuthPage }))),
+  ComparePage: lazy(() => import('../pages/ComparePage').then((module) => ({ default: module.ComparePage }))),
+  GuidePage: lazy(() => import('../pages/GuidePage').then((module) => ({ default: module.GuidePage }))),
+  ChecklistPage: lazy(() => import('../pages/ChecklistPage').then((module) => ({ default: module.ChecklistPage }))),
+  SavedAnalysisPage: lazy(() => import('../pages/SavedAnalysisPage').then((module) => ({ default: module.SavedAnalysisPage }))),
+  SavedPage: lazy(() => import('../pages/SavedPage').then((module) => ({ default: module.SavedPage }))),
+  SettingsPage: lazy(() => import('../pages/SettingsPage').then((module) => ({ default: module.SettingsPage }))),
 }
 
 export const router = createBrowserRouter([
