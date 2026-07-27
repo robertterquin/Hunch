@@ -1,6 +1,7 @@
 import { Icon } from '@iconify/react'
+import { AnimatePresence, MotionConfig, motion } from 'motion/react'
 import { Suspense } from 'react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAppState } from './stateContext'
 import hunchLogo from '../assets/hunch-logo.svg'
 
@@ -14,8 +15,11 @@ const navigation = [
 
 export function AppShell() {
   const { user, isAuthLoading } = useAppState()
+  const location = useLocation()
+
   return (
-    <div className="app-shell">
+    <MotionConfig reducedMotion="user">
+      <div className="app-shell">
       <a className="skip-link" href="#main-content">Skip to main content</a>
       <header className="topbar">
         <Link className="brand" to="/analyze" aria-label="Hunch Analyze">
@@ -42,9 +46,20 @@ export function AppShell() {
       </header>
 
       <main className="app-main" id="main-content" tabIndex={-1}>
-        <Suspense fallback={<div className="route-loading" role="status" aria-live="polite">Loading this page...</div>}>
-          <Outlet />
-        </Suspense>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={location.pathname}
+            className="route-frame"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.22, ease: 'easeOut' }}
+          >
+            <Suspense fallback={<div className="route-loading" role="status" aria-live="polite">Loading this page...</div>}>
+              <Outlet />
+            </Suspense>
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       <nav className="mobile-nav" aria-label="Mobile navigation">
@@ -59,6 +74,7 @@ export function AppShell() {
           </NavLink>
         ))}
       </nav>
-    </div>
+      </div>
+    </MotionConfig>
   )
 }

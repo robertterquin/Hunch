@@ -15,6 +15,7 @@
 .topbar-actions { display: flex; align-items: center; gap: 8px; }
 .account-link { display: inline-flex; align-items: center; min-height: 34px; color: var(--color-text-secondary); font-size: 14px; line-height: 1; text-decoration: none; }
 .app-main { width: min(1180px, 100%); margin: 0 auto; padding: 42px 32px 96px; }
+.route-frame { min-height: 320px; }
 .route-loading { display: grid; min-height: 320px; place-items: center; color: var(--color-text-muted); font-size: 14px; }
 .page-stack, .support-page { display: grid; gap: 24px; }
 .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
