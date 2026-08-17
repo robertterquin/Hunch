@@ -19,6 +19,7 @@ export function AppShell() {
   const displayName = typeof user?.user_metadata?.display_name === 'string' ? user.user_metadata.display_name.trim() : ''
   const firstName = displayName.split(/\s+/)[0]
   const accountInitial = (firstName?.[0] ?? user?.email?.[0] ?? 'U').toUpperCase()
+  const accountName = displayName || user?.email?.split('@')[0] || 'Sign in'
 
   return (
     <MotionConfig reducedMotion="user">
@@ -45,7 +46,7 @@ export function AppShell() {
         <div className="topbar-actions">
           <Link className="account-link" to={user ? '/settings' : '/auth/sign-in'} aria-label={user ? 'Open account settings' : 'Sign in'}>
             {user && <span className="account-avatar" aria-hidden="true">{accountInitial}</span>}
-            <span className="account-name">{isAuthLoading ? 'Checking...' : user?.email?.split('@')[0] ?? 'Sign in'}</span>
+            <span className="account-name">{isAuthLoading ? 'Checking...' : accountName}</span>
           </Link>
         </div>
       </header>

@@ -14,6 +14,7 @@
 .topbar-actions { display: flex; align-items: center; gap: 10px; }
 .account-avatar { display: grid; width: 30px; height: 30px; flex: 0 0 auto; place-items: center; color: var(--color-action-hover); border: 1px solid rgba(138, 180, 255, 0.42); border-radius: 50%; background: var(--color-action-surface); font-size: 12px; font-weight: 800; }
 .account-link { display: inline-flex; align-items: center; gap: 10px; min-height: 34px; color: var(--color-text-secondary); font-size: 14px; line-height: 1; text-decoration: none; }
+.account-name { max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .app-main { width: min(1180px, 100%); margin: 0 auto; padding: 42px 32px 96px; }
 .route-frame { min-height: 320px; }
 .route-loading { display: grid; min-height: 320px; place-items: center; color: var(--color-text-muted); font-size: 14px; }
