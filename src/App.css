@@ -213,7 +213,7 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .selection-count span:first-child { color: var(--color-text); font-family: var(--font-mono); font-size: 28px; font-weight: 700; }
 .selection-count span:last-child { color: var(--color-text-muted); font-size: 13px; }
 .is-disabled { opacity: 0.55; pointer-events: none; }
-.compare-selector { max-width: 680px; }
+.compare-selector { width: 100%; max-width: none; }
 .compare-options { display: grid; gap: 8px; }
 .compare-option { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-control); cursor: pointer; }
 .compare-option.is-selected { border-color: var(--color-action); background: var(--color-action-surface); }
