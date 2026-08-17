@@ -24,7 +24,6 @@ export function AppShell() {
       <header className="topbar">
         <Link className="brand" to="/analyze" aria-label="Hunch Analyze">
           <img className="brand-logo" src={hunchLogo} alt="Hunch" />
-          <span className="brand-note">Pause. Check. Apply.</span>
         </Link>
 
         <nav className="desktop-nav" aria-label="Primary navigation">

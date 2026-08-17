@@ -147,10 +147,6 @@ export function AnalyzePage() {
           <h1>Let’s check this opportunity.</h1>
           <p className="page-intro">Bring an OJT or internship post, and Hunch will help you spot signals, ask better questions, and choose your next step.</p>
         </div>
-        <div className="page-actions">
-          <button className="button button-secondary" type="button" onClick={loadSample} disabled={isAnalyzing}><FileText size={16} aria-hidden="true" />Use a sample listing</button>
-          <div className="status-note" role="status" aria-live="polite"><span className={`status-dot${isAnalyzing ? ' is-busy' : ''}`} aria-hidden="true" /><span>{isAnalyzing ? loadingCopy?.label : 'Anonymous analysis is available'}</span></div>
-        </div>
       </section>
 
       {notice && <div className="notice notice-success" role="status" aria-live="polite"><Check size={16} aria-hidden="true" />{notice}</div>}
@@ -200,6 +196,7 @@ export function AnalyzePage() {
 
           <div className="button-row">
             <button className="button button-secondary" type="button" onClick={clearInput} disabled={isAnalyzing || (!(inputMode === 'paste' ? text : linkUrl) && !activeReport)}><RotateCcw size={16} aria-hidden="true" />Clear</button>
+            {inputMode === 'paste' && <button className="button button-secondary" type="button" onClick={loadSample} disabled={isAnalyzing}><FileText size={16} aria-hidden="true" />Try a sample</button>}
             <button className="button button-primary" type="submit" disabled={!canAnalyze}>{isAnalyzing ? <LoaderCircle className="spin" size={16} aria-hidden="true" /> : <ArrowRight size={16} aria-hidden="true" />}{isAnalyzing ? 'Checking' : inputMode === 'paste' ? 'Analyze post' : 'Analyze link'}</button>
           </div>
           {loadingCopy && <div className="analysis-progress" role="status" aria-live="polite">
