@@ -30,7 +30,12 @@ export function AnalysisReportView({ report, onToggleChecklist, onSave, isSaved 
             <span className={`risk-pill risk-pill-${report.riskLevel}`}>{report.confidence} confidence</span>
           </div>
           <p className="report-summary">{report.summary}</p>
-          {report.sourceUrl && <a className="report-source-link" href={report.sourceUrl} target="_blank" rel="noreferrer"><ExternalLink size={14} aria-hidden="true" />Open analyzed source</a>}
+          {report.sourceUrl && <div className="report-source">
+            <p className="section-label">Source URL</p>
+            <a className="report-source-link" href={report.sourceUrl} target="_blank" rel="noreferrer" title="Open the original public listing">
+              <ExternalLink size={14} aria-hidden="true" /><span>{report.sourceUrl}</span>
+            </a>
+          </div>}
         </div>
         <div className="report-header-side">
           <div className="score-block">

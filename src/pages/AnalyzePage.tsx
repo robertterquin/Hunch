@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { ArrowRight, Check, CircleAlert, FileText, Link as LinkIcon, LoaderCircle, RotateCcw, Sparkles } from 'lucide-react'
+import { ArrowRight, Check, CircleAlert, FileText, Link as LinkIcon, LoaderCircle, LockKeyhole, RotateCcw, Sparkles } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { AnalysisReportView } from '../components/AnalysisReportView'
 import { useAppState } from '../app/stateContext'
@@ -201,7 +201,8 @@ export function AnalyzePage() {
             <div className="analysis-progress-heading"><span className="analysis-progress-icon"><LoaderCircle className="spin" size={16} aria-hidden="true" /></span><span><strong>{loadingCopy.label}</strong><small>{loadingCopy.detail}</small></span></div>
             <div className="analysis-progress-track" aria-hidden="true"><span className={analysisStage === 'explaining' ? 'is-explaining' : ''} /></div>
           </div>}
-          <p className="trust-note">Hunch provides an estimate based on visible signals. It does not prove whether a listing is legitimate.</p>
+          <p className="trust-note">Hunch detects warning signals, not definite scams. A low score is not proof that a listing is safe.</p>
+          <p className="privacy-note"><LockKeyhole size={15} aria-hidden="true" /><span><strong>Privacy note:</strong> Pasted text is not saved unless you choose to save the report.</span></p>
         </form>
 
         <aside className="panel checks-panel" aria-label="What Hunch checks">
