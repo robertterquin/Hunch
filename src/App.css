@@ -154,6 +154,20 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .notice { display: flex; align-items: center; gap: 9px; padding: 11px 13px; border: 1px solid var(--color-border); border-radius: var(--radius-control); font-size: 13px; }
 .notice-success { color: var(--color-risk-low-text); border-color: var(--color-risk-low-border); background: var(--color-risk-low-surface); }
 .notice-error { color: var(--color-risk-high-text); border-color: var(--color-risk-high-border); background: var(--color-risk-high-surface); }
+.modal-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: rgba(4, 7, 14, 0.76); animation: modal-fade-in 160ms ease both; }
+.confirm-dialog { width: min(100%, 460px); padding: 22px; border: 1px solid var(--color-border-muted); border-radius: var(--radius-card); background: var(--color-surface); box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42); animation: modal-rise-in 180ms ease both; }
+.confirm-dialog-heading { display: flex; align-items: flex-start; gap: 12px; }
+.confirm-dialog-icon { display: grid; width: 36px; height: 36px; flex: 0 0 auto; place-items: center; color: var(--color-action-hover); border: 1px solid rgba(138, 180, 255, 0.34); border-radius: 10px; background: var(--color-action-surface); }
+.confirm-dialog-icon.is-danger { color: var(--color-risk-high-text); border-color: var(--color-risk-high-border); background: var(--color-risk-high-surface); }
+.confirm-dialog-heading > div { min-width: 0; flex: 1; }
+.confirm-dialog-heading .eyebrow { margin: 1px 0 5px; }
+.confirm-dialog-heading h2 { margin: 0; font-size: 20px; line-height: 1.25; }
+.modal-close { display: grid; width: 32px; height: 32px; flex: 0 0 auto; place-items: center; padding: 0; color: var(--color-text-muted); border: 1px solid transparent; border-radius: var(--radius-control); background: transparent; cursor: pointer; }
+.modal-close:hover { color: var(--color-text); border-color: var(--color-border-muted); background: var(--color-surface-2); }
+.confirm-dialog-description { margin: 18px 0 0; color: var(--color-text-secondary); font-size: 14px; line-height: 1.55; }
+.confirm-dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+.button-danger { color: #fff1f2; border-color: var(--color-risk-high-border); background: #b91c1c; }
+.button-danger:hover:not(:disabled) { border-color: #f87171; background: #dc2626; }
 .page-actions, .detail-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .text-link { display: inline-flex; align-items: center; gap: 5px; color: var(--color-action-hover); font-family: var(--font-sans); font-size: 13px; font-weight: 700; text-decoration: none; }
 .text-link:hover { color: var(--color-text); }
@@ -270,6 +284,8 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .mobile-nav { display: none; }
 .spin { animation: spin 900ms linear infinite; }
 @keyframes report-arrive { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modal-rise-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes progress-scan { 0% { transform: translateX(-110%); } 100% { transform: translateX(205%); } }
 @media (prefers-reduced-motion: reduce) {
@@ -322,6 +338,9 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
   .auth-page .page-heading h1 { font-size: 34px; }
   .auth-panel { padding: 22px 20px; }
   .auth-links { justify-content: flex-start; }
+  .confirm-dialog { padding: 18px; }
+  .confirm-dialog-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .confirm-dialog-actions .button { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }

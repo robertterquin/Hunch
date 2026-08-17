@@ -50,14 +50,14 @@ interface ChecklistRow {
 }
 
 function requireClient() {
-  if (!supabase) throw new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.')
+  if (!supabase) throw new Error('Account storage is not configured. Add the required account environment variables.')
   return supabase
 }
 
 function saveErrorMessage(error: { message?: string } | null) {
   const message = error?.message ?? ''
   if (/source_url/i.test(message) && /(column|schema cache|could not find)/i.test(message)) {
-    return 'Your Supabase database needs the Phase 11 update before public-link reports can be saved. Run supabase/master.sql in the Supabase SQL Editor, then try again.'
+    return 'Account storage needs the latest database update before public-link reports can be saved. Run the latest database setup script, then try again.'
   }
   return message || 'The report could not be saved.'
 }
@@ -129,7 +129,7 @@ export async function signUpWithPassword(displayName: string, email: string, pas
   if (error) throw error
 
   if (!data.user || !data.session) {
-    throw new Error('Account created, but it cannot be used yet. Disable Confirm email in Supabase Auth settings, then try again.')
+    throw new Error('Account created, but it cannot be used yet. Disable email confirmation in the authentication settings, then try again.')
   }
 
   const { error: profileError } = await client.from('profiles').upsert({ id: data.user.id, display_name: displayName.trim() })

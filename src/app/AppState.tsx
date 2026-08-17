@@ -32,7 +32,7 @@ function authErrorMessage(error: unknown, fallback: string) {
   const message = error instanceof Error ? error.message : ''
   if (/invalid login credentials/i.test(message)) return 'Email or password is incorrect.'
   if (/user already registered/i.test(message)) return 'An account with this email already exists. Sign in instead.'
-  if (/email not confirmed/i.test(message)) return 'Email confirmation is enabled in Supabase. Disable it for immediate account access.'
+  if (/email not confirmed/i.test(message)) return 'Email confirmation is enabled. Disable it in the account authentication settings for immediate access.'
   return message || fallback
 }
 

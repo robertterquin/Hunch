@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { ArrowRight, Check, CircleAlert, FileText, Link as LinkIcon, LoaderCircle, LockKeyhole, RotateCcw, Sparkles } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { AnalysisReportView } from '../components/AnalysisReportView'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { useAppState } from '../app/stateContext'
 import { getFixtureById } from '../data/analysisFixtures'
 import { analyzePublicLink } from '../services/linkAnalysisService'
@@ -39,6 +40,7 @@ export function AnalyzePage() {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [analysisStage, setAnalysisStage] = useState<AnalysisStage>('idle')
+  const [isClearDialogOpen, setIsClearDialogOpen] = useState(false)
   const isAnalyzing = analysisStage !== 'idle'
 
   useEffect(() => {
@@ -103,14 +105,21 @@ export function AnalyzePage() {
     setNotice('A short sample listing is ready. Analyze it to see how Hunch explains the signals.')
   }
 
-  const clearInput = () => {
-    const hasInput = inputMode === 'paste' ? Boolean(text) : Boolean(linkUrl)
-    if ((hasInput || activeReport) && !window.confirm('Clear this listing and its current result?')) return
+  const resetInput = () => {
     setText('')
     setLinkUrl('')
     setActiveReport(null)
     setError('')
     setNotice('')
+  }
+
+  const clearInput = () => {
+    const hasInput = inputMode === 'paste' ? Boolean(text) : Boolean(linkUrl)
+    if (hasInput || activeReport) {
+      setIsClearDialogOpen(true)
+      return
+    }
+    resetInput()
   }
 
   const characterCount = text.length
@@ -126,7 +135,7 @@ export function AnalyzePage() {
     }
     const result = await saveReport(activeReport)
     if (result.error) setError(result.error)
-    else setNotice('Report saved privately to your Supabase account.')
+    else setNotice('Report saved privately to your account.')
   }
 
   return (
@@ -207,6 +216,7 @@ export function AnalyzePage() {
       </section>
 
       {activeReport && <AnalysisReportView report={activeReport} onToggleChecklist={(checklistId) => toggleChecklistItem(activeReport.id, checklistId)} onSave={() => void handleSave()} isSaved={isCurrentReportSaved} />}
+      <ConfirmDialog open={isClearDialogOpen} title="Clear this listing?" description="This will remove the current listing and its unsaved analysis from this session." confirmLabel="Clear listing" danger onCancel={() => setIsClearDialogOpen(false)} onConfirm={() => { setIsClearDialogOpen(false); resetInput() }} />
     </div>
   )
 }
