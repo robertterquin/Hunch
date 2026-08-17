@@ -16,6 +16,9 @@ const navigation = [
 export function AppShell() {
   const { user, isAuthLoading } = useAppState()
   const location = useLocation()
+  const displayName = typeof user?.user_metadata?.display_name === 'string' ? user.user_metadata.display_name.trim() : ''
+  const firstName = displayName.split(/\s+/)[0]
+  const accountInitial = (firstName?.[0] ?? user?.email?.[0] ?? 'U').toUpperCase()
 
   return (
     <MotionConfig reducedMotion="user">
@@ -40,7 +43,10 @@ export function AppShell() {
         </nav>
 
         <div className="topbar-actions">
-          <Link className="account-link" to={user ? '/settings' : '/auth/sign-in'}>{isAuthLoading ? 'Checking...' : user?.email?.split('@')[0] ?? 'Sign in'}</Link>
+          <Link className="account-link" to={user ? '/settings' : '/auth/sign-in'} aria-label={user ? 'Open account settings' : 'Sign in'}>
+            {user && <span className="account-avatar" aria-hidden="true">{accountInitial}</span>}
+            <span className="account-name">{isAuthLoading ? 'Checking...' : user?.email?.split('@')[0] ?? 'Sign in'}</span>
+          </Link>
         </div>
       </header>
 
