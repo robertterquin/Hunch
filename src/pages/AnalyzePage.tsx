@@ -6,8 +6,6 @@ import { useAppState } from '../app/stateContext'
 import { getFixtureById } from '../data/analysisFixtures'
 import { analyzePublicLink } from '../services/linkAnalysisService'
 import { analyzeListingWithExplanation } from '../services/openaiAnalysisService'
-import { buildRuleOnlyReport } from '../services/mockAnalysisService'
-import { runRuleEngine } from '../services/ruleEngine'
 import type { AnalysisReport, SourceType } from '../types/analysis'
 
 const sourceOptions: Array<{ value: SourceType; label: string }> = [
@@ -76,16 +74,10 @@ export function AnalyzePage() {
       return
     }
 
+    setActiveReport(null)
     setAnalysisStage(inputMode === 'paste' ? 'scanning' : 'reading-link')
     try {
       if (inputMode === 'paste') {
-        const normalizedText = text.trim()
-        const quickReport = buildRuleOnlyReport(
-          { text: normalizedText, sourceType },
-          runRuleEngine(normalizedText),
-        )
-        setActiveReport(quickReport)
-        setNotice('Your confirmed signals are ready to review.')
         await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()))
         setAnalysisStage('explaining')
       }
