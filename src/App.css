@@ -24,8 +24,20 @@
 .eyebrow, .section-label { margin: 0 0 8px; color: var(--color-action-hover); font-size: 11px; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase; }
 .status-note { display: inline-flex; align-items: center; gap: 8px; padding: 9px 12px; color: var(--color-text-secondary); border: 1px solid var(--color-border); border-radius: 999px; font-size: 13px; white-space: nowrap; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); }
+.status-dot.is-busy { background: var(--color-yellow); animation: status-pulse 1.1s ease-in-out infinite; }
 .foundation-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.85fr); gap: 20px; }
 .analyzer-layout { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.8fr); gap: 20px; align-items: start; }
+.workflow-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 0; margin: 0; list-style: none; }
+.workflow-step { display: flex; align-items: flex-start; gap: 10px; min-height: 76px; padding: 14px; border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); transition: border-color var(--motion-fast) ease, background var(--motion-fast) ease; }
+.workflow-step.is-current { border-color: var(--color-action); background: var(--color-action-surface); }
+.workflow-step.is-complete { border-color: var(--color-risk-low-border); }
+.workflow-number { display: grid; width: 25px; height: 25px; flex: 0 0 auto; place-items: center; color: var(--color-text-muted); border: 1px solid var(--color-border-muted); border-radius: 50%; font-family: var(--font-mono); font-size: 11px; font-weight: 800; }
+.workflow-step.is-current .workflow-number { color: var(--color-action-text); border-color: var(--color-action); background: var(--color-action); }
+.workflow-step.is-complete .workflow-number { color: var(--color-risk-low-text); border-color: var(--color-risk-low-border); background: var(--color-risk-low-surface); }
+.workflow-step strong, .workflow-step small { display: block; }
+.workflow-step strong { color: var(--color-text-secondary); font-size: 13px; }
+.workflow-step.is-current strong { color: var(--color-text); }
+.workflow-step small { margin-top: 4px; color: var(--color-text-muted); font-size: 12px; line-height: 1.4; }
 .panel, .support-card { border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); box-shadow: var(--shadow-soft); }
 .panel { padding: 24px; }
 .support-card { padding: 20px; }
@@ -54,6 +66,15 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .button-secondary { color: var(--color-text-secondary); border-color: var(--color-border-muted); background: transparent; }
 .button-secondary:hover:not(:disabled) { color: var(--color-text); border-color: var(--color-action); background: var(--color-action-surface); }
 .button-compact { min-height: 34px; padding-inline: 11px; }
+.analysis-progress { display: grid; gap: 10px; margin-top: 16px; padding: 12px; border: 1px solid var(--color-action); border-radius: var(--radius-control); background: var(--color-action-surface); }
+.analysis-progress-heading { display: flex; align-items: center; gap: 9px; }
+.analysis-progress-icon { display: grid; width: 27px; height: 27px; flex: 0 0 auto; place-items: center; color: var(--color-action-hover); border: 1px solid var(--color-action); border-radius: 50%; background: var(--color-surface); }
+.analysis-progress-heading strong, .analysis-progress-heading small { display: block; }
+.analysis-progress-heading strong { color: var(--color-text); font-size: 13px; }
+.analysis-progress-heading small { margin-top: 3px; color: var(--color-text-muted); font-size: 12px; line-height: 1.4; }
+.analysis-progress-track { height: 4px; overflow: hidden; border-radius: 999px; background: var(--color-surface-2); }
+.analysis-progress-track span { display: block; width: 52%; height: 100%; border-radius: inherit; background: var(--color-action); animation: progress-scan 1.2s ease-in-out infinite; }
+.analysis-progress-track span.is-explaining { width: 76%; animation-duration: 1.6s; }
 .inline-error, .trust-note { display: flex; align-items: flex-start; gap: 8px; margin: 16px 0 0; font-size: 13px; line-height: 1.45; }
 .inline-error { color: var(--color-risk-high-text); }
 .trust-note, .muted-copy { color: var(--color-text-muted); }
@@ -248,6 +269,8 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .spin { animation: spin 900ms linear infinite; }
 @keyframes report-arrive { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes status-pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+@keyframes progress-scan { 0% { transform: translateX(-110%); } 100% { transform: translateX(205%); } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.001ms !important; animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
 }
@@ -260,6 +283,7 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
   .page-heading { display: grid; align-items: start; }
   .auth-page { width: 100%; margin-top: 0; }
   .foundation-grid, .analyzer-layout, .report-grid, .support-grid, .saved-layout, .guide-detail-grid, .full-checklist, .checklist-depth-grid { grid-template-columns: 1fr; }
+  .workflow-steps { grid-template-columns: 1fr; }
   .filter-row-secondary { grid-template-columns: 1fr; }
   .mobile-nav { position: fixed; right: 0; bottom: 0; left: 0; z-index: 10; display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); border-top: 1px solid var(--color-border); background: rgba(11, 16, 32, 0.98); }
   .mobile-nav-link { display: grid; justify-items: center; gap: 4px; padding: 6px 4px; border-radius: 6px; font-size: 10px; }
