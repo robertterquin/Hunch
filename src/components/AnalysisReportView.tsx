@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, ChevronDown, ChevronUp, CircleAlert, ExternalLink, Info, LockKeyhole, Sparkles } from 'lucide-react'
+import { Check, ChevronDown, ChevronUp, CircleAlert, ExternalLink, LockKeyhole, Sparkles } from 'lucide-react'
 import type { AnalysisReport } from '../types/analysis'
 
 const riskLabels = {
@@ -24,29 +24,31 @@ export function AnalysisReportView({ report, onToggleChecklist, onSave, isSaved 
     <section className={`panel report-panel risk-${report.riskLevel}${compact ? ' report-compact' : ''}`} aria-labelledby={`report-${report.id}`}>
       <div className="report-header">
         <div>
-          <p className="eyebrow eyebrow-with-mark"><Sparkles size={13} aria-hidden="true" />Your check-in</p>
+          <p className="eyebrow eyebrow-with-mark"><Sparkles size={13} aria-hidden="true" />Check result</p>
           <div className="result-title-row">
             <h2 id={`report-${report.id}`}>{riskLabels[report.riskLevel]}</h2>
             <span className={`risk-pill risk-pill-${report.riskLevel}`}>{report.confidence} confidence</span>
           </div>
           <p className="report-summary">{report.summary}</p>
           {report.sourceUrl && <a className="report-source-link" href={report.sourceUrl} target="_blank" rel="noreferrer"><ExternalLink size={14} aria-hidden="true" />Open analyzed source</a>}
-          <p className="explanation-status" role="status">
-            <Info size={13} aria-hidden="true" />
-            {report.explanationNote ?? 'This guidance is based on the details Hunch could confirm in the listing.'}
-          </p>
         </div>
-        <div className="score-block">
-          <strong>{report.riskScore}</strong>
-          <span>/ 100</span>
-          <small>risk estimate</small>
+        <div className="report-header-side">
+          <div className="score-block">
+            <strong>{report.riskScore}</strong>
+            <span>/ 100</span>
+            <small>risk estimate</small>
+          </div>
+          <div className="report-guidance">
+            <div className="guidance-icon" aria-hidden="true"><Check size={16} /></div>
+            <div><p className="section-label">What to do next</p><p className="uncertainty-copy">{report.studentAdvice}</p></div>
+          </div>
         </div>
       </div>
 
       <div className="report-grid">
         <div>
           <div className="section-heading-row">
-            <p className="section-label">Visible signals</p>
+            <div><p className="section-label">What we noticed</p><p className="report-subheading">Confirmed signals</p></div>
             <span className="count-label">{report.flags.length} found</span>
           </div>
           {report.flags.length > 0 ? (
@@ -65,25 +67,17 @@ export function AnalysisReportView({ report, onToggleChecklist, onSave, isSaved 
                 )
               })}
             </div>
-          ) : <p className="muted-copy">No major warning categories were found in this listing.</p>}
+          ) : <p className="muted-copy">No confirmed warning signals were found in this listing.</p>}
         </div>
 
         <div className="report-side-column">
-          <div className="report-guidance">
-            <div className="guidance-icon" aria-hidden="true"><Check size={16} /></div>
-            <div><p className="section-label">Your next step</p><p className="uncertainty-copy">Use the evidence below to decide what to verify before you apply.</p></div>
-          </div>
           <div>
-            <div className="section-heading-row"><p className="section-label">Score breakdown</p><span className="count-label">capped at 100</span></div>
+            <div className="section-heading-row"><p className="section-label">How the score adds up</p><span className="count-label">capped at 100</span></div>
             <div className="breakdown-list">{report.scoreBreakdown.map((item) => <div className="breakdown-row" key={item.ruleId}><span>{item.label}</span><strong>+{item.scoreImpact}</strong></div>)}</div>
           </div>
           <div>
-            <p className="section-label">What is still unclear</p>
+            <p className="section-label">Missing information</p>
             {report.missingInformation.length > 0 ? <ul className="missing-list">{report.missingInformation.map((item) => <li key={item}>{item}</li>)}</ul> : <p className="muted-copy">The post includes the main details Hunch can check.</p>}
-          </div>
-          <div>
-            <p className="section-label">Practical advice</p>
-            <p className="uncertainty-copy">{report.studentAdvice}</p>
           </div>
           <div>
             <div className="section-heading-row"><p className="section-label">Before applying</p><span className="count-label">{completedCount}/{report.checklist.length}</span></div>

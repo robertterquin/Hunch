@@ -25,9 +25,9 @@ type AnalysisStage = 'idle' | 'reading-link' | 'scanning' | 'explaining'
 const shortSampleListing = 'URGENT: OJT students needed for easy online office work. Earn PHP 25,000/month. Pay a PHP 1,000 training fee today. Send your government ID to our recruiter on WhatsApp. Company details will be shared after payment.'
 
 const analysisStageCopy: Record<Exclude<AnalysisStage, 'idle'>, { label: string; detail: string }> = {
-  'reading-link': { label: 'Reading the public listing', detail: 'Extracting only the page text Hunch can review safely.' },
-  scanning: { label: 'Quick signal scan complete', detail: 'Your first score and visible warnings are ready below.' },
-  explaining: { label: 'Adding the AI explanation', detail: 'Connecting each warning to evidence and practical next steps.' },
+  'reading-link': { label: 'Reading the public listing', detail: 'Preparing the details Hunch can check safely.' },
+  scanning: { label: 'Checking the listing', detail: 'Looking for clear warning signs and missing details.' },
+  explaining: { label: 'Preparing your guidance', detail: 'Turning the checked details into clear next steps.' },
 }
 
 export function AnalyzePage() {
@@ -59,9 +59,7 @@ export function AnalyzePage() {
 
   const showReport = (nextReport: AnalysisReport) => {
     setActiveReport(nextReport)
-    setNotice(nextReport.explanationSource === 'openai'
-      ? 'Your check is ready. Review the details before deciding what to do next.'
-      : `${nextReport.explanationNote ?? 'Your check is ready with the findings Hunch could confirm.'} Review the details before deciding what to do next.`)
+    setNotice('Your result is ready. Review the signals and next steps before applying.')
   }
 
   const handleAnalyze = async (event: FormEvent<HTMLFormElement>) => {
@@ -87,7 +85,7 @@ export function AnalyzePage() {
           runRuleEngine(normalizedText),
         )
         setActiveReport(quickReport)
-        setNotice('Quick scan ready. Hunch is adding an AI explanation while you review the signals.')
+        setNotice('Your confirmed signals are ready to review.')
         await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()))
         setAnalysisStage('explaining')
       }

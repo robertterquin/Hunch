@@ -91,6 +91,7 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .risk-caution { border-left-color: var(--color-risk-caution-border); }
 .risk-high-risk { border-left-color: var(--color-risk-high-border); }
 .report-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.report-header-side { display: grid; grid-template-columns: minmax(104px, 0.52fr) minmax(220px, 1fr); gap: 12px; align-items: stretch; width: min(100%, 440px); min-width: 0; }
 .result-title-row, .section-heading-row, .list-heading, .checklist-progress { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .result-title-row { justify-content: flex-start; flex-wrap: wrap; }
 .risk-pill { display: inline-flex; align-items: center; width: fit-content; padding: 4px 8px; border: 1px solid currentColor; border-radius: 999px; font-size: 11px; font-weight: 750; line-height: 1.2; white-space: nowrap; }
@@ -98,14 +99,13 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .risk-pill-caution { color: var(--color-risk-caution-text); background: var(--color-risk-caution-surface); }
 .risk-pill-high-risk { color: var(--color-risk-high-text); background: var(--color-risk-high-surface); }
 .report-summary { max-width: 720px; color: var(--color-text-secondary); line-height: 1.55; }
-.report-guidance { display: flex; align-items: flex-start; gap: 10px; margin: 0 0 20px; padding: 13px 14px; border: 1px solid rgba(85, 230, 189, 0.28); border-radius: var(--radius-control); background: var(--color-mint-surface); }
+.report-guidance { display: flex; align-items: flex-start; gap: 10px; min-width: 0; padding: 13px 14px; border: 1px solid rgba(85, 230, 189, 0.28); border-radius: var(--radius-control); background: var(--color-mint-surface); }
 .guidance-icon { display: grid; width: 26px; height: 26px; flex: 0 0 auto; place-items: center; color: var(--color-action-text); border-radius: 8px; background: var(--color-mint); }
 .report-guidance .section-label { margin-bottom: 4px; color: var(--color-mint); }
 .report-guidance .uncertainty-copy { margin: 0; font-size: 13px; }
+.report-subheading { margin: -3px 0 0; color: var(--color-text-secondary); font-size: 13px; font-weight: 650; }
 .report-source-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--color-action-hover); font-size: 12px; font-weight: 700; text-decoration: none; }
 .report-source-link:hover { color: var(--color-text); }
-.explanation-status { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--color-text-muted); font-size: 11px; line-height: 1.4; }
-.explanation-status svg { color: var(--color-action-hover); flex: 0 0 auto; }
 .score-block { display: grid; min-width: 112px; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-control); text-align: right; }
 .score-block strong { font-family: var(--font-mono); font-size: 32px; line-height: 1; }
 .score-block span, .score-block small { color: var(--color-text-muted); font-size: 12px; }
@@ -276,6 +276,8 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
   .account-link { display: none; }
   .app-main { padding: 28px 18px 88px; }
   .page-heading { display: grid; align-items: start; }
+  .report-header { display: grid; }
+  .report-header-side { width: 100%; }
   .auth-page { width: 100%; margin-top: 0; }
   .foundation-grid, .analyzer-layout, .report-grid, .support-grid, .saved-layout, .guide-detail-grid, .full-checklist, .checklist-depth-grid { grid-template-columns: 1fr; }
   .workflow-steps { grid-template-columns: 1fr; }
@@ -288,6 +290,7 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 @media (max-width: 520px) {
   .panel { padding: 18px; }
   .panel-heading, .report-header, .report-footer, .settings-row { display: grid; }
+  .report-header-side { grid-template-columns: 1fr; }
   .page-actions { width: 100%; }
   .page-actions .button { width: 100%; }
   .score-block { width: fit-content; text-align: left; }
