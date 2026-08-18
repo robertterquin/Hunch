@@ -60,6 +60,9 @@ export function AnalyzePage() {
   const showReport = (nextReport: AnalysisReport) => {
     setActiveReport(nextReport)
     setNotice('Your result is ready. Review the signals and next steps before applying.')
+    window.requestAnimationFrame(() => {
+      document.getElementById('analysis-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
   }
 
   const handleAnalyze = async (event: FormEvent<HTMLFormElement>) => {
@@ -211,11 +214,11 @@ export function AnalyzePage() {
           <p className="eyebrow">Step 2 of 3</p>
           <h2>Understand the signal, then choose your next step.</h2>
           <ul className="signal-list">{['Payment requests', 'Recruiter email details', 'Company and role clarity', 'Urgency and chat-only hiring', 'Early sensitive-data requests'].map((item) => <li key={item}><Check size={16} aria-hidden="true" />{item}</li>)}</ul>
-          <div className="preview-note"><span className="preview-score">--</span><span><strong>Your result will appear here.</strong><br />Hunch keeps the score next to its evidence and checklist.</span></div>
+          {activeReport ? <div className="preview-note preview-note-ready"><span className="preview-score"><Check size={20} aria-hidden="true" /></span><span><strong>Your result is ready below.</strong><br />Review the score, evidence, and checklist.</span></div> : <div className="preview-note"><span className="preview-score">--</span><span><strong>Your result will appear here.</strong><br />Hunch keeps the score next to its evidence and checklist.</span></div>}
         </aside>
       </section>
 
-      {activeReport && <AnalysisReportView report={activeReport} onToggleChecklist={(checklistId) => toggleChecklistItem(activeReport.id, checklistId)} onSave={() => void handleSave()} isSaved={isCurrentReportSaved} />}
+      {activeReport && <AnalysisReportView id="analysis-result" report={activeReport} onToggleChecklist={(checklistId) => toggleChecklistItem(activeReport.id, checklistId)} onSave={() => void handleSave()} isSaved={isCurrentReportSaved} />}
       <ConfirmDialog open={isClearDialogOpen} title="Clear this listing?" description="This will remove the current listing and its unsaved analysis from this session." confirmLabel="Clear listing" danger onCancel={() => setIsClearDialogOpen(false)} onConfirm={() => { setIsClearDialogOpen(false); resetInput() }} />
     </div>
   )

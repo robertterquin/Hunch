@@ -10,18 +10,19 @@ const riskLabels = {
 
 interface AnalysisReportViewProps {
   report: AnalysisReport
+  id?: string
   onToggleChecklist?: (checklistId: string) => void
   onSave?: () => void
   isSaved?: boolean
   compact?: boolean
 }
 
-export function AnalysisReportView({ report, onToggleChecklist, onSave, isSaved = false, compact = false }: AnalysisReportViewProps) {
+export function AnalysisReportView({ report, id, onToggleChecklist, onSave, isSaved = false, compact = false }: AnalysisReportViewProps) {
   const [expandedFlagId, setExpandedFlagId] = useState<string | null>(null)
   const completedCount = report.checklist.filter((item) => item.completed).length
 
   return (
-    <section className={`panel report-panel risk-${report.riskLevel}${compact ? ' report-compact' : ''}`} aria-labelledby={`report-${report.id}`}>
+    <section id={id} className={`panel report-panel risk-${report.riskLevel}${compact ? ' report-compact' : ''}`} aria-labelledby={`report-${report.id}`}>
       <div className="report-header">
         <div>
           <p className="eyebrow eyebrow-with-mark"><Sparkles size={13} aria-hidden="true" />Check result</p>
