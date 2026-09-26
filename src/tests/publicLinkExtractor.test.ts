@@ -38,6 +38,15 @@ describe('public-link extractor safeguards', () => {
     expect(isBlockedIpAddress('8.8.8.8')).toBe(false)
   })
 
+  it('rejects login-walled social platforms like Facebook and LinkedIn', () => {
+    expect(() => parsePublicUrl('https://www.facebook.com/groups/123/posts/456')).toThrowError(
+      /require a login and cannot be read directly/
+    )
+    expect(() => parsePublicUrl('https://linkedin.com/jobs/view/123')).toThrowError(
+      /require a login and cannot be read directly/
+    )
+  })
+
   it('extracts readable HTML and rejects pages outside the analysis text range', () => {
     const page = extractReadableHtml(pageHtml, 'https://jobs.example.test/ojt')
     expect(page.title).toBe('Public Marketing OJT')

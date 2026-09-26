@@ -76,6 +76,11 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .analysis-progress-track span.is-explaining { width: 76%; animation-duration: 1.6s; }
 .inline-error, .trust-note, .privacy-note { display: flex; align-items: flex-start; gap: 8px; margin: 16px 0 0; font-size: 13px; line-height: 1.45; }
 .inline-error { color: var(--color-risk-high-text); }
+.inline-error-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; }
+.inline-error-row .inline-error { margin: 0; }
+.social-link-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; padding: 12px 14px; border: 1px solid var(--color-risk-caution-border); border-radius: var(--radius-control); background: var(--color-risk-caution-surface); font-size: 13px; line-height: 1.45; }
+.social-link-banner-text strong { display: block; color: var(--color-risk-caution-text); font-size: 13px; }
+.social-link-banner-text span { display: block; margin-top: 3px; color: var(--color-text-secondary); font-size: 12px; }
 .trust-note, .muted-copy { color: var(--color-text-muted); }
 .privacy-note { color: var(--color-text-secondary); }
 .privacy-note svg { flex: 0 0 auto; margin-top: 1px; color: var(--color-mint); }
@@ -348,6 +353,9 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
   .auth-page .page-heading h1 { font-size: 34px; }
   .auth-panel { padding: 22px 20px; }
   .auth-links { justify-content: flex-start; }
+  .social-link-banner { flex-direction: column; align-items: flex-start; }
+  .social-link-banner .button { width: 100%; }
+  .inline-error-row .button { width: 100%; }
   .confirm-dialog { padding: 18px; }
   .confirm-dialog-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .confirm-dialog-actions .button { width: 100%; }

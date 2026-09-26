@@ -29,6 +29,33 @@ const analysisStageCopy: Record<Exclude<AnalysisStage, 'idle'>, { label: string;
   explaining: { label: 'Preparing your guidance', detail: 'Turning the checked details into clear next steps.' },
 }
 
+function detectSocialPlatform(url: string): { name: string; sourceType: SourceType } | null {
+  try {
+    const trimmed = url.trim()
+    if (!trimmed) return null
+    const parsed = new URL(trimmed.startsWith('http://') || trimmed.startsWith('https://') ? trimmed : `https://${trimmed}`)
+    const host = parsed.hostname.toLowerCase()
+    if (host.includes('facebook.com') || host.includes('fb.com') || host.includes('fb.watch') || host.includes('fb.me')) {
+      return { name: 'Facebook', sourceType: 'facebook' }
+    }
+    if (host.includes('linkedin.com')) {
+      return { name: 'LinkedIn', sourceType: 'linkedin' }
+    }
+    if (host.includes('instagram.com')) {
+      return { name: 'Instagram', sourceType: 'other' }
+    }
+    if (host.includes('tiktok.com')) {
+      return { name: 'TikTok', sourceType: 'other' }
+    }
+    if (host.includes('twitter.com') || host.includes('x.com')) {
+      return { name: 'X / Twitter', sourceType: 'other' }
+    }
+  } catch {
+    return null
+  }
+  return null
+}
+
 export function AnalyzePage() {
   const { activeReport, setActiveReport, saveReport, savedReports, toggleChecklistItem, user } = useAppState()
   const navigate = useNavigate()
@@ -42,6 +69,19 @@ export function AnalyzePage() {
   const [analysisStage, setAnalysisStage] = useState<AnalysisStage>('idle')
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false)
   const isAnalyzing = analysisStage !== 'idle'
+  const detectedSocial = inputMode === 'link' ? detectSocialPlatform(linkUrl) : null
+
+  const switchToPaste = (targetSource?: SourceType, platformName?: string) => {
+    setInputMode('paste')
+    if (targetSource) {
+      setSourceType(targetSource)
+    }
+    setError('')
+    setNotice(platformName ? `Switched to Paste mode for ${platformName}. Paste your post text below.` : 'Switched to Paste mode.')
+    window.requestAnimationFrame(() => {
+      document.getElementById('listing')?.focus()
+    })
+  }
 
   useEffect(() => {
     const fixtureId = searchParams.get('fixture')
@@ -74,9 +114,16 @@ export function AnalyzePage() {
       setError('Paste at least 40 characters so Hunch has enough detail to analyze.')
       return
     }
-    if (inputMode === 'link' && !linkUrl.trim()) {
-      setError('Enter one public HTTP or HTTPS listing link.')
-      return
+    if (inputMode === 'link') {
+      if (!linkUrl.trim()) {
+        setError('Enter one public HTTP or HTTPS listing link.')
+        return
+      }
+      const social = detectSocialPlatform(linkUrl)
+      if (social) {
+        setError(`${social.name} posts require a login and cannot be read via link. Switch to "Paste text" to analyze this post.`)
+        return
+      }
     }
 
     setActiveReport(null)
@@ -126,7 +173,7 @@ export function AnalyzePage() {
   }
 
   const characterCount = text.length
-  const canAnalyze = (inputMode === 'paste' ? text.trim().length >= 40 : Boolean(linkUrl.trim())) && !isAnalyzing
+  const canAnalyze = (inputMode === 'paste' ? text.trim().length >= 40 : Boolean(linkUrl.trim()) && !detectedSocial) && !isAnalyzing
   const currentStep = isAnalyzing ? 2 : activeReport ? 3 : text.trim() ? 2 : 1
   const loadingCopy = analysisStage === 'idle' ? null : analysisStageCopy[analysisStage]
   const isCurrentReportSaved = activeReport ? savedReports.some((report) => report.id === activeReport.id) : false
@@ -190,11 +237,39 @@ export function AnalyzePage() {
             {text.length > 0 && text.trim().length < 40 && <p className="field-warning"><CircleAlert size={15} aria-hidden="true" />Paste {40 - text.trim().length} more characters to continue.</p>}
           </> : <>
             <label className="field-label" htmlFor="public-link">Public listing URL</label>
-            <input id="public-link" type="url" value={linkUrl} onChange={(event) => setLinkUrl(event.target.value)} placeholder="https://example.com/internship" autoComplete="url" inputMode="url" aria-describedby="public-link-help" aria-invalid={Boolean(error && inputMode === 'link')} disabled={isAnalyzing} />
+            <input id="public-link" type="url" value={linkUrl} onChange={(event) => { setLinkUrl(event.target.value); if (error) setError('') }} placeholder="https://example.com/internship" autoComplete="url" inputMode="url" aria-describedby="public-link-help" aria-invalid={Boolean(error && inputMode === 'link')} disabled={isAnalyzing} />
             <p className="field-help" id="public-link-help">Hunch can read public HTML pages only. Login-protected, private, JavaScript-only, blocked, or non-HTML pages need to be pasted manually.</p>
+            {detectedSocial && (
+              <div className="social-link-banner" role="status">
+                <div className="social-link-banner-text">
+                  <strong>{detectedSocial.name} links require a login</strong>
+                  <span>{detectedSocial.name} blocks direct link reading. Copy the text from the post and analyze it in <strong>Paste text</strong> mode.</span>
+                </div>
+                <button
+                  className="button button-secondary button-compact"
+                  type="button"
+                  onClick={() => switchToPaste(detectedSocial.sourceType, detectedSocial.name)}
+                >
+                  Switch to Paste text
+                </button>
+              </div>
+            )}
           </>}
 
-          {error && <p className="inline-error" role="alert"><CircleAlert size={16} aria-hidden="true" />{error}</p>}
+          {error && (
+            <div className="inline-error-row">
+              <p className="inline-error" role="alert"><CircleAlert size={16} aria-hidden="true" />{error}</p>
+              {inputMode === 'link' && (
+                <button
+                  className="button button-secondary button-compact"
+                  type="button"
+                  onClick={() => switchToPaste(detectedSocial?.sourceType ?? 'facebook', detectedSocial?.name)}
+                >
+                  Switch to Paste text
+                </button>
+              )}
+            </div>
+          )}
 
           <div className="button-row">
             <button className="button button-secondary" type="button" onClick={clearInput} disabled={isAnalyzing || (!(inputMode === 'paste' ? text : linkUrl) && !activeReport)}><RotateCcw size={16} aria-hidden="true" />Clear</button>

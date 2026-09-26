@@ -87,6 +87,10 @@ export function isBlockedIpAddress(address: string) {
     || (first === 0x2001 && groups[1] === 0x0db8)
 }
 
+function isWalledGardenHost(host: string) {
+  return /(?:^|\.)(?:facebook\.com|fb\.com|fb\.watch|fb\.me|instagram\.com|linkedin\.com|tiktok\.com)$/i.test(host)
+}
+
 export function parsePublicUrl(input: string) {
   let url: URL
   try {
@@ -107,6 +111,13 @@ export function parsePublicUrl(input: string) {
   }
   if (isIP(host) && isBlockedIpAddress(host)) {
     throw new LinkExtractionError('BLOCKED_ADDRESS', 400, 'That link points to a private or reserved address and cannot be analyzed.')
+  }
+  if (isWalledGardenHost(host)) {
+    throw new LinkExtractionError(
+      'LOGIN_REQUIRED',
+      422,
+      'Social media links (such as Facebook or LinkedIn) require a login and cannot be read directly via link. Paste the listing text manually instead.'
+    )
   }
   url.hash = ''
   return url
