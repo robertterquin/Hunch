@@ -80,8 +80,10 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .inline-error-row .inline-error { margin: 0; }
 .social-link-banner { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 12px; padding: 12px 14px; border: 1px solid var(--color-risk-caution-border); border-radius: var(--radius-control); background: var(--color-risk-caution-surface); font-size: 13px; line-height: 1.45; }
 .social-link-banner-text { min-width: 0; flex: 1 1 auto; }
-.social-link-banner-text strong { display: block; color: var(--color-risk-caution-text); font-size: 13px; }
+.social-link-banner-title { display: block; color: var(--color-risk-caution-text); font-size: 13px; }
 .social-link-banner-text span { display: block; margin-top: 3px; color: var(--color-text-secondary); font-size: 12px; line-height: 1.45; }
+.social-link-banner-text span strong { display: inline; color: var(--color-risk-caution-text); font-weight: 700; }
+.social-link-target { display: inline; white-space: nowrap; }
 .social-link-banner .button { flex-shrink: 0; white-space: nowrap; }
 .trust-note, .muted-copy { color: var(--color-text-muted); }
 .privacy-note { color: var(--color-text-secondary); }

@@ -242,8 +242,8 @@ export function AnalyzePage() {
             {detectedSocial && (
               <div className="social-link-banner" role="status">
                 <div className="social-link-banner-text">
-                  <strong>{detectedSocial.name} links require a login</strong>
-                  <span>{detectedSocial.name} blocks direct link reading. Copy the post text and use <strong>Paste text</strong> instead.</span>
+                  <strong className="social-link-banner-title">{detectedSocial.name} links require a login</strong>
+                  <span>{detectedSocial.name} blocks direct link reading. Copy the post text and use <span className="social-link-target"><strong>Paste text</strong> instead.</span></span>
                 </div>
                 <button
                   className="button button-secondary button-compact"
