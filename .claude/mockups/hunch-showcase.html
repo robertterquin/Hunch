@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!-- Render: Chrome --headless --window-size=2000,1378 --force-device-scale-factor=1.8 --screenshot (matches hapag-showcase.png, 3600x2480) -->
+<html>
+<head>
+<style>
+  html, body { margin: 0; width: 2000px; height: 1378px; overflow: hidden; }
+  body {
+    background:
+      radial-gradient(ellipse 900px 420px at 50% 108%, rgba(92,149,255,.22), transparent 70%),
+      radial-gradient(ellipse 1300px 700px at 50% 45%, #0f1830 0%, transparent 75%),
+      #05080f;
+    position: relative;
+  }
+  .bezel {
+    position: absolute; left: 256px; top: 188px; width: 1488px; height: 814px;
+    box-sizing: border-box; padding: 15px; border-radius: 26px;
+    background: linear-gradient(#1c2230, #10141d);
+    box-shadow: 0 0 0 1.5px #2a3242, 0 40px 90px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .screen {
+    width: 100%; height: 100%; border-radius: 12px; overflow: hidden;
+    background: #080b14 url(hunch-analyze.png) top center / 100% auto no-repeat; /* fit width so nav edges never crop; #080b14 = app page bg fills any gap below */
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+  }
+  .neck {
+    position: absolute; left: 885px; top: 1001px; width: 232px; height: 168px;
+    clip-path: polygon(13% 0, 87% 0, 100% 100%, 0 100%);
+    background: linear-gradient(90deg, #8d939c 0%, #d9dde2 22%, #f4f5f7 50%, #d4d8dd 78%, #858b94 100%);
+  }
+  .neck::after { /* shade under the bezel */
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 40px;
+    background: linear-gradient(rgba(0,0,0,.35), transparent);
+  }
+  .base {
+    position: absolute; left: 767px; top: 1167px; width: 466px; height: 26px; border-radius: 6px 6px 12px 12px;
+    background: linear-gradient(#f3f4f6 0%, #d5d9de 45%, #a9aeb6 100%);
+    box-shadow: 0 1px 0 rgba(255,255,255,.4) inset;
+  }
+  .shadow {
+    position: absolute; left: 680px; top: 1185px; width: 640px; height: 60px; border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,.7), transparent 70%);
+    filter: blur(8px);
+  }
+</style>
+</head>
+<body>
+  <div class="shadow"></div>
+  <div class="neck"></div>
+  <div class="base"></div>
+  <div class="bezel"><div class="screen"></div></div>
+</body>
+</html>
