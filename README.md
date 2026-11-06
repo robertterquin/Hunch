@@ -60,11 +60,11 @@ Configure the Supabase Auth URL allow list to include `http://localhost:5173/aut
 
 ### Public-link analysis
 
-Hunch accepts one public HTTP or HTTPS URL and fetches static readable HTML server-side. It rejects private and local addresses, follows at most three redirects, uses a ten-second timeout, limits pages to 1 MB, and never sends browser cookies or executes page JavaScript. Private, login-protected, JavaScript-only, blocked, non-HTML, short, or oversized pages must be pasted manually. See [`docs/20-public-link-analyzer.md`](C:/Hunch/Hunch/docs/20-public-link-analyzer.md).
+Hunch accepts one public HTTP or HTTPS URL and fetches static readable HTML server-side. It rejects private and local addresses, follows at most three redirects, uses a ten-second timeout, limits pages to 1 MB, and never sends browser cookies or executes page JavaScript. Private, login-protected, JavaScript-only, blocked, non-HTML, short, or oversized pages must be pasted manually. See [`docs/20-public-link-analyzer.md`](docs/20-public-link-analyzer.md).
 
 ### Safety and privacy review
 
-Hunch is a safety-screening aid, not proof that a listing is fake or safe. The app now includes a skip link, live status regions, reduced-motion support, clearer deletion/privacy copy, explicit API request limits, and anonymous rate limits for OpenAI explanations and public-link extraction. See [`docs/21-safety-privacy-accessibility.md`](C:/Hunch/Hunch/docs/21-safety-privacy-accessibility.md).
+Hunch is a safety-screening aid, not proof that a listing is fake or safe. The app now includes a skip link, live status regions, reduced-motion support, clearer deletion/privacy copy, explicit API request limits, and anonymous rate limits for OpenAI explanations and public-link extraction. See [`docs/21-safety-privacy-accessibility.md`](docs/21-safety-privacy-accessibility.md).
 
 ### OpenAI explanation setup
 
@@ -85,4 +85,4 @@ Vite alone serves the React app and does not execute `api/analyze.ts` or `api/ex
 
 For production Vercel deployments, add `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` as encrypted server-side environment variables. Hunch uses them for shared fixed-window limits across serverless instances. When they are absent or temporarily unavailable, local development and requests continue through a bounded in-memory fallback.
 
-See [`docs/19-openai-integration.md`](C:/Hunch/Hunch/docs/19-openai-integration.md) for the request contract, fallback behavior, security rules, and test instructions.
+See [`docs/19-openai-integration.md`](docs/19-openai-integration.md) for the request contract, fallback behavior, security rules, and test instructions.
