@@ -1,0 +1,38 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Hunch — Scam Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Newsreader:ital,opsz,wght@0,6..72,400..500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="hunch-v2.css">
+<style>
+.group { margin-top: 40px; }
+.group h2 { margin-bottom: 16px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.card { display: flex; flex-direction: column; gap: 12px; padding: 24px; }
+.card .h3 { display: flex; align-items: center; gap: 10px; }
+.card .h3 svg { flex: 0 0 auto; }
+.card.high .h3 svg { color: var(--red); } .card.caution .h3 svg { color: var(--amber); }
+.card p.desc { color: var(--text-2); font-size: 14.5px; line-height: 1.6; }
+.card .quote { margin-top: auto; padding-top: 4px; }
+</style></head><body>
+{{bar:guide}}
+<main class="page">
+  <h1 class="title">Scam Guide</h1>
+  <p class="lede">The eight patterns Hunch looks for.</p>
+
+  <section class="group"><h2 class="h2">High risk</h2>
+    <div class="grid2">
+      <a class="panel card high"><h3 class="h3">{{i:currency-circle-dollar:20}}A fee before you start</h3><p class="desc">Real OJT placements don’t charge training or registration fees.</p><p class="quote small-q"><mark class="high">Pay a PHP 1,500 registration and training fee today before starting.</mark></p></a>
+      <a class="panel card high"><h3 class="h3">{{i:identification-card:20}}IDs or bank details requested early</h3><p class="desc">Don’t send documents until the placement is verified.</p><p class="quote small-q"><mark class="high">Send your government ID, bank account details, and a selfie</mark></p></a>
+    </div>
+  </section>
+
+  <section class="group"><h2 class="h2">Caution</h2>
+    <div class="grid3">
+      <a class="panel card caution"><h3 class="h3">{{i:timer:20}}Urgency pressure</h3><p class="desc">Pushes you to skip normal checks.</p><p class="quote small-q"><mark class="caution">Limited slots and instant hiring, no interview needed.</mark></p></a>
+      <a class="panel card caution"><h3 class="h3">{{i:money:20}}Pay doesn’t match the role</h3><p class="desc">High, guaranteed pay for vague work.</p><p class="quote small-q"><mark class="caution">Earn PHP 35,000 every month, guaranteed.</mark></p></a>
+      <a class="panel card caution"><h3 class="h3">{{i:buildings:20}}Company not named</h3><p class="desc">You can’t check who is offering it.</p><p class="quote small-q"><mark class="caution">Our company name and website will be shared after payment.</mark></p></a>
+      <a class="panel card caution"><h3 class="h3">{{i:briefcase:20}}Vague role</h3><p class="desc">No clear tasks, hours or supervisor.</p><p class="quote small-q"><mark class="caution">easy online office work</mark></p></a>
+      <a class="panel card caution"><h3 class="h3">{{i:envelope-simple:20}}Personal email</h3><p class="desc">A free inbox instead of a company address.</p><p class="quote small-q"><mark class="caution">fastjobs.hiring@gmail.com</mark></p></a>
+      <a class="panel card caution"><h3 class="h3">{{i:chat-circle-dots:20}}Chat app only</h3><p class="desc">No official email or website to apply through.</p><p class="quote small-q"><mark class="caution">to our recruiter on WhatsApp only</mark></p></a>
+    </div>
+  </section>
+</main></body></html>

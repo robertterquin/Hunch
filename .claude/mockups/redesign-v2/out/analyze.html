@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Hunch — Analyze</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Newsreader:ital,opsz,wght@0,6..72,400..500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="hunch-v2.css">
+<style>
+.col { width: 820px; margin: 0 auto; }
+.sheet-top { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+.seg { display: inline-flex; padding: 4px; border-radius: 12px; background: var(--sunk); box-shadow: inset 0 1px 3px rgba(0,0,0,.4); }
+.seg a { height: 34px; padding: 0 16px; display: flex; align-items: center; border-radius: 9px; color: var(--muted); font-size: 14px; font-weight: 500; }
+.seg a.on { background: var(--raised); color: var(--paper); box-shadow: var(--lift-1); }
+.write { min-height: 320px; padding: 26px 28px; }
+.write p { font-family: var(--quote); font-size: 22px; line-height: 1.6; color: var(--faint); font-style: italic; }
+.sheet-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; border-top: 1px solid var(--line); }
+.privacy { margin-top: 16px; color: var(--muted); font-size: 14px; }
+</style></head><body>
+<header class="bar"><a class="brand" href="analyze.html"><img src="hunch-logo.svg" alt="Hunch" height="34"></a><nav class="nav"><a class="on" href="analyze.html">Analyze</a><a class="" href="saved.html">Saved</a><a class="" href="guide.html">Scam Guide</a><a class="" href="checklist.html">Checklist</a><a class="" href="settings.html">Settings</a></nav><div class="bar-end"><a class="btn btn-ghost" style="height:36px">Sign in</a></div></header>
+<main class="page"><div class="col">
+  <h1 class="title">Check an OJT post before you apply</h1>
+  <p class="lede">Paste a listing or recruiter message to see its warning signs.</p>
+
+  <section class="sheet" style="margin-top:36px">
+    <div class="sheet-top">
+      <div class="seg"><a class="on">Paste text</a><a>Public link</a></div>
+    </div>
+    <div style="padding:18px 20px 0"><div class="chips" style="align-items:center"><span class="muted small" style="margin-right:4px">Seen on</span><span class="chip on">Facebook</span><span class="chip">Messenger</span><span class="chip">Group chat</span><span class="chip">Email</span><span class="chip">LinkedIn</span><span class="chip">Other</span></div></div>
+    <div class="write"><p>Paste the post here</p></div>
+    <div class="sheet-foot">
+      <span class="muted small">At least 40 characters</span>
+      <div class="row"><a class="btn btn-quiet">Try a sample</a><a class="btn btn-primary btn-lg" style="opacity:.55">Analyze post</a></div>
+    </div>
+  </section>
+  <p class="privacy">Nothing is saved unless you save the report.</p>
+</div></main></body></html>

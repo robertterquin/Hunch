@@ -1,0 +1,42 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Hunch — Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Newsreader:ital,opsz,wght@0,6..72,400..500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="hunch-v2.css">
+<style>
+.cols { display: grid; grid-template-columns: minmax(0, 1fr) 440px; gap: 28px; align-items: start; }
+.progress { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 16px; }
+.progress span { height: 6px; border-radius: 999px; background: var(--sunk); }
+.progress span.on { background: var(--blue); }
+ul { list-style: none; margin: 18px 0 0; padding: 0; }
+li { display: flex; align-items: center; gap: 14px; padding: 15px 0; border-top: 1px solid var(--line); font-size: 15px; }
+li:first-child { border-top: 0; }
+li small { display: block; margin-top: 2px; color: var(--muted); font-size: 13.5px; }
+li.done .t { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--faint); }
+.picker { display: flex; align-items: center; gap: 10px; margin-top: 16px; padding: 12px 14px; border: 1px solid var(--line-strong); border-radius: var(--r-ctl); background: var(--sunk); font-size: 14.5px; }
+.picker span:nth-child(2) { flex: 1; }
+</style></head><body>
+<header class="bar"><a class="brand" href="analyze.html"><img src="hunch-logo.svg" alt="Hunch" height="34"></a><nav class="nav"><a class="" href="analyze.html">Analyze</a><a class="" href="saved.html">Saved</a><a class="" href="guide.html">Scam Guide</a><a class="on" href="checklist.html">Checklist</a><a class="" href="settings.html">Settings</a></nav><div class="bar-end"><span class="avatar">J</span></div></header>
+<main class="page">
+  <div class="page-head"><h1 class="title">Checklist</h1><a class="btn btn-quiet">Reset</a></div>
+  <div class="cols">
+    <section class="panel pad">
+      <div class="row between"><h2 class="h3">Every OJT post</h2><span class="muted small">2 of 5</span></div>
+      <div class="progress"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
+      <ul>
+        <li class="done"><span class="check on"><svg class="i" width="13" height="13" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183L215.51 63.51a12 12 0 0 1 17 17Z"/></svg></span><span><span class="t">Verify the company website</span><small>Search the name yourself, not through links in the post.</small></span></li>
+        <li class="done"><span class="check on"><svg class="i" width="13" height="13" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183L215.51 63.51a12 12 0 0 1 17 17Z"/></svg></span><span><span class="t">Check the recruiter’s email matches the company</span><small>name@company.com, not a free Gmail or Yahoo address.</small></span></li>
+        <li><span class="check"><svg class="i" width="13" height="13" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183L215.51 63.51a12 12 0 0 1 17 17Z"/></svg></span><span><span class="t">Get the role description and supervisor</span><small>You should know your tasks, hours and who you report to.</small></span></li>
+        <li><span class="check"><svg class="i" width="13" height="13" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183L215.51 63.51a12 12 0 0 1 17 17Z"/></svg></span><span><span class="t">Don’t pay before it’s verified</span><small>Real OJT placements don’t charge training or registration fees.</small></span></li>
+        <li><span class="check"><svg class="i" width="13" height="13" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183L215.51 63.51a12 12 0 0 1 17 17Z"/></svg></span><span><span class="t">Don’t send IDs or bank details early</span><small>Wait until your school confirms the placement.</small></span></li>
+      </ul>
+    </section>
+    <section class="panel pad">
+      <h2 class="h3">From a report</h2>
+      <div class="picker"><span class="dot high"></span><span>Urgent online office job with registration fee</span><svg class="i" width="16" height="16" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M181.66 170.34a8 8 0 0 1 0 11.32l-48 48a8 8 0 0 1-11.32 0l-48-48a8 8 0 0 1 11.32-11.32L128 212.69l42.34-42.35a8 8 0 0 1 11.32 0m-96-84.68L128 43.31l42.34 42.35a8 8 0 0 0 11.32-11.32l-48-48a8 8 0 0 0-11.32 0l-48 48a8 8 0 0 0 11.32 11.32"/></svg></div>
+      <ul>
+        <li class="done"><span class="check on"><svg class="i" width="13" height="13" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183L215.51 63.51a12 12 0 0 1 17 17Z"/></svg></span><span class="t">Ask your school coordinator to verify it</span></li>
+        <li><span class="check"><svg class="i" width="13" height="13" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183L215.51 63.51a12 12 0 0 1 17 17Z"/></svg></span><span class="t">Don’t send documents yet</span></li>
+        <li><span class="check"><svg class="i" width="13" height="13" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183L215.51 63.51a12 12 0 0 1 17 17Z"/></svg></span><span class="t">Ask for an official email or website</span></li>
+      </ul>
+    </section>
+  </div>
+</main></body></html>

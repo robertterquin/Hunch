@@ -1,0 +1,81 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Hunch — Result</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Newsreader:ital,opsz,wght@0,6..72,400..500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="hunch-v2.css">
+<style>
+.toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+.verdict { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 56px; align-items: end; }
+.verdict h1 { margin-top: 14px; color: var(--red); font-size: 60px; line-height: 1; font-weight: 650; letter-spacing: -0.04em; }
+.verdict .summary { max-width: 580px; margin-top: 16px; color: var(--text-2); font-size: 18px; line-height: 1.6; }
+.score { display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px; }
+.score strong { font-size: 48px; line-height: 1; font-weight: 650; letter-spacing: -0.04em; }
+.score span { color: var(--muted); }
+.advice { margin-top: 36px; padding: 18px 22px; border-left: 3px solid var(--mint); border-radius: 0 12px 12px 0; background: var(--slate); }
+.advice strong { font-weight: 600; }
+.advice span { color: var(--text-2); }
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 28px; align-items: start; margin-top: 28px; }
+.doc { padding: 30px 36px 34px; }
+.doc-head { display: flex; justify-content: space-between; margin-bottom: 18px; color: var(--muted); font-size: 14px; }
+.sig { border-top: 1px solid var(--line); }
+.sig-row { display: flex; align-items: center; gap: 12px; padding: 14px 22px; }
+.sig-row strong { flex: 1; font-size: 15px; font-weight: 550; }
+.pts { color: var(--muted); font-size: 13px; font-weight: 600; }
+.sig.open { background: var(--raised); }
+.sig-body { padding: 0 22px 18px 56px; color: var(--text-2); font-size: 14px; line-height: 1.6; }
+.sig-body p + p { margin-top: 10px; color: var(--paper); }
+.head { padding: 18px 22px 14px; }
+.todo ul { list-style: none; margin: 12px 0 0; padding: 0; }
+.todo li { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-top: 1px solid var(--line); font-size: 15px; color: var(--text-2); }
+.todo li:first-child { border-top: 0; }
+</style></head><body>
+<header class="bar"><a class="brand" href="analyze.html"><img src="hunch-logo.svg" alt="Hunch" height="34"></a><nav class="nav"><a class="on" href="analyze.html">Analyze</a><a class="" href="saved.html">Saved</a><a class="" href="guide.html">Scam Guide</a><a class="" href="checklist.html">Checklist</a><a class="" href="settings.html">Settings</a></nav><div class="bar-end"><a class="btn btn-ghost" style="height:36px">Sign in</a></div></header>
+<main class="page">
+  <div class="toolbar">
+    <a class="btn btn-quiet" style="padding:0"><svg class="i" width="17" height="17" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M224 128a8 8 0 0 1-8 8H59.31l58.35 58.34a8 8 0 0 1-11.32 11.32l-72-72a8 8 0 0 1 0-11.32l72-72a8 8 0 0 1 11.32 11.32L59.31 120H216a8 8 0 0 1 8 8"/></svg>Edit post</a>
+    <a class="btn btn-primary">Save report</a>
+  </div>
+
+  <section class="verdict">
+    <div>
+      <span class="tag high">High confidence</span>
+      <h1>High risk</h1>
+      <p class="summary">Asks for a fee before you start and for your ID and bank details over WhatsApp.</p>
+    </div>
+    <div>
+      <div class="score"><strong>100</strong><span>/ 100</span></div>
+      <div class="scale" style="color:var(--red)"><span></span><span></span><span></span><i class="pin" style="left:98.5%"></i></div>
+      <div class="scale-labels"><span>Low</span><span>Caution</span><span>High</span></div>
+    </div>
+  </section>
+
+  <p class="advice"><strong>Don’t pay or send documents.</strong> <span>Ask your school OJT coordinator to verify this company first.</span></p>
+
+  <div class="main">
+    <div class="stack-24">
+      <section class="sheet doc">
+        <div class="doc-head"><span>The post</span><span>Forwarded message</span></div>
+        <p class="quote"><mark class="caution">URGENT!!!<sup>1</sup></mark> Students needed for <mark class="caution">easy online office work<sup>2</sup></mark>. <mark class="caution">Earn PHP 35,000 every month, guaranteed.<sup>3</sup></mark> <mark class="caution">Limited slots and instant hiring, no interview needed.<sup>1</sup></mark> <mark class="high focus">Pay a PHP 1,500 registration and training fee today before starting.<sup>4</sup></mark> <mark class="high">Send your government ID, bank account details, and a selfie<sup>5</sup></mark> <mark class="caution">to our recruiter on WhatsApp only<sup>6</sup></mark>. Email questions to <mark class="caution">fastjobs.hiring@gmail.com<sup>7</sup></mark>. <mark class="caution">Our company name and website will be shared after payment.<sup>8</sup></mark></p>
+      </section>
+      <section class="panel pad todo">
+        <h2 class="h3">Before you apply</h2>
+        <ul>
+          <li><span class="check"><svg class="i" width="13" height="13" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183L215.51 63.51a12 12 0 0 1 17 17Z"/></svg></span>Ask your school coordinator to verify the company</li>
+          <li><span class="check"><svg class="i" width="13" height="13" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183L215.51 63.51a12 12 0 0 1 17 17Z"/></svg></span>Get a written role description and OJT hours</li>
+          <li><span class="check"><svg class="i" width="13" height="13" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183L215.51 63.51a12 12 0 0 1 17 17Z"/></svg></span>Don’t send IDs until the placement is confirmed</li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2 class="h3 head">Warning signs</h2>
+      <div class="sig open"><div class="sig-row"><span class="num high">4</span><strong>Fee before you start</strong><span class="pts">+30</span><svg class="i" width="16" height="16" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M213.66 165.66a8 8 0 0 1-11.32 0L128 91.31l-74.34 74.35a8 8 0 0 1-11.32-11.32l80-80a8 8 0 0 1 11.32 0l80 80a8 8 0 0 1 0 11.32"/></svg></div>
+        <div class="sig-body"><p>Real OJT placements don’t charge an upfront fee.</p><p>Ask your school coordinator before paying anything.</p></div></div>
+      <div class="sig"><div class="sig-row"><span class="num high">5</span><strong>IDs or bank details requested</strong><span class="pts">+25</span><svg class="i" width="16" height="16" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32"/></svg></div></div>
+      <div class="sig"><div class="sig-row"><span class="num caution">1</span><strong>Urgency pressure</strong><span class="pts">+10</span><svg class="i" width="16" height="16" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32"/></svg></div></div>
+      <div class="sig"><div class="sig-row"><span class="num caution">3</span><strong>Pay doesn’t match the role</strong><span class="pts">+10</span><svg class="i" width="16" height="16" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32"/></svg></div></div>
+      <div class="sig"><div class="sig-row"><span class="num caution">8</span><strong>Company not named</strong><span class="pts">+10</span><svg class="i" width="16" height="16" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32"/></svg></div></div>
+      <div class="sig"><div class="sig-row"><span class="num caution">2</span><strong>Vague role</strong><span class="pts">+8</span><svg class="i" width="16" height="16" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32"/></svg></div></div>
+      <div class="sig"><div class="sig-row"><span class="num caution">7</span><strong>Personal email</strong><span class="pts">+8</span><svg class="i" width="16" height="16" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32"/></svg></div></div>
+      <div class="sig"><div class="sig-row"><span class="num caution">6</span><strong>Chat app only</strong><span class="pts">+7</span><svg class="i" width="16" height="16" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m213.66 101.66l-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32"/></svg></div></div>
+    </section>
+  </div>
+</main></body></html>

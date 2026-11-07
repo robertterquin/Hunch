@@ -1,0 +1,74 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Hunch — Result (low risk)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Newsreader:ital,opsz,wght@0,6..72,400..500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="hunch-v2.css">
+<style>
+.toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+.verdict { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 56px; align-items: end; }
+.verdict h1 { margin-top: 14px; color: var(--mint); font-size: 60px; line-height: 1; font-weight: 650; letter-spacing: -0.04em; }
+.verdict .summary { max-width: 580px; margin-top: 16px; color: var(--text-2); font-size: 18px; line-height: 1.6; }
+.score { display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px; }
+.score strong { font-size: 48px; line-height: 1; font-weight: 650; letter-spacing: -0.04em; }
+.score span { color: var(--muted); }
+.advice { margin-top: 36px; padding: 18px 22px; border-left: 3px solid var(--mint); border-radius: 0 12px 12px 0; background: var(--slate); }
+.advice strong { font-weight: 600; }
+.advice span { color: var(--text-2); }
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 28px; align-items: start; margin-top: 28px; }
+.doc { padding: 30px 36px 34px; }
+.doc-head { display: flex; justify-content: space-between; margin-bottom: 18px; color: var(--muted); font-size: 14px; }
+.head { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px 14px; }
+.ok { display: flex; align-items: center; gap: 12px; padding: 12px 22px; border-top: 1px solid var(--line); color: var(--text-2); font-size: 14.5px; }
+.ok svg { color: var(--mint); }
+.todo ul { list-style: none; margin: 12px 0 0; padding: 0; }
+.todo li { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-top: 1px solid var(--line); font-size: 15px; color: var(--text-2); }
+.todo li:first-child { border-top: 0; }
+</style></head><body>
+{{bar:analyze}}
+<main class="page">
+  <div class="toolbar">
+    <a class="btn btn-quiet" style="padding:0">{{i:arrow-left:17}}Edit post</a>
+    <a class="btn btn-primary">Save report</a>
+  </div>
+
+  <section class="verdict">
+    <div>
+      <span class="tag low">High confidence</span>
+      <h1>Low risk</h1>
+      <p class="summary">No warning signs in this post. It names the company, supervisor and hours, and asks for no fees.</p>
+    </div>
+    <div>
+      <div class="score"><strong>8</strong><span>/ 100</span></div>
+      <div class="scale" style="color:var(--mint)"><span></span><span></span><span></span><i class="pin" style="left:8%"></i></div>
+      <div class="scale-labels"><span>Low</span><span>Caution</span><span>High</span></div>
+    </div>
+  </section>
+
+  <p class="advice"><strong>A low score isn’t proof the offer is real.</strong> <span>Confirm it with your school OJT coordinator before sending documents.</span></p>
+
+  <div class="main">
+    <div class="stack-24">
+      <section class="sheet doc">
+        <div class="doc-head"><span>The post</span><span>School referral</span></div>
+        <p class="quote">Brightline Digital Services is accepting OJT students for a web support placement. Students will help with website content updates, testing, and documentation under the Web Operations team. Schedule: 400 OJT hours, Monday to Friday, 9:00 AM to 5:00 PM. Supervisor: Ana Reyes, Web Operations Lead. Allowance: none; no application, training, or registration fee. Apply through careers@brightline.example and https://brightline.example/careers. Submit only your resume and school endorsement after the interview. We will not ask for passwords, bank details, or government IDs during initial screening.</p>
+      </section>
+      <section class="panel pad todo">
+        <h2 class="h3">Before you apply</h2>
+        <ul>
+          <li><span class="check">{{i:check-bold:13}}</span>Visit the company website yourself</li>
+          <li><span class="check">{{i:check-bold:13}}</span>Confirm the supervisor with your school</li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="panel">
+      <div class="head"><h2 class="h3">Nothing flagged</h2><span class="muted small">8 checks</span></div>
+      <div class="ok">{{i:check-circle:18}}No fees before starting</div>
+      <div class="ok">{{i:check-circle:18}}No early requests for IDs or bank details</div>
+      <div class="ok">{{i:check-circle:18}}No urgency pressure</div>
+      <div class="ok">{{i:check-circle:18}}Pay matches the role</div>
+      <div class="ok">{{i:check-circle:18}}Company is named</div>
+      <div class="ok">{{i:check-circle:18}}Role and hours are clear</div>
+      <div class="ok">{{i:check-circle:18}}Uses a company email</div>
+      <div class="ok">{{i:check-circle:18}}Has an official way to apply</div>
+    </section>
+  </div>
+</main></body></html>

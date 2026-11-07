@@ -1,0 +1,53 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Hunch — Result (mobile)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Newsreader:ital,opsz,wght@0,6..72,400..500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="hunch-v2.css">
+<style>
+body { width: 390px; }
+.mbar { display: flex; align-items: center; justify-content: space-between; height: 58px; padding: 0 16px; border-bottom: 1px solid var(--line); }
+.m { padding: 20px 16px 170px; }
+.top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+h1 { color: var(--red); font-size: 44px; line-height: 1; font-weight: 650; letter-spacing: -0.04em; margin-top: 12px; }
+.sum { margin-top: 12px; color: var(--text-2); font-size: 16px; line-height: 1.55; }
+.score { display: flex; align-items: baseline; gap: 8px; margin: 22px 0 12px; }
+.score strong { font-size: 36px; font-weight: 650; letter-spacing: -0.03em; line-height: 1; }
+.advice { margin-top: 22px; padding: 14px 16px; border-left: 3px solid var(--mint); border-radius: 0 12px 12px 0; background: var(--slate); }
+.advice svg { color: var(--mint); margin-top: 2px; }
+.advice strong { display: block; font-size: 15px; } .advice p { margin-top: 2px; color: var(--text-2); font-size: 14px; }
+.doc { margin-top: 18px; padding: 20px 18px; border-radius: 18px; }
+.doc .quote { font-size: 18px; line-height: 1.75; }
+.sigs { margin-top: 18px; }
+.sig { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-top: 1px solid var(--line); font-size: 15px; }
+.sig:first-of-type { border-top: 0; }
+.sig strong { flex: 1; font-weight: 550; }
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; width: 390px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px 8px 22px; border-top: 1px solid var(--line); background: rgba(12, 19, 34, 0.96); }
+.tabs a { display: grid; justify-items: center; gap: 4px; padding: 6px 0; border-radius: 10px; color: var(--muted); font-size: 11px; font-weight: 500; }
+.tabs a.on { color: var(--paper); background: var(--raised); }
+.save { position: fixed; left: 0; right: 0; bottom: 78px; width: 390px; padding: 12px 16px; border-top: 1px solid var(--line); background: var(--ink); }
+.save .btn { width: 100%; height: 50px; }
+</style></head><body>
+<header class="mbar"><img src="hunch-logo.svg" alt="Hunch" height="30"><a class="btn btn-ghost" style="height:34px;padding:0 12px">Sign in</a></header>
+<main class="m">
+  <div class="top"><a class="btn btn-quiet" style="padding:0">{{i:arrow-left:17}}Edit post</a><span class="tag high">High confidence</span></div>
+  <h1>High risk</h1>
+  <p class="sum">Asks for a fee before you start and for your ID and bank details over WhatsApp.</p>
+  <div class="score"><strong>100</strong><span class="muted small">/ 100</span></div>
+  <div class="scale" style="color:var(--red)"><span></span><span></span><span></span><i class="pin" style="left:97%"></i></div>
+  <div class="scale-labels"><span>Low</span><span>Caution</span><span>High</span></div>
+  <div class="advice"><div><strong>Don’t pay or send documents.</strong><p>Ask your school OJT coordinator to verify this company first.</p></div></div>
+
+  <section class="sheet doc"><p class="label" style="margin-bottom:10px">The post</p>
+    <p class="quote"><mark class="caution">URGENT!!!<sup>1</sup></mark> Students needed for <mark class="caution">easy online office work<sup>2</sup></mark>. <mark class="caution">Earn PHP 35,000 every month, guaranteed.<sup>3</sup></mark> <mark class="high focus">Pay a PHP 1,500 registration and training fee today before starting.<sup>4</sup></mark> <mark class="high">Send your government ID, bank account details, and a selfie<sup>5</sup></mark> …</p>
+    <a class="btn btn-quiet" style="padding:0;margin-top:6px;color:var(--blue)">Show full post{{i:caret-down:15}}</a>
+  </section>
+
+  <section class="panel sigs">
+    <div class="sig"><span class="num high">4</span><strong>Fee before you start</strong><span class="pts muted small">+30</span></div>
+    <div class="sig"><span class="num high">5</span><strong>IDs or bank details requested</strong><span class="pts muted small">+25</span></div>
+    <div class="sig"><span class="num caution">1</span><strong>Urgency pressure</strong><span class="pts muted small">+10</span></div>
+    <div class="sig"><span class="num caution">3</span><strong>Pay doesn’t match the role</strong><span class="pts muted small">+10</span></div>
+    <div class="sig"><span class="muted small" style="flex:1;text-align:center">4 more</span></div>
+  </section>
+</main>
+<div class="save"><a class="btn btn-primary">Save report</a></div>
+<nav class="tabs"><a class="on">{{i:file-magnifying-glass:20}}Analyze</a><a>{{i:shield-check:20}}Saved</a><a>{{i:book-open-text:20}}Guide</a><a>{{i:check-square:20}}Checklist</a></nav>
+</body></html>

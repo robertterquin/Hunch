@@ -1,0 +1,38 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Hunch — Analyze (mobile)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Newsreader:ital,opsz,wght@0,6..72,400..500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="hunch-v2.css">
+<style>
+body { width: 390px; }
+.mbar { display: flex; align-items: center; justify-content: space-between; height: 58px; padding: 0 16px; border-bottom: 1px solid var(--line); }
+.m { padding: 26px 16px 170px; }
+h1 { font-size: 34px; line-height: 1.1; font-weight: 650; letter-spacing: -0.035em; }
+.lede { font-size: 16px; margin-top: 12px; }
+.seg { display: flex; margin-top: 24px; padding: 4px; border-radius: 12px; background: var(--sunk); box-shadow: inset 0 1px 3px rgba(0,0,0,.4); }
+.seg a { flex: 1; display: flex; justify-content: center; align-items: center; gap: 7px; height: 38px; border-radius: 9px; color: var(--muted); font-size: 14px; font-weight: 500; }
+.seg a.on { background: var(--raised); color: var(--paper); box-shadow: var(--lift-1); }
+.chips { flex-wrap: nowrap; overflow: hidden; margin: 14px -16px 0; padding: 0 16px; }
+.chip { flex: 0 0 auto; }
+.sheet { margin-top: 16px; padding: 18px; min-height: 260px; border-radius: 18px; }
+.sheet p { font-family: var(--quote); font-size: 19px; line-height: 1.55; font-style: italic; color: var(--faint); }
+.meter { display: flex; justify-content: space-between; margin-top: 12px; color: var(--muted); font-size: 13px; }
+.dock { position: fixed; left: 0; right: 0; bottom: 78px; width: 390px; display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--line); background: var(--ink); }
+.dock .btn { height: 50px; }
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; width: 390px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px 8px 22px; border-top: 1px solid var(--line); background: rgba(12, 19, 34, 0.96); }
+.tabs a { display: grid; justify-items: center; gap: 4px; padding: 6px 0; border-radius: 10px; color: var(--muted); font-size: 11px; font-weight: 500; }
+.tabs a.on { color: var(--paper); background: var(--raised); }
+.privacy { display: flex; gap: 10px; margin-top: 18px; color: var(--muted); font-size: 13.5px; }
+.privacy svg { color: var(--mint); }
+</style></head><body>
+<header class="mbar"><img src="hunch-logo.svg" alt="Hunch" height="30"><a class="btn btn-ghost" style="height:34px;padding:0 12px">Sign in</a></header>
+<main class="m">
+  <h1>Check an OJT post before you apply</h1>
+  <p class="lede">Paste a listing or recruiter message to see its warning signs.</p>
+  <div class="seg"><a class="on">Paste text</a><a>Public link</a></div>
+    <div class="chips" style="align-items:center;margin-top:18px"><span class="muted small">Seen on</span><span class="chip on">Facebook</span><span class="chip">Messenger</span><span class="chip">Group chat</span><span class="chip">Email</span></div>
+  <div class="sheet"><p>Paste the post here</p></div>
+  <div class="meter"><span>At least 40 characters</span></div>
+  <p class="privacy">Nothing is saved unless you save the report.</p>
+</main>
+<div class="dock"><a class="btn btn-ghost">Try a sample</a><a class="btn btn-primary" style="opacity:.55">Analyze post</a></div>
+<nav class="tabs"><a class="on"><svg class="i" width="20" height="20" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="m213.66 82.34l-56-56A8 8 0 0 0 152 24H56a16 16 0 0 0-16 16v176a16 16 0 0 0 16 16h144a16 16 0 0 0 16-16V88a8 8 0 0 0-2.34-5.66M160 51.31L188.69 80H160ZM200 216H56V40h88v48a8 8 0 0 0 8 8h48zm-45.54-48.85a36.05 36.05 0 1 0-11.31 11.31l11.19 11.2a8 8 0 0 0 11.32-11.32ZM104 148a20 20 0 1 1 20 20a20 20 0 0 1-20-20"/></svg>Analyze</a><a><svg class="i" width="20" height="20" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M208 40H48a16 16 0 0 0-16 16v56c0 52.72 25.52 84.67 46.93 102.19c23.06 18.86 46 25.26 47 25.53a8 8 0 0 0 4.2 0c1-.27 23.91-6.67 47-25.53C198.48 196.67 224 164.72 224 112V56a16 16 0 0 0-16-16m0 72c0 37.07-13.66 67.16-40.6 89.42a129.3 129.3 0 0 1-39.4 22.2a128.3 128.3 0 0 1-38.92-21.81C61.82 179.51 48 149.3 48 112V56h160ZM82.34 141.66a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 11.32l-56 56a8 8 0 0 1-11.32 0Z"/></svg>Saved</a><a><svg class="i" width="20" height="20" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M232 48h-72a40 40 0 0 0-32 16a40 40 0 0 0-32-16H24a8 8 0 0 0-8 8v144a8 8 0 0 0 8 8h72a24 24 0 0 1 24 24a8 8 0 0 0 16 0a24 24 0 0 1 24-24h72a8 8 0 0 0 8-8V56a8 8 0 0 0-8-8M96 192H32V64h64a24 24 0 0 1 24 24v112a39.8 39.8 0 0 0-24-8m128 0h-64a39.8 39.8 0 0 0-24 8V88a24 24 0 0 1 24-24h64ZM160 88h40a8 8 0 0 1 0 16h-40a8 8 0 0 1 0-16m48 40a8 8 0 0 1-8 8h-40a8 8 0 0 1 0-16h40a8 8 0 0 1 8 8m0 32a8 8 0 0 1-8 8h-40a8 8 0 0 1 0-16h40a8 8 0 0 1 8 8"/></svg>Guide</a><a><svg class="i" width="20" height="20" viewBox="0 0 256 256" aria-hidden="true"><path fill="currentColor" d="M173.66 98.34a8 8 0 0 1 0 11.32l-56 56a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 0M224 48v160a16 16 0 0 1-16 16H48a16 16 0 0 1-16-16V48a16 16 0 0 1 16-16h160a16 16 0 0 1 16 16m-16 160V48H48v160z"/></svg>Checklist</a></nav>
+</body></html>

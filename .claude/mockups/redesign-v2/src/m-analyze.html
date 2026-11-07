@@ -1,0 +1,38 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Hunch — Analyze (mobile)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Newsreader:ital,opsz,wght@0,6..72,400..500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="hunch-v2.css">
+<style>
+body { width: 390px; }
+.mbar { display: flex; align-items: center; justify-content: space-between; height: 58px; padding: 0 16px; border-bottom: 1px solid var(--line); }
+.m { padding: 26px 16px 170px; }
+h1 { font-size: 34px; line-height: 1.1; font-weight: 650; letter-spacing: -0.035em; }
+.lede { font-size: 16px; margin-top: 12px; }
+.seg { display: flex; margin-top: 24px; padding: 4px; border-radius: 12px; background: var(--sunk); box-shadow: inset 0 1px 3px rgba(0,0,0,.4); }
+.seg a { flex: 1; display: flex; justify-content: center; align-items: center; gap: 7px; height: 38px; border-radius: 9px; color: var(--muted); font-size: 14px; font-weight: 500; }
+.seg a.on { background: var(--raised); color: var(--paper); box-shadow: var(--lift-1); }
+.chips { flex-wrap: nowrap; overflow: hidden; margin: 14px -16px 0; padding: 0 16px; }
+.chip { flex: 0 0 auto; }
+.sheet { margin-top: 16px; padding: 18px; min-height: 260px; border-radius: 18px; }
+.sheet p { font-family: var(--quote); font-size: 19px; line-height: 1.55; font-style: italic; color: var(--faint); }
+.meter { display: flex; justify-content: space-between; margin-top: 12px; color: var(--muted); font-size: 13px; }
+.dock { position: fixed; left: 0; right: 0; bottom: 78px; width: 390px; display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--line); background: var(--ink); }
+.dock .btn { height: 50px; }
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; width: 390px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px 8px 22px; border-top: 1px solid var(--line); background: rgba(12, 19, 34, 0.96); }
+.tabs a { display: grid; justify-items: center; gap: 4px; padding: 6px 0; border-radius: 10px; color: var(--muted); font-size: 11px; font-weight: 500; }
+.tabs a.on { color: var(--paper); background: var(--raised); }
+.privacy { display: flex; gap: 10px; margin-top: 18px; color: var(--muted); font-size: 13.5px; }
+.privacy svg { color: var(--mint); }
+</style></head><body>
+<header class="mbar"><img src="hunch-logo.svg" alt="Hunch" height="30"><a class="btn btn-ghost" style="height:34px;padding:0 12px">Sign in</a></header>
+<main class="m">
+  <h1>Check an OJT post before you apply</h1>
+  <p class="lede">Paste a listing or recruiter message to see its warning signs.</p>
+  <div class="seg"><a class="on">Paste text</a><a>Public link</a></div>
+    <div class="chips" style="align-items:center;margin-top:18px"><span class="muted small">Seen on</span><span class="chip on">Facebook</span><span class="chip">Messenger</span><span class="chip">Group chat</span><span class="chip">Email</span></div>
+  <div class="sheet"><p>Paste the post here</p></div>
+  <div class="meter"><span>At least 40 characters</span></div>
+  <p class="privacy">Nothing is saved unless you save the report.</p>
+</main>
+<div class="dock"><a class="btn btn-ghost">Try a sample</a><a class="btn btn-primary" style="opacity:.55">Analyze post</a></div>
+<nav class="tabs"><a class="on">{{i:file-magnifying-glass:20}}Analyze</a><a>{{i:shield-check:20}}Saved</a><a>{{i:book-open-text:20}}Guide</a><a>{{i:check-square:20}}Checklist</a></nav>
+</body></html>

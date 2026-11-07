@@ -1,0 +1,66 @@
+/* Concept D — visual polish ideas on top of the shipped minimalist design (mockup only). */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400..800&display=swap');
+
+/* 5. Typography: Geist + tabular numbers instead of monospace microcopy */
+:root { --font-sans: Geist, Inter, ui-sans-serif, system-ui, sans-serif; }
+.page-heading h1 { font-weight: 700; letter-spacing: -0.035em; }
+.panel h2, .support-card h2 { letter-spacing: -0.015em; }
+.panel-kicker, .flag-title small, .saved-report-meta, .report-footer, .breakdown-row strong, .count-label, .confidence-label { font-family: var(--font-sans); font-variant-numeric: tabular-nums; }
+.panel-kicker { align-self: flex-start; padding: 3px 8px; border: 1px solid var(--color-border); border-radius: 999px; font-size: 11px; font-weight: 600; }
+
+/* 1. Result hero: coloured risk title + score ring */
+.report-panel { --risk: var(--color-action); }
+.report-panel.risk-high-risk { --risk: var(--color-risk-high-border); }
+.report-panel.risk-caution { --risk: var(--color-risk-caution-border); }
+.report-panel.risk-low-risk { --risk: var(--color-risk-low-border); }
+.result-title-row h2 { font-size: 30px; letter-spacing: -0.025em; color: var(--risk); }
+.score-block { position: relative; display: grid; justify-items: center; align-content: center; gap: 4px; min-width: 132px; padding: 14px 12px; text-align: center; }
+.score-ring { width: 84px; height: 84px; transform: rotate(-90deg); }
+.score-ring circle { fill: none; stroke-width: 7; }
+.score-ring .track { stroke: var(--color-border); }
+.score-ring .value { stroke: var(--risk); stroke-linecap: round; }
+.score-ring-label { position: absolute; top: 14px; left: 0; right: 0; display: grid; height: 84px; place-content: center; text-align: center; }
+.score-ring-label strong { font-family: var(--font-sans); font-size: 26px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.score-ring-label span { color: var(--color-text-muted); font-size: 11px; }
+.score-block small { margin-top: 2px; color: var(--color-text-muted); font-size: 12px; }
+
+/* 2. Signal severity */
+.flag-card { border-left: 3px solid var(--sev, var(--color-border)); }
+.flag-card.sev-high { --sev: var(--color-risk-high-border); }
+.flag-card.sev-medium { --sev: var(--color-risk-caution-border); }
+.flag-card.sev-high .flag-marker { color: var(--color-risk-high-text); border-color: var(--color-risk-high-border); background: var(--color-risk-high-surface); }
+.flag-card.sev-medium .flag-marker { background: var(--color-risk-caution-surface); }
+.flag-title small { padding: 3px 8px; border-radius: 999px; color: var(--color-text-secondary); background: var(--color-surface); font-size: 11px; font-weight: 700; }
+.flag-card.is-expanded { border-left-color: var(--sev); }
+
+/* 3. Saved cards: score badge + readable meta */
+.saved-report-card { grid-template-columns: 24px 52px minmax(0, 1fr) 24px; }
+.score-chip { display: grid; width: 52px; height: 52px; place-content: center; text-align: center; border-radius: 12px; background: var(--chip-bg); color: var(--chip-fg); font-variant-numeric: tabular-nums; }
+.score-chip strong { font-size: 18px; line-height: 1; }
+.score-chip span { font-size: 10px; opacity: 0.8; }
+.score-chip.low-risk { --chip-bg: var(--color-risk-low-surface); --chip-fg: var(--color-risk-low-text); }
+.score-chip.caution { --chip-bg: var(--color-risk-caution-surface); --chip-fg: var(--color-risk-caution-text); }
+.score-chip.high-risk { --chip-bg: var(--color-risk-high-surface); --chip-fg: var(--color-risk-high-text); }
+.saved-report-meta { gap: 0; color: var(--color-text-muted); font-size: 12px; }
+.saved-report-meta span:not(:first-child, :nth-child(2))::before { content: '·'; margin: 0 8px; color: var(--color-text-disabled); }
+
+/* 4. Guide cards: distinct icon + severity tag */
+.guide-card { display: grid; grid-template-columns: auto 1fr; align-content: start; column-gap: 12px; }
+.guide-card .guide-icon { grid-row: span 1; }
+.guide-card > strong, .guide-card > span { grid-column: 1 / -1; }
+.sev-tag { align-self: center; justify-self: start; padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+.sev-tag.high { color: var(--color-risk-high-text); background: var(--color-risk-high-surface); }
+.sev-tag.medium { color: var(--color-risk-caution-text); background: var(--color-risk-caution-surface); }
+.guide-card .guide-icon.high { color: var(--color-risk-high-text); }
+.guide-card .guide-icon.medium { color: var(--color-risk-caution-text); }
+
+/* 6. Analyze page: sticky side panel + softer empty textarea */
+.analyzer-layout > aside, .analyzer-layout > .checks-panel { position: sticky; top: 96px; }
+.analyzer-panel textarea:placeholder-shown { border-style: dashed; background: transparent; }
+
+/* 7. Footer */
+.mock-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; width: min(1180px, 100%); margin: 0 auto; padding: 28px 32px 40px; border-top: 1px solid var(--color-border); color: var(--color-text-muted); font-size: 13px; }
+.mock-footer nav { display: flex; gap: 18px; }
+.mock-footer a { color: var(--color-text-secondary); text-decoration: none; }
+.guide-card > .sev-tag { grid-column: 2; }
+.saved-report-meta span:nth-child(2) { display: none; }

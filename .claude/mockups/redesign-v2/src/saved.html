@@ -1,0 +1,36 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Hunch — Saved</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Newsreader:ital,opsz,wght@0,6..72,400..500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="hunch-v2.css">
+<style>
+.filters { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.filters .field { width: 360px; }
+.thead, .tr { display: grid; grid-template-columns: 40px minmax(0, 1fr) 120px 80px 90px 20px; align-items: center; gap: 16px; padding: 0 22px; }
+.thead { height: 46px; color: var(--faint); font-size: 13px; border-bottom: 1px solid var(--line); }
+.tr { min-height: 76px; border-top: 1px solid var(--line); }
+.thead + .tr { border-top: 0; }
+.tr.sel { background: rgba(111, 166, 255, 0.06); }
+.tr strong { display: block; font-size: 15px; font-weight: 550; }
+.tr .src { margin-top: 3px; color: var(--muted); font-size: 13px; }
+.score-n { font-weight: 600; }
+.dim { color: var(--muted); font-size: 14px; }
+.compare-bar { display: flex; align-items: center; gap: 12px; width: fit-content; margin: 24px auto 0; padding: 8px 8px 8px 20px; border: 1px solid var(--line-strong); border-radius: 14px; background: var(--raised); box-shadow: var(--lift-3); }
+</style></head><body>
+{{bar:saved:in}}
+<main class="page">
+  <div class="page-head"><h1 class="title">Saved</h1><a class="btn btn-primary">Analyze a post</a></div>
+
+  <div class="filters">
+    <div class="field">{{i:magnifying-glass:17}}Search</div>
+    <div class="chips"><span class="chip on">All</span><span class="chip">High</span><span class="chip">Caution</span><span class="chip">Low</span></div>
+  </div>
+
+  <section class="panel">
+    <div class="thead"><span></span><span>Listing</span><span>Risk</span><span>Score</span><span>Saved</span><span></span></div>
+    <div class="tr sel"><span class="check on">{{i:check-bold:13}}</span><div><strong>Brightline Digital Services - Web Support OJT</strong><div class="src">School referral</div></div><span class="tag low">Low risk</span><span class="score-n">8</span><span class="dim">Jul 18</span>{{i:caret-right:16}}</div>
+    <div class="tr sel"><span class="check on">{{i:check-bold:13}}</span><div><strong>Northstar Student Tech Lab placement</strong><div class="src">School group</div></div><span class="tag low">Low risk</span><span class="score-n">18</span><span class="dim">Jul 17</span>{{i:caret-right:16}}</div>
+    <div class="tr"><span class="check">{{i:check-bold:13}}</span><div><strong>Urgent online office job with registration fee</strong><div class="src">Forwarded message</div></div><span class="tag high">High risk</span><span class="score-n">100</span><span class="dim">Jul 16</span>{{i:caret-right:16}}</div>
+    <div class="tr"><span class="check">{{i:check-bold:13}}</span><div><strong>OJT opening with limited details</strong><div class="src">Student group chat</div></div><span class="tag caution">Caution</span><span class="score-n">44</span><span class="dim">Jul 14</span>{{i:caret-right:16}}</div>
+  </section>
+
+  <div class="compare-bar"><span>2 selected</span><a class="btn btn-primary">Compare</a></div>
+</main></body></html>
