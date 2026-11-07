@@ -1,0 +1,78 @@
+/* Concept A — "Elevated Midnight": same navy brand, cards lifted with layered shadows + top-edge light. */
+:root {
+  --color-page: #060912;
+  --color-shell: #0e1626;
+  --color-surface: #121b2e;
+  --color-surface-2: #1a2640;
+  --color-surface-input: #0b1220;
+  --color-border: rgba(148, 163, 184, 0.14);
+  --color-border-muted: rgba(148, 163, 184, 0.22);
+  --radius-control: 12px;
+  --radius-card: 18px;
+  --lift: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.45), 0 14px 30px -10px rgba(0, 0, 0, 0.65), 0 34px 70px -28px rgba(10, 24, 60, 0.7);
+  --lift-hover: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 4px rgba(0, 0, 0, 0.45), 0 22px 44px -12px rgba(0, 0, 0, 0.7), 0 40px 80px -30px rgba(40, 90, 200, 0.45);
+  --glow-action: 0 0 0 1px rgba(92, 149, 255, 0.55), 0 18px 44px -14px rgba(92, 149, 255, 0.55);
+  --shadow-soft: var(--lift);
+}
+.app-shell { display: flow-root;
+  background:
+    radial-gradient(900px 520px at 12% -8%, rgba(92, 149, 255, 0.16), transparent 70%),
+    radial-gradient(700px 480px at 92% 8%, rgba(85, 230, 189, 0.07), transparent 70%),
+    var(--color-page);
+}
+
+/* Floating nav bar */
+.topbar { top: 14px; width: min(1240px, calc(100% - 32px)); margin: 14px auto 0; padding: 0 14px 0 18px; min-height: 64px; border: 1px solid var(--color-border); border-radius: 18px; background: rgba(14, 22, 38, 0.78); box-shadow: var(--lift); }
+.nav-link { padding: 9px 13px; border-radius: 999px; }
+.nav-link.active { color: var(--color-text); background: linear-gradient(180deg, rgba(92, 149, 255, 0.28), rgba(92, 149, 255, 0.12)); box-shadow: inset 0 0 0 1px rgba(138, 180, 255, 0.35), 0 6px 18px -8px rgba(92, 149, 255, 0.8); }
+.account-link { padding: 0 14px; min-height: 38px; border: 1px solid var(--color-border-muted); border-radius: 999px; background: rgba(255, 255, 255, 0.03); }
+
+/* Headings */
+.eyebrow, .section-label { letter-spacing: 0.14em; }
+.page-heading > div > .eyebrow { display: inline-flex; padding: 5px 10px; border: 1px solid rgba(138, 180, 255, 0.3); border-radius: 999px; background: rgba(92, 149, 255, 0.1); }
+.page-heading h1 { letter-spacing: -0.02em; }
+
+/* Every card: lift + top-edge light */
+.panel, .support-card, .workflow-step, .flag-card, .saved-report-card, .full-checklist li, .compare-option, .preview-note, .score-block, .confirm-dialog {
+  border-color: var(--color-border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0) 120px), var(--color-surface);
+  box-shadow: var(--lift);
+}
+.panel, .support-card { padding: 28px; }
+.workflow-step, .flag-card, .saved-report-card, .full-checklist li, .compare-option, .support-card { transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease; }
+.workflow-step:hover, .flag-card:hover, .saved-report-card:hover, .full-checklist li:hover, .compare-option:hover, .support-card:hover { transform: translateY(-3px); border-color: rgba(138, 180, 255, 0.35); box-shadow: var(--lift-hover); }
+.checks-panel, .compare-rail { background: linear-gradient(160deg, rgba(92, 149, 255, 0.14), rgba(92, 149, 255, 0) 55%), var(--color-shell); }
+
+/* Selected / current cards glow */
+.workflow-step.is-current, .saved-report-card.is-selected, .compare-option.is-selected, .flag-card.is-expanded { border-color: transparent; background: linear-gradient(180deg, rgba(92, 149, 255, 0.2), rgba(92, 149, 255, 0.06)), var(--color-surface); box-shadow: var(--glow-action), var(--lift); }
+
+/* Icon tiles */
+.guide-icon, .settings-icon, .confirm-dialog-icon, .guidance-icon { border-radius: 12px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 18px -8px rgba(92, 149, 255, 0.7); }
+.workflow-number { width: 28px; height: 28px; }
+
+/* Buttons */
+.button { min-height: 42px; padding: 0 16px; border-radius: 12px; transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease; }
+.button-primary { color: #06101f; background: linear-gradient(180deg, #7fb0ff, #4f86f5); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 10px 24px -8px rgba(92, 149, 255, 0.75); }
+.button-primary:hover:not(:disabled) { background: linear-gradient(180deg, #96bfff, #5c95ff); transform: translateY(-1px); }
+.button-secondary { background: rgba(255, 255, 255, 0.03); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05); }
+.button-secondary:hover:not(:disabled) { transform: translateY(-1px); }
+
+/* Inputs: recessed */
+select, input, textarea, .search-field { border-color: var(--color-border-muted); background: var(--color-surface-input); box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.35); }
+.input-mode-toggle { padding: 4px; border-radius: 999px; background: var(--color-surface-input); box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.35); }
+.input-mode-toggle button { border-radius: 999px; padding: 0 14px; }
+.input-mode-toggle button.is-active { background: linear-gradient(180deg, #2a4a85, #1d3666); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 4px 12px -4px rgba(0, 0, 0, 0.6); }
+
+/* Report */
+.report-panel { border-left-width: 1px; }
+.report-panel.risk-high-risk { box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.45), 0 30px 70px -30px rgba(239, 68, 68, 0.45), var(--lift); }
+.report-panel.risk-caution { box-shadow: 0 0 0 1px rgba(234, 191, 66, 0.45), 0 30px 70px -30px rgba(234, 191, 66, 0.4), var(--lift); }
+.report-panel.risk-low-risk { box-shadow: 0 0 0 1px rgba(49, 200, 148, 0.45), 0 30px 70px -30px rgba(49, 200, 148, 0.4), var(--lift); }
+.score-block strong { font-size: 40px; }
+.risk-pill { padding: 5px 10px; }
+.report-guidance { border-radius: 14px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 12px 28px -14px rgba(85, 230, 189, 0.5); }
+.progress-track, .analysis-progress-track { box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5); }
+.progress-track span { background: linear-gradient(90deg, #5c95ff, #55e6bd); }
+
+/* Support pages use the full content width instead of 880px */
+.support-page:not(.auth-page) { max-width: none; }

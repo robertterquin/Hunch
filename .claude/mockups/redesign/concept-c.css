@@ -1,0 +1,65 @@
+/* Concept C — "Quiet Lift": minimalist. Flat solid colours, no gradients or glows; cards stand out with a clean border + soft neutral shadow and lift on hover. */
+:root {
+  --color-page: #090c14;
+  --color-shell: #111827;
+  --color-surface: #111827;
+  --color-surface-2: #1a2232;
+  --color-surface-input: #0c111c;
+  --color-border: #232c3d;
+  --color-border-muted: #2f3a4f;
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --lift: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --lift-hover: 0 2px 4px rgba(0, 0, 0, 0.4), 0 16px 40px rgba(0, 0, 0, 0.5);
+  --shadow-soft: var(--lift);
+}
+
+/* Plain nav: solid bar, simple active pill */
+.topbar { background: var(--color-page); box-shadow: none; backdrop-filter: none; border-bottom-color: var(--color-border); }
+.nav-link { border-radius: 8px; }
+.nav-link.active { color: var(--color-text); background: var(--color-surface-2); box-shadow: none; }
+
+/* Headings: more air, quieter eyebrow */
+.page-heading h1 { letter-spacing: -0.02em; }
+.eyebrow, .section-label { color: var(--color-text-muted); }
+.page-stack { gap: 32px; }
+
+/* Cards: one solid surface, thin border, soft shadow */
+.panel, .support-card, .workflow-step, .flag-card, .saved-report-card, .full-checklist li, .compare-option, .preview-note, .score-block, .confirm-dialog, .checks-panel, .compare-rail {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--lift);
+}
+.panel, .support-card { padding: 28px; }
+.flag-card, .saved-report-card, .full-checklist li, .compare-option, .preview-note { background: var(--color-surface-2); box-shadow: none; }
+.workflow-step, .flag-card, .saved-report-card, .full-checklist li, .compare-option, .support-card { transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
+.workflow-step:hover, .saved-report-card:hover, .full-checklist li:hover, .compare-option:hover, .support-card:hover { transform: translateY(-2px); border-color: var(--color-border-muted); box-shadow: var(--lift-hover); }
+
+/* Selected = solid accent border, no glow */
+.workflow-step.is-current, .saved-report-card.is-selected, .compare-option.is-selected, .flag-card.is-expanded { border-color: var(--color-action); background: var(--color-surface); }
+.workflow-step.is-complete { border-color: var(--color-border); }
+
+/* Icon tiles: flat */
+.guide-icon, .settings-icon, .confirm-dialog-icon { border: 0; border-radius: 10px; background: var(--color-surface-2); }
+
+/* Buttons: solid fills, no gradients */
+.button { min-height: 40px; border-radius: 10px; transition: background 140ms ease, border-color 140ms ease, transform 140ms ease; }
+.button-primary:hover:not(:disabled) { transform: translateY(-1px); }
+.button-secondary { background: transparent; }
+
+/* Inputs: flat, quiet focus */
+select, input, textarea, .search-field { border-color: var(--color-border-muted); background: var(--color-surface-input); box-shadow: none; }
+.input-mode-toggle { border-color: var(--color-border); background: var(--color-surface-input); }
+.input-mode-toggle button.is-active { background: var(--color-surface-2); color: var(--color-text); }
+
+/* Report: risk shown by a thin top rule instead of a coloured left bar */
+.report-panel { border-left-width: 1px; border-top: 3px solid var(--color-action); }
+.report-panel.risk-high-risk { border-top-color: var(--color-risk-high-border); }
+.report-panel.risk-caution { border-top-color: var(--color-risk-caution-border); }
+.report-panel.risk-low-risk { border-top-color: var(--color-risk-low-border); }
+.score-block { box-shadow: none; background: var(--color-surface-2); }
+.report-guidance { border-color: var(--color-border); background: var(--color-surface-2); }
+.report-guidance .section-label { color: var(--color-mint); }
+
+/* Support pages use the full content width instead of 880px */
+.support-page:not(.auth-page) { max-width: none; }
