@@ -1,50 +1,45 @@
 :root {
-  --color-page: #090c14;
-  --color-shell: #111827;
-  --color-surface: #111827;
-  --color-surface-2: #1a2232;
-  --color-surface-input: #0c111c;
-  --color-border: #232c3d;
-  --color-border-muted: #2f3a4f;
-  --color-text: #f8fafc;
-  --color-text-secondary: #cbd5e1;
-  --color-text-muted: #94a3b8;
-  --color-text-disabled: #64748b;
-  --color-action: #5c95ff;
-  --color-action-hover: #8ab4ff;
-  --color-action-active: #3f7fec;
-  --color-action-text: #08101f;
-  --color-action-surface: #142b50;
-  --color-focus: #8ab4ff;
-  --color-mint: #55e6bd;
-  --color-mint-surface: #10352f;
-  --color-yellow: #f8d66d;
-  --color-yellow-surface: #342b12;
-  --color-risk-low-text: #8bf0c0;
-  --color-risk-low-surface: #10352f;
-  --color-risk-low-border: #31c894;
-  --color-risk-caution-text: #f8d66d;
-  --color-risk-caution-surface: #342b12;
-  --color-risk-caution-border: #eabf42;
-  --color-risk-high-text: #fca5a5;
-  --color-risk-high-surface: #351416;
-  --color-risk-high-border: #ef4444;
-  --color-success: #55e6bd;
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
+  /* Surfaces: ink page, slate panels, raised sheets, sunk inputs */
+  --color-page: #0c1322;
+  --color-surface: #141d30;
+  --color-raised: #1b2640;
+  --color-sunk: #0f1728;
+  --color-border: #26324b;
+  --color-border-strong: #34425f;
+
+  /* Text (every value passes 4.5:1 on --color-raised, the lightest surface) */
+  --color-text: #e8edf6;
+  --color-text-secondary: #b9c3d6;
+  --color-text-muted: #8e9ab3;
+  --color-text-faint: #8390aa;
+
+  /* Action + risk. Risk colours double as highlighter marks on the listing text. */
+  --color-action: #6fa6ff;
+  --color-action-hover: #8fbaff;
+  --color-action-text: #08111f;
+  --color-action-wash: rgba(111, 166, 255, 0.12);
+  --color-high: #ff7a70;
+  --color-high-wash: rgba(255, 122, 112, 0.16);
+  --color-caution: #f2c14e;
+  --color-caution-wash: rgba(242, 193, 78, 0.16);
+  --color-low: #52d6a6;
+  --color-low-wash: rgba(82, 214, 166, 0.14);
+  --color-focus: #8fbaff;
+
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-quote: 'Newsreader Variable', Georgia, serif; /* only for the listing's own words */
+
+  --radius-sheet: 22px;
+  --radius-panel: 16px;
   --radius-control: 10px;
-  --radius-card: 16px;
-  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
-  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 16px 40px rgba(0, 0, 0, 0.5);
-  --shadow-focus: 0 0 0 3px rgba(138, 180, 255, 0.24);
-  --motion-fast: 120ms;
-  --motion-lift: 160ms;
+
+  --lift-1: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 1px 2px rgba(0, 0, 0, 0.45), 0 8px 20px -6px rgba(2, 6, 16, 0.55);
+  --lift-3: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 4px 8px rgba(0, 0, 0, 0.35), 0 40px 80px -24px rgba(2, 6, 16, 0.9);
+  --shadow-focus: 0 0 0 3px rgba(143, 186, 255, 0.3);
+  --motion-fast: 140ms;
+
   font-family: var(--font-sans);
+  font-feature-settings: 'tnum' 1;
   color: var(--color-text);
   background: var(--color-page);
   font-synthesis: none;
@@ -55,8 +50,9 @@
 
 * { box-sizing: border-box; }
 html { background: var(--color-page); }
-body { margin: 0; min-width: 320px; min-height: 100svh; }
-button, input, select, textarea { font: inherit; }
+body { margin: 0; min-width: 320px; min-height: 100svh; font-size: 15px; line-height: 1.55; }
+h1, h2, h3, p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; }
 #root { min-height: 100svh; }

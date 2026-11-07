@@ -70,11 +70,7 @@ export function ConfirmDialog({ open, title, description, confirmLabel, onConfir
     <div className="modal-backdrop" role="presentation" onMouseDown={handleBackdropClick}>
       <div className="confirm-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} aria-describedby={descriptionId}>
         <div className="confirm-dialog-heading">
-          <span className={`confirm-dialog-icon${danger ? ' is-danger' : ''}`}><Icon icon="ph:warning-circle-duotone" width={19} height={19} aria-hidden="true" /></span>
-          <div>
-            <p className="eyebrow">Confirm action</p>
-            <h2 id={titleId}>{title}</h2>
-          </div>
+          <h2 id={titleId}>{title}</h2>
           <button className="modal-close" type="button" onClick={onCancel} aria-label="Close confirmation" title="Close confirmation"><Icon icon="ph:x" width={18} height={18} aria-hidden="true" /></button>
         </div>
         <p className="confirm-dialog-description" id={descriptionId}>{description}</p>

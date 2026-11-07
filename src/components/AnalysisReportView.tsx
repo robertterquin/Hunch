@@ -1,12 +1,16 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Icon } from '@iconify/react'
-import type { AnalysisReport } from '../types/analysis'
+import { highlightPost } from '../lib/highlightPost'
+import { RULE_CATALOG } from '../data/ruleCatalog'
+import { passedCheckLabels } from '../data/supportContent'
+import type { AnalysisReport, RiskLevel } from '../types/analysis'
 
-const riskLabels = {
-  'low-risk': 'Low risk',
-  caution: 'Caution',
-  'high-risk': 'High risk',
-} as const
+const riskLabels: Record<RiskLevel, string> = { 'low-risk': 'Low risk', caution: 'Caution', 'high-risk': 'High risk' }
+const adviceHeadlines: Record<RiskLevel, string> = {
+  'high-risk': 'Don’t pay or send documents.',
+  caution: 'Check the details before you reply.',
+  'low-risk': 'A low score isn’t proof the offer is real.',
+}
 
 interface AnalysisReportViewProps {
   report: AnalysisReport
@@ -14,87 +18,86 @@ interface AnalysisReportViewProps {
   onToggleChecklist?: (checklistId: string) => void
   onSave?: () => void
   isSaved?: boolean
-  compact?: boolean
 }
 
-export function AnalysisReportView({ report, id, onToggleChecklist, onSave, isSaved = false, compact = false }: AnalysisReportViewProps) {
-  const [expandedFlagId, setExpandedFlagId] = useState<string | null>(null)
-  const completedCount = report.checklist.filter((item) => item.completed).length
+export function AnalysisReportView({ report, id, onToggleChecklist, onSave, isSaved = false }: AnalysisReportViewProps) {
+  const sortedFlags = useMemo(() => [...report.flags].sort((left, right) => right.scoreImpact - left.scoreImpact), [report.flags])
+  const [openFlagId, setOpenFlagId] = useState<string | null>(sortedFlags[0]?.id ?? null)
+  const { segments, numbers } = useMemo(() => highlightPost(report.originalText, report.flags), [report.originalText, report.flags])
+  const level = report.riskLevel
 
   return (
-    <section id={id} className={`panel report-panel risk-${report.riskLevel}${compact ? ' report-compact' : ''}`} aria-labelledby={`report-${report.id}`}>
-      <div className="report-header">
+    <section id={id} className={`report report-${level}`} aria-labelledby={`report-${report.id}`}>
+      {onSave && <div className="report-toolbar"><button className="button button-primary" type="button" onClick={onSave} disabled={isSaved}>{isSaved ? 'Report saved' : 'Save report'}</button></div>}
+
+      <header className="verdict">
         <div>
-          <p className="eyebrow eyebrow-with-mark"><Icon icon="ph:sparkle" width={13} height={13} aria-hidden="true" />Check result</p>
-          <div className="result-title-row">
-            <h2 id={`report-${report.id}`}>{riskLabels[report.riskLevel]}</h2>
-            <span className={`risk-pill risk-pill-${report.riskLevel}`}>{report.confidence} confidence</span>
-          </div>
-          <p className="report-summary">{report.summary}</p>
-          {report.sourceUrl && <div className="report-source">
-            <p className="section-label">Source URL</p>
-            <a className="report-source-link" href={report.sourceUrl} target="_blank" rel="noreferrer" title="Open the original public listing">
-              <Icon icon="ph:arrow-square-out" width={14} height={14} aria-hidden="true" /><span>{report.sourceUrl}</span>
-            </a>
-          </div>}
+          <span className={`tag tag-${level}`}>{report.confidence[0].toUpperCase() + report.confidence.slice(1)} confidence</span>
+          <h2 className="verdict-title" id={`report-${report.id}`}>{riskLabels[level]}</h2>
+          <p className="verdict-summary">{report.summary}</p>
+          {report.sourceUrl && <a className="source-link" href={report.sourceUrl} target="_blank" rel="noreferrer"><Icon icon="ph:arrow-square-out" width={15} height={15} aria-hidden="true" /><span>{report.sourceUrl}</span></a>}
         </div>
-        <div className="report-header-side">
-          <div className="score-block">
-            <strong>{report.riskScore}</strong>
-            <span>/ 100</span>
-            <small>risk estimate</small>
+        <div className="score">
+          <p className="score-number"><strong>{report.riskScore}</strong><span>/ 100</span></p>
+          <div className="scale" role="img" aria-label={`Risk estimate ${report.riskScore} out of 100, ${riskLabels[level].toLowerCase()} range`}>
+            <span /><span /><span /><i className="scale-pin" style={{ left: `${Math.min(98.5, Math.max(1.5, report.riskScore))}%` }} />
           </div>
-          <div className="report-guidance">
-            <div className="guidance-icon" aria-hidden="true"><Icon icon="ph:check-bold" width={16} height={16}  /></div>
-            <div><p className="section-label">What to do next</p><p className="uncertainty-copy">{report.studentAdvice}</p></div>
-          </div>
+          <div className="scale-labels" aria-hidden="true"><span>Low</span><span>Caution</span><span>High</span></div>
         </div>
-      </div>
+      </header>
+
+      <p className="advice"><strong>{adviceHeadlines[level]}</strong> <span>{report.studentAdvice}</span></p>
 
       <div className="report-grid">
-        <div>
-          <div className="section-heading-row">
-            <div><p className="section-label">What we noticed</p><p className="report-subheading">Confirmed signals</p></div>
-            <span className="count-label">{report.flags.length} found</span>
-          </div>
-          {report.flags.length > 0 ? (
-            <div className="flag-list">
-              {report.flags.map((flag) => {
-                const isExpanded = expandedFlagId === flag.id
-                return (
-                  <article className={`flag-card${isExpanded ? ' is-expanded' : ''}`} key={flag.id}>
-                    <button className="flag-toggle" type="button" onClick={() => setExpandedFlagId(isExpanded ? null : flag.id)} aria-expanded={isExpanded}>
-                      <span className="flag-marker" aria-hidden="true"><Icon icon="ph:warning-circle" width={14} height={14}  /></span>
-                      <span className="flag-title"><strong>{flag.title}</strong><small>{flag.scoreImpact} points</small></span>
-                      {isExpanded ? <Icon icon="ph:caret-up" width={17} height={17} aria-hidden="true" /> : <Icon icon="ph:caret-down" width={17} height={17} aria-hidden="true" />}
-                    </button>
-                    {isExpanded && <div className="flag-detail"><p>{flag.explanation}</p><blockquote>{flag.evidence}</blockquote><p className="next-action"><strong>Next step:</strong> {flag.nextAction}</p></div>}
-                  </article>
-                )
-              })}
-            </div>
-          ) : <p className="muted-copy">No confirmed warning signals were found in this listing.</p>}
-        </div>
+        <div className="report-main">
+          <section className="sheet post">
+            <div className="post-head"><h3>The post</h3></div>
+            <p className="post-text">
+              {segments.map((segment, index) => segment.flag
+                ? <mark key={index} className={`mark-${segment.flag.severity}${segment.flag.id === openFlagId ? ' is-focus' : ''}`}>{segment.text}<sup aria-label={`warning sign ${segment.number}`}>{segment.number}</sup></mark>
+                : <span key={index}>{segment.text}</span>)}
+            </p>
+          </section>
 
-        <div className="report-side-column">
-          <div>
-            <div className="section-heading-row"><p className="section-label">How the score adds up</p><span className="count-label">capped at 100</span></div>
-            <div className="breakdown-list">{report.scoreBreakdown.map((item) => <div className="breakdown-row" key={item.ruleId}><span>{item.label}</span><strong>+{item.scoreImpact}</strong></div>)}</div>
-          </div>
-          <div>
-            <p className="section-label">Missing information</p>
-            {report.missingInformation.length > 0 ? <ul className="missing-list">{report.missingInformation.map((item) => <li key={item}>{item}</li>)}</ul> : <p className="muted-copy">The post includes the main details Hunch can check.</p>}
-          </div>
-          <div>
-            <div className="section-heading-row"><p className="section-label">Before applying</p><span className="count-label">{completedCount}/{report.checklist.length}</span></div>
-            <ul className="checklist-list report-checklist">
-              {report.checklist.map((item) => <li key={item.id}><button className={`check-button${item.completed ? ' is-complete' : ''}`} type="button" onClick={() => onToggleChecklist?.(item.id)} aria-label={`${item.completed ? 'Mark incomplete' : 'Complete'}: ${item.label}`}><Icon icon="ph:check-bold" width={14} height={14} aria-hidden="true" /></button><span className={item.completed ? 'is-complete' : ''}>{item.label}</span></li>)}
+          {report.missingInformation.length > 0 && <section className="panel panel-pad">
+            <h3>Missing from the post</h3>
+            <ul className="plain-list">{report.missingInformation.map((item) => <li key={item}>{item}</li>)}</ul>
+          </section>}
+
+          {report.checklist.length > 0 && <section className="panel panel-pad">
+            <h3>Before you apply</h3>
+            <ul className="check-list">
+              {report.checklist.map((item) => <li key={item.id}>
+                <button className={`check${item.completed ? ' is-on' : ''}`} type="button" onClick={() => onToggleChecklist?.(item.id)} aria-pressed={item.completed} aria-label={`${item.completed ? 'Mark incomplete' : 'Mark done'}: ${item.label}`}><Icon icon="ph:check-bold" width={13} height={13} aria-hidden="true" /></button>
+                <span className={item.completed ? 'is-done' : ''}>{item.label}</span>
+              </li>)}
             </ul>
-          </div>
+          </section>}
         </div>
-      </div>
 
-      <div className="report-footer"><span className="safety-note"><Icon icon="ph:lock-simple" width={14} height={14} aria-hidden="true" /> A lower score is not a guarantee of safety.</span>{onSave && <button className="button button-primary button-compact" type="button" onClick={onSave} disabled={isSaved}>{isSaved ? 'Report saved' : 'Save report'}</button>}</div>
+        {sortedFlags.length > 0 ? <section className="panel signs" aria-label="Warning signs">
+          <h3 className="signs-head">Warning signs</h3>
+          {sortedFlags.map((flag) => {
+            const isOpen = flag.id === openFlagId
+            return <article className={`sign${isOpen ? ' is-open' : ''}`} key={flag.id}>
+              <button className="sign-row" type="button" onClick={() => setOpenFlagId(isOpen ? null : flag.id)} aria-expanded={isOpen}>
+                <span className={`num num-${flag.severity}`} aria-label={`${flag.severity === 'high' ? 'High-risk' : 'Caution'} sign ${numbers[flag.id]}`}>{numbers[flag.id]}</span>
+                <strong>{flag.title}</strong>
+                <span className="pts">+{flag.scoreImpact}</span>
+                <Icon icon={isOpen ? 'ph:caret-up' : 'ph:caret-down'} width={16} height={16} aria-hidden="true" />
+              </button>
+              {isOpen && <div className="sign-body">
+                <p>{flag.explanation}</p>
+                {!segments.some((segment) => segment.flag?.id === flag.id) && <blockquote>{flag.evidence}</blockquote>}
+                <p className="sign-next">{flag.nextAction}</p>
+              </div>}
+            </article>
+          })}
+        </section> : <section className="panel signs" aria-label="Checks">
+          <div className="signs-head"><h3>Nothing flagged</h3><span>{RULE_CATALOG.length} checks</span></div>
+          <ul className="passed-list">{RULE_CATALOG.map((rule) => <li key={rule.id}><Icon icon="ph:check-circle" width={18} height={18} aria-hidden="true" />{passedCheckLabels[rule.category]}</li>)}</ul>
+        </section>}
+      </div>
     </section>
   )
 }

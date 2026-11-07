@@ -31,13 +31,12 @@ export function AppShell() {
         </Link>
 
         <nav className="desktop-nav" aria-label="Primary navigation">
-          {navigation.map(({ label, to, icon }) => (
+          {navigation.map(({ label, to }) => (
             <NavLink
               key={to}
               to={to}
               className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
             >
-              <span className="nav-icon"><Icon icon={icon} width="16" height="16" aria-hidden="true" /></span>
               {label}
             </NavLink>
           ))}

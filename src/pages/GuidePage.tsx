@@ -3,9 +3,36 @@ import { Link, useParams } from 'react-router-dom'
 import { SupportPage } from '../components/support/SupportPage'
 import { guideEntries } from '../data/supportContent'
 
+type GuideEntry = (typeof guideEntries)[number]
+
+function GuideCard({ entry }: { entry: GuideEntry }) {
+  return <Link className={`panel guide-card guide-${entry.severity}`} to={`/guide/${entry.id}`}>
+    <h3><Icon icon={entry.icon} width={20} height={20} aria-hidden="true" />{entry.title}</h3>
+    <p>{entry.summary}</p>
+    {entry.example && <p className="quote"><mark className={`mark-${entry.severity}`}>{entry.example}</mark></p>}
+  </Link>
+}
+
 export function GuidePage() {
   const { patternId } = useParams()
   const pattern = guideEntries.find((item) => item.id === patternId)
-  if (pattern) return <SupportPage eyebrow="Scam Guide > Pattern" title={pattern.title} description={pattern.description} actions={<Link className="button button-secondary" to="/guide"><Icon icon="ph:arrow-left" width={16} height={16} aria-hidden="true" />All patterns</Link>}><section className="guide-detail-grid"><article className="panel guide-detail"><div className="guide-icon"><Icon icon="ph:book-open-text-duotone" width={22} height={22} aria-hidden="true" /></div><p className="section-label">Why it matters</p><p>{pattern.rationale}</p><p className="section-label">What to do</p><p>{pattern.safetyTip}</p><p className="section-label">Related checklist actions</p><ul className="guide-action-list"><li><Icon icon="ph:check-bold" width={15} height={15} aria-hidden="true" />{pattern.safetyTip}</li><li><Icon icon="ph:check-bold" width={15} height={15} aria-hidden="true" />Verify through a school coordinator or official company channel before applying.</li></ul><div className="guide-callout"><Icon icon="ph:shield-check" width={17} height={17} aria-hidden="true" /><span>Hunch describes signals in a post. It does not accuse a company or prove fraud.</span></div><Link className="button button-primary" to={`/analyze?fixture=${pattern.fixtureId}`}><Icon icon="ph:file-magnifying-glass" width={16} height={16} aria-hidden="true" />Try a sample post</Link></article><aside className="panel guide-next"><p className="eyebrow">Keep checking</p><h2>One signal is a reason to verify, not a verdict.</h2><ul className="signal-list"><li><Icon icon="ph:check-bold" width={16} height={16} aria-hidden="true" />Confirm the company through an independent channel.</li><li><Icon icon="ph:check-bold" width={16} height={16} aria-hidden="true" />Ask for clear role and supervisor details.</li><li><Icon icon="ph:check-bold" width={16} height={16} aria-hidden="true" />Do not send money or sensitive documents early.</li></ul></aside></section></SupportPage>
-  return <SupportPage eyebrow="Scam Guide" title="Learn the common signals" description="Plain-language patterns from Hunch's rule catalog to help students pause, verify, and decide what to do next."><section className="support-grid guide-grid">{guideEntries.map((item) => <Link className="support-card guide-card" key={item.id} to={`/guide/${item.id}`}><div className="guide-icon"><Icon icon="ph:book-open-text-duotone" width={22} height={22} aria-hidden="true" /></div><strong>{item.title}</strong><span>{item.description}</span><span className="text-link">Read pattern <Icon icon="ph:arrow-right" width={14} height={14} aria-hidden="true" /></span></Link>)}</section></SupportPage>
+
+  if (pattern) return <SupportPage title={pattern.title} actions={<Link className="button button-quiet" to="/guide"><Icon icon="ph:arrow-left" width={16} height={16} aria-hidden="true" />Scam Guide</Link>}>
+    <article className="panel panel-pad guide-detail">
+      <span className={`tag tag-${pattern.severity === 'high' ? 'high-risk' : 'caution'}`}>{pattern.severity === 'high' ? 'High risk' : 'Caution'}</span>
+      <p className="guide-lead">{pattern.description}</p>
+      {pattern.example && <p className="quote"><mark className={`mark-${pattern.severity}`}>{pattern.example}</mark></p>}
+      <h3>Why it matters</h3>
+      <p>{pattern.rationale}</p>
+      <h3>What to do</h3>
+      <p>{pattern.safetyTip}</p>
+      <p className="muted">Hunch points out warning signs in a post. It doesn’t accuse a company or prove fraud.</p>
+      <Link className="button button-primary" to={`/analyze?fixture=${pattern.fixtureId}`}>Try a sample post</Link>
+    </article>
+  </SupportPage>
+
+  return <SupportPage title="Scam Guide" description="The eight patterns Hunch looks for.">
+    <section className="guide-group"><h2>High risk</h2><div className="guide-grid guide-grid-2">{guideEntries.filter((entry) => entry.severity === 'high').map((entry) => <GuideCard entry={entry} key={entry.id} />)}</div></section>
+    <section className="guide-group"><h2>Caution</h2><div className="guide-grid">{guideEntries.filter((entry) => entry.severity !== 'high').map((entry) => <GuideCard entry={entry} key={entry.id} />)}</div></section>
+  </SupportPage>
 }

@@ -172,9 +172,9 @@ export function AnalyzePage() {
     resetInput()
   }
 
-  const characterCount = text.length
-  const canAnalyze = (inputMode === 'paste' ? text.trim().length >= 40 : Boolean(linkUrl.trim()) && !detectedSocial) && !isAnalyzing
-  const currentStep = isAnalyzing ? 2 : activeReport ? 3 : text.trim() ? 2 : 1
+  const trimmedLength = text.trim().length
+  const canAnalyze = (inputMode === 'paste' ? trimmedLength >= 40 : Boolean(linkUrl.trim()) && !detectedSocial) && !isAnalyzing
+  const hasInput = inputMode === 'paste' ? Boolean(text) : Boolean(linkUrl)
   const loadingCopy = analysisStage === 'idle' ? null : analysisStageCopy[analysisStage]
   const isCurrentReportSaved = activeReport ? savedReports.some((report) => report.id === activeReport.id) : false
   const handleSave = async () => {
@@ -189,112 +189,65 @@ export function AnalyzePage() {
   }
 
   return (
-    <div className="page-stack">
-      <section className="page-heading">
+    <div className="page-stack analyze-page">
+      <header className="page-heading">
         <div>
-          <p className="eyebrow">Analyze</p>
-          <h1>Let’s check this opportunity.</h1>
-          <p className="page-intro">Bring an OJT or internship post, and Hunch will help you spot signals, ask better questions, and choose your next step.</p>
+          <h1>Check an OJT post before you apply</h1>
+          <p className="page-intro">Paste a listing or recruiter message to see its warning signs.</p>
         </div>
-      </section>
+      </header>
 
       {notice && <div className="notice notice-success" role="status" aria-live="polite"><Icon icon="ph:check-bold" width={16} height={16} aria-hidden="true" />{notice}</div>}
 
-      <ol className="workflow-steps" aria-label="How Hunch works">
-        {[
-          ['1', 'Paste', 'Add the listing or recruiter message.'],
-          ['2', 'Review signals', 'See the score and evidence behind each warning.'],
-          ['3', 'Verify safely', 'Use the checklist before sharing details or applying.'],
-        ].map(([number, title, description], index) => {
-          const step = index + 1
-          return <li className={`workflow-step${currentStep === step ? ' is-current' : ''}${currentStep > step ? ' is-complete' : ''}`} key={number} aria-current={currentStep === step ? 'step' : undefined}>
-            <span className="workflow-number">{currentStep > step ? <Icon icon="ph:check-bold" width={14} height={14} aria-hidden="true" /> : number}</span>
-            <span><strong>{title}</strong><small>{description}</small></span>
-          </li>
-        })}
-      </ol>
-
-      <section className="analyzer-layout">
-        <form className="panel analyzer-panel" onSubmit={handleAnalyze} aria-busy={isAnalyzing}>
-          <div className="panel-heading">
-            <div><p className="eyebrow">Step 1 of 3</p><h2>{inputMode === 'paste' ? 'Paste the listing' : 'Analyze a public link'}</h2></div>
-            <span className="panel-kicker">{inputMode === 'paste' ? 'Text check' : 'Public page'}</span>
+      <form className="sheet analyzer" onSubmit={handleAnalyze} aria-busy={isAnalyzing}>
+        <div className="analyzer-top">
+          <div className="segmented" role="group" aria-label="Choose listing input method">
+            <button aria-pressed={inputMode === 'paste'} type="button" onClick={() => { setInputMode('paste'); setError('') }} disabled={isAnalyzing}>Paste text</button>
+            <button aria-pressed={inputMode === 'link'} type="button" onClick={() => { setInputMode('link'); setError('') }} disabled={isAnalyzing}>Public link</button>
           </div>
+        </div>
 
-          <div className="input-mode-toggle" role="group" aria-label="Choose listing input method">
-            <button className={inputMode === 'paste' ? 'is-active' : ''} type="button" onClick={() => { setInputMode('paste'); setError('') }} disabled={isAnalyzing}>Paste text</button>
-            <button className={inputMode === 'link' ? 'is-active' : ''} type="button" onClick={() => { setInputMode('link'); setError('') }} disabled={isAnalyzing}><Icon icon="ph:link-simple" width={15} height={15} aria-hidden="true" />Public link</button>
-          </div>
-
-          {inputMode === 'paste' ? <>
-            <label className="field-label" htmlFor="source">Where did you find it?</label>
-            <select id="source" value={sourceType} onChange={(event) => setSourceType(event.target.value as SourceType)} disabled={isAnalyzing}>
-              {sourceOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-            </select>
-            <label className="field-label" htmlFor="listing">Listing or recruiter message</label>
-            <textarea id="listing" value={text} onChange={(event) => setText(event.target.value)} placeholder="Paste the listing, recruiter message, or forwarded post here." aria-describedby="listing-help listing-count" aria-invalid={Boolean(error && inputMode === 'paste')} disabled={isAnalyzing} />
-            <div className="field-meta"><span id="listing-help">Use at least 40 characters for a meaningful check.</span><span id="listing-count">{characterCount} characters</span></div>
-            {text.length > 0 && text.trim().length < 40 && <p className="field-warning"><Icon icon="ph:warning-circle" width={15} height={15} aria-hidden="true" />Paste {40 - text.trim().length} more characters to continue.</p>}
-          </> : <>
-            <label className="field-label" htmlFor="public-link">Public listing URL</label>
-            <input id="public-link" type="url" value={linkUrl} onChange={(event) => { setLinkUrl(event.target.value); if (error) setError('') }} placeholder="https://example.com/internship" autoComplete="url" inputMode="url" aria-describedby="public-link-help" aria-invalid={Boolean(error && inputMode === 'link')} disabled={isAnalyzing} />
-            <p className="field-help" id="public-link-help">Hunch can read public HTML pages only. Login-protected, private, JavaScript-only, blocked, or non-HTML pages need to be pasted manually.</p>
-            {detectedSocial && (
-              <div className="social-link-banner" role="status">
-                <div className="social-link-banner-text">
-                  <strong className="social-link-banner-title">{detectedSocial.name} links require a login</strong>
-                  <span>{detectedSocial.name} blocks direct link reading. Copy the post text and use <span className="social-link-target"><strong>Paste text</strong> instead.</span></span>
-                </div>
-                <button
-                  className="button button-secondary button-compact"
-                  type="button"
-                  onClick={() => switchToPaste(detectedSocial.sourceType, detectedSocial.name)}
-                >
-                  Switch to Paste text
-                </button>
-              </div>
-            )}
-          </>}
-
-          {error && (
-            <div className="inline-error-row">
-              <p className="inline-error" role="alert"><Icon icon="ph:warning-circle" width={16} height={16} aria-hidden="true" />{error}</p>
-              {inputMode === 'link' && (
-                <button
-                  className="button button-secondary button-compact"
-                  type="button"
-                  onClick={() => switchToPaste(detectedSocial?.sourceType ?? 'facebook', detectedSocial?.name)}
-                >
-                  Switch to Paste text
-                </button>
-              )}
+        {inputMode === 'paste' ? <>
+          <fieldset className="source-chips" disabled={isAnalyzing}>
+            <legend>Seen on</legend>
+            {sourceOptions.map((option) => <label className="chip" key={option.value}><input className="sr-only" type="radio" name="source" value={option.value} checked={sourceType === option.value} onChange={() => setSourceType(option.value)} />{option.label}</label>)}
+          </fieldset>
+          <label className="sr-only" htmlFor="listing">Listing or recruiter message</label>
+          <textarea id="listing" className="listing-input" value={text} onChange={(event) => setText(event.target.value)} placeholder="Paste the post here" aria-describedby="listing-help" aria-invalid={Boolean(error && inputMode === 'paste')} disabled={isAnalyzing} />
+        </> : <div className="link-body">
+          <label className="field-label" htmlFor="public-link">Public listing URL</label>
+          <input id="public-link" type="url" value={linkUrl} onChange={(event) => { setLinkUrl(event.target.value); if (error) setError('') }} placeholder="https://example.com/internship" autoComplete="url" inputMode="url" aria-describedby="public-link-help" aria-invalid={Boolean(error && inputMode === 'link')} disabled={isAnalyzing} />
+          <p className="field-help" id="public-link-help">Public pages only. Posts behind a login need to be pasted.</p>
+          {detectedSocial && (
+            <div className="banner" role="status">
+              <p><strong>{detectedSocial.name} needs a login.</strong> Copy the post text and paste it instead.</p>
+              <button className="button button-secondary" type="button" onClick={() => switchToPaste(detectedSocial.sourceType, detectedSocial.name)}>Switch to Paste text</button>
             </div>
           )}
+        </div>}
 
-          <div className="button-row">
-            <button className="button button-secondary" type="button" onClick={clearInput} disabled={isAnalyzing || (!(inputMode === 'paste' ? text : linkUrl) && !activeReport)}><Icon icon="ph:arrow-counter-clockwise" width={16} height={16} aria-hidden="true" />Clear</button>
-            {inputMode === 'paste' && <button className="button button-secondary" type="button" onClick={loadSample} disabled={isAnalyzing}><Icon icon="ph:file-text" width={16} height={16} aria-hidden="true" />Try a sample</button>}
-            <button className="button button-primary" type="submit" disabled={!canAnalyze}>{isAnalyzing ? <Icon icon="ph:circle-notch" width={16} height={16} className="spin" aria-hidden="true" /> : <Icon icon="ph:arrow-right" width={16} height={16} aria-hidden="true" />}{isAnalyzing ? 'Checking' : inputMode === 'paste' ? 'Analyze post' : 'Analyze link'}</button>
+        {error && (
+          <div className="analyzer-error">
+            <p className="inline-error" role="alert"><Icon icon="ph:warning-circle" width={16} height={16} aria-hidden="true" />{error}</p>
+            {inputMode === 'link' && !detectedSocial && <button className="button button-secondary" type="button" onClick={() => switchToPaste()}>Switch to Paste text</button>}
           </div>
-          {loadingCopy && <div className="analysis-progress" role="status" aria-live="polite">
-            <div className="analysis-progress-heading"><span className="analysis-progress-icon"><Icon icon="ph:circle-notch" width={16} height={16} className="spin" aria-hidden="true" /></span><span><strong>{loadingCopy.label}</strong><small>{loadingCopy.detail}</small></span></div>
-            <div className="analysis-progress-track" aria-hidden="true"><span className={analysisStage === 'explaining' ? 'is-explaining' : ''} /></div>
-          </div>}
-          <p className="trust-note">Hunch detects warning signals, not definite scams. A low score is not proof that a listing is safe.</p>
-          <p className="privacy-note"><Icon icon="ph:lock-simple" width={15} height={15} aria-hidden="true" /><span><strong>Privacy note:</strong> Pasted text is not saved unless you choose to save the report.</span></p>
-        </form>
+        )}
 
-        <aside className="panel checks-panel" aria-label="What Hunch checks">
-          <div className="signal-motif" aria-hidden="true"><Icon icon="ph:sparkle" width={16} height={16}  /><span /><span /><span /></div>
-          <p className="eyebrow">Step 2 of 3</p>
-          <h2>Understand the signal, then choose your next step.</h2>
-          <ul className="signal-list">{['Payment requests', 'Recruiter email details', 'Company and role clarity', 'Urgency and chat-only hiring', 'Early sensitive-data requests'].map((item) => <li key={item}><Icon icon="ph:check-bold" width={16} height={16} aria-hidden="true" />{item}</li>)}</ul>
-          {activeReport ? <div className="preview-note preview-note-ready"><span className="preview-score"><Icon icon="ph:check-bold" width={20} height={20} aria-hidden="true" /></span><span><strong>Your result is ready below.</strong><br />Review the score, evidence, and checklist.</span></div> : <div className="preview-note"><span className="preview-score">--</span><span><strong>Your result will appear here.</strong><br />Hunch keeps the score next to its evidence and checklist.</span></div>}
-        </aside>
-      </section>
+        {loadingCopy && <div className="progress" role="status" aria-live="polite"><Icon icon="ph:circle-notch" width={16} height={16} className="spin" aria-hidden="true" /><span><strong>{loadingCopy.label}</strong> {loadingCopy.detail}</span></div>}
+
+        <div className="analyzer-foot">
+          <span className="muted" id="listing-help">{inputMode === 'paste' ? (text.length > 0 && trimmedLength < 40 ? `${40 - trimmedLength} more characters needed` : text.length > 0 ? `${text.length} characters` : 'At least 40 characters') : ''}</span>
+          <div className="analyzer-actions">
+            {(hasInput || activeReport) && <button className="button button-quiet" type="button" onClick={clearInput} disabled={isAnalyzing}>Clear</button>}
+            {inputMode === 'paste' && <button className="button button-quiet" type="button" onClick={loadSample} disabled={isAnalyzing}>Try a sample</button>}
+            <button className="button button-primary button-large" type="submit" disabled={!canAnalyze}>{isAnalyzing && <Icon icon="ph:circle-notch" width={16} height={16} className="spin" aria-hidden="true" />}{isAnalyzing ? 'Checking' : inputMode === 'paste' ? 'Analyze post' : 'Analyze link'}</button>
+          </div>
+        </div>
+      </form>
+      <p className="page-note">Nothing is saved unless you save the report.</p>
 
       {activeReport && <AnalysisReportView id="analysis-result" report={activeReport} onToggleChecklist={(checklistId) => toggleChecklistItem(activeReport.id, checklistId)} onSave={() => void handleSave()} isSaved={isCurrentReportSaved} />}
-      <ConfirmDialog open={isClearDialogOpen} title="Clear this listing?" description="This will remove the current listing and its unsaved analysis from this session." confirmLabel="Clear listing" danger onCancel={() => setIsClearDialogOpen(false)} onConfirm={() => { setIsClearDialogOpen(false); resetInput() }} />
+      <ConfirmDialog open={isClearDialogOpen} title="Clear this listing?" description="This removes the listing and its unsaved result." confirmLabel="Clear" danger onCancel={() => setIsClearDialogOpen(false)} onConfirm={() => { setIsClearDialogOpen(false); resetInput() }} />
     </div>
   )
 }
