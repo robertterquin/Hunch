@@ -1,11 +1,11 @@
 :root {
-  --color-page: #080b14;
-  --color-shell: #0d1424;
-  --color-surface: #131d30;
-  --color-surface-2: #1a2940;
-  --color-surface-input: #101a2d;
-  --color-border: #31415b;
-  --color-border-muted: #40516d;
+  --color-page: #090c14;
+  --color-shell: #111827;
+  --color-surface: #111827;
+  --color-surface-2: #1a2232;
+  --color-surface-input: #0c111c;
+  --color-border: #232c3d;
+  --color-border-muted: #2f3a4f;
   --color-text: #f8fafc;
   --color-text-secondary: #cbd5e1;
   --color-text-muted: #94a3b8;
@@ -38,10 +38,12 @@
   --space-5: 24px;
   --space-6: 32px;
   --radius-control: 10px;
-  --radius-card: 12px;
-  --shadow-soft: 0 14px 38px rgba(0, 0, 0, 0.18);
+  --radius-card: 16px;
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 16px 40px rgba(0, 0, 0, 0.5);
   --shadow-focus: 0 0 0 3px rgba(138, 180, 255, 0.24);
   --motion-fast: 120ms;
+  --motion-lift: 160ms;
   font-family: var(--font-sans);
   color: var(--color-text);
   background: var(--color-page);
