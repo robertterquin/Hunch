@@ -2,33 +2,23 @@ import { Icon } from '@iconify/react'
 import { Link } from 'react-router-dom'
 import { ReportListCard } from '../components/support/ReportListCard'
 import { SupportPage } from '../components/support/SupportPage'
+import { sourceLabels } from '../data/supportContent'
 import { useSavedReportFilters } from '../hooks/useSavedReportFilters'
 import { useAppState } from '../app/stateContext'
 
-const riskFilters = [['all', 'All'], ['high-risk', 'High'], ['caution', 'Caution'], ['low-risk', 'Low']] as const
-
 export function SavedPage() {
   const { savedReports, user, isSupabaseConfigured, isAuthLoading } = useAppState()
-  const { query, setQuery, risk, setRisk, selectedIds, visibleReports, toggleSelected } = useSavedReportFilters(savedReports)
-  const analyzeLink = <Link className="button button-primary" to="/analyze">Analyze a post</Link>
+  const { query, setQuery, risk, setRisk, source, setSource, dateRange, setDateRange, sort, setSort, selectedIds, visibleReports, availableSources, toggleSelected, hasFilters, clearFilters } = useSavedReportFilters(savedReports)
 
-  if (isSupabaseConfigured && !user && !isAuthLoading) return <SupportPage title="Saved" actions={analyzeLink}><section className="panel empty-panel"><h2>Sign in to see saved reports</h2><p>You can analyze posts without an account.</p><Link className="button button-primary" to="/auth/sign-in">Sign in</Link></section></SupportPage>
-  if (isSupabaseConfigured && isAuthLoading) return <SupportPage title="Saved"><section className="panel empty-panel" role="status"><p>Loading saved reports…</p></section></SupportPage>
+  if (isSupabaseConfigured && !user && !isAuthLoading) return <SupportPage eyebrow="Saved" title="Your saved checks" description="Saved reports are private to your account." actions={<Link className="button button-primary" to="/analyze"><Icon icon="ph:arrow-right" width={16} height={16} aria-hidden="true" />New analysis</Link>}><section className="panel empty-panel"><Icon icon="ph:lock-simple-duotone" width={28} height={28} aria-hidden="true" /><h2>Sign in to open Saved.</h2><p>Your current analysis can stay anonymous. Sign in only when you want to save or revisit a report.</p><Link className="button button-primary" to="/auth/sign-in">Sign in to continue <Icon icon="ph:arrow-right" width={16} height={16} aria-hidden="true" /></Link></section></SupportPage>
+  if (isSupabaseConfigured && isAuthLoading) return <SupportPage eyebrow="Saved" title="Your saved checks" description="Loading your private reports."><section className="panel empty-panel"><Icon icon="ph:magnifying-glass-duotone" width={28} height={28} aria-hidden="true" /><h2>Loading saved reports</h2><p>Hunch is checking your account before showing private report data.</p></section></SupportPage>
 
-  return <SupportPage title="Saved" actions={analyzeLink}>
-    <div className="filters">
-      <label className="search-field"><Icon icon="ph:magnifying-glass" width={17} height={17} aria-hidden="true" /><span className="sr-only">Search saved reports</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search" /></label>
-      <div className="chips" role="group" aria-label="Filter by risk">{riskFilters.map(([value, label]) => <button key={value} className="chip" type="button" aria-pressed={risk === value} onClick={() => setRisk(value)}>{label}</button>)}</div>
-    </div>
-
-    {visibleReports.length > 0 ? <section className="panel saved-table">
-      <div className="saved-head" aria-hidden="true"><span /><span>Listing</span><span>Risk</span><span>Score</span><span>Saved</span><span /></div>
-      <ul>{visibleReports.map((report) => <ReportListCard key={report.id} report={report} selected={selectedIds.includes(report.id)} onSelect={() => toggleSelected(report.id)} />)}</ul>
-    </section> : <section className="panel empty-panel"><h2>{savedReports.length === 0 ? 'No saved reports yet' : 'No reports match'}</h2><p>{savedReports.length === 0 ? 'Save a report after you analyze a post.' : 'Try another search or filter.'}</p></section>}
-
-    {selectedIds.length > 0 && <div className="compare-bar" role="status">
-      <span>{selectedIds.length} selected</span>
-      {selectedIds.length >= 2 ? <Link className="button button-primary" to={`/compare?ids=${selectedIds.join(',')}`}>Compare</Link> : <span className="muted">Select one more to compare</span>}
-    </div>}
+  return <SupportPage eyebrow="Saved" title="Your saved checks" description="Keep private report snapshots here so you can review or compare them later." actions={<Link className="button button-primary" to="/analyze"><Icon icon="ph:arrow-right" width={16} height={16} aria-hidden="true" />New analysis</Link>}>
+    <section className="saved-layout"><div className="saved-list-panel panel">
+      <div className="filter-row"><label className="search-field"><Icon icon="ph:magnifying-glass" width={16} height={16} aria-hidden="true" /><span className="sr-only">Search saved checks</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search title, text, source, or link" /></label><label className="filter-select"><span className="sr-only">Filter by risk</span><select value={risk} onChange={(event) => setRisk(event.target.value)}><option value="all">All risk levels</option><option value="low-risk">Low risk</option><option value="caution">Caution</option><option value="high-risk">High risk</option></select></label></div>
+      <div className="filter-row filter-row-secondary"><label className="filter-select"><span className="sr-only">Filter by source</span><select value={source} onChange={(event) => setSource(event.target.value)}><option value="all">All sources</option>{availableSources.map((value) => <option key={value} value={value}>{sourceLabels[value]}</option>)}</select></label><label className="filter-select"><span className="sr-only">Filter by date</span><select value={dateRange} onChange={(event) => setDateRange(event.target.value)}><option value="all">Any date</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option></select></label><label className="filter-select"><span className="sr-only">Sort saved reports</span><select value={sort} onChange={(event) => setSort(event.target.value)}><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="highest-risk">Highest risk</option><option value="lowest-risk">Lowest risk</option></select></label></div>
+      <div className="list-heading"><div><p className="section-label">Private reports</p><span className="muted-copy">{visibleReports.length} of {savedReports.length} checks</span></div>{hasFilters && <button className="button button-secondary button-compact" type="button" onClick={clearFilters}><Icon icon="ph:x" width={14} height={14} aria-hidden="true" />Clear filters</button>}</div>
+      {visibleReports.length > 0 ? <div className="saved-report-list">{visibleReports.map((report) => <ReportListCard key={report.id} report={report} selected={selectedIds.includes(report.id)} onSelect={() => toggleSelected(report.id)} />)}</div> : <div className="empty-inline"><Icon icon="ph:magnifying-glass-duotone" width={22} height={22} aria-hidden="true" /><strong>{savedReports.length === 0 ? 'No saved checks yet.' : 'No checks match those filters.'}</strong><span>{savedReports.length === 0 ? 'Analyze an OJT post and save the report to compare it later.' : 'Try a different search or clear the filters.'}</span></div>}
+    </div><aside className="panel compare-rail"><p className="eyebrow">Compare</p><h2>Look at reports side by side.</h2><p className="muted-copy">Select two or more saved reports to compare scores, evidence, missing information, and checklist progress.</p><div className="selection-count"><span>{selectedIds.length}</span><span>selected</span></div><Link className={`button button-primary${selectedIds.length < 2 ? ' is-disabled' : ''}`} to={selectedIds.length >= 2 ? `/compare?ids=${selectedIds.join(',')}` : '/saved'} aria-disabled={selectedIds.length < 2}><Icon icon="ph:check-square" width={16} height={16} aria-hidden="true" />Compare selected</Link><p className="safety-note"><Icon icon="ph:shield-check" width={14} height={14} aria-hidden="true" />The lower score is not guaranteed safe.</p></aside></section>
   </SupportPage>
 }

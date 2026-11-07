@@ -9,8 +9,10 @@ export function SettingsPage() {
   const { savedReports, deleteAllReports, signOut, user, isSupabaseConfigured } = useAppState()
   const [message, setMessage] = useState('')
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const location = isSupabaseConfigured && user ? 'from your account' : 'from this browser session'
-  const count = savedReports.length
+  const location = isSupabaseConfigured && user ? 'from your private account' : 'from this browser session'
+  const clearReports = async () => {
+    setIsDeleteDialogOpen(true)
+  }
   const confirmClearReports = async () => {
     setIsDeleteDialogOpen(false)
     const result = await deleteAllReports()
@@ -18,17 +20,10 @@ export function SettingsPage() {
   }
   const handleSignOut = async () => {
     const result = await signOut()
-    setMessage(result.error ?? 'You are signed out. Your current unsaved report is still here.')
+    setMessage(result.error ?? 'You are signed out. Private saved data is no longer active in this session, but an unsaved current report stays available.')
   }
   return <>
-    <SupportPage title="Settings" className="settings-page">
-      <section className="panel settings-list">
-        <div className="settings-row"><div><h2>Account</h2><p>{user?.email ?? 'Not signed in'}</p></div>{user ? <button className="button button-secondary" type="button" onClick={() => void handleSignOut()}>Sign out</button> : <Link className="button button-secondary" to="/auth/sign-in">Sign in</Link>}</div>
-        <div className="settings-row"><div><h2>Privacy</h2><p>Hunch only keeps reports you save: the post text, its link and the result.</p></div></div>
-        <div className="settings-row"><div><h2>Delete saved reports</h2><p>{count === 0 ? 'No saved reports.' : `Removes ${count === 1 ? 'your saved report' : `all ${count} saved reports`} ${location}. This can’t be undone.`}</p></div><button className="button button-danger-outline" type="button" onClick={() => setIsDeleteDialogOpen(true)} disabled={count === 0}>Delete all</button></div>
-      </section>
-      {message && <div className={`notice ${message.startsWith('All') || message.startsWith('You are') ? 'notice-success' : 'notice-error'}`} role="status" aria-live="polite"><Icon icon="ph:check-bold" width={16} height={16} aria-hidden="true" />{message}</div>}
-    </SupportPage>
-    <ConfirmDialog open={isDeleteDialogOpen} title="Delete all saved reports?" description={`This permanently removes all saved reports ${location}. This can’t be undone.`} confirmLabel="Delete all" danger onCancel={() => setIsDeleteDialogOpen(false)} onConfirm={() => void confirmClearReports()} />
+    <SupportPage eyebrow="Settings" title="Account and privacy" description="Control what Hunch keeps in this browser session and how you return to your saved checks."><section className="settings-stack"><div className="panel settings-row"><div className="settings-icon"><Icon icon="ph:gear-six-duotone" width={22} height={22} aria-hidden="true" /></div><div><h2>{user ? 'Signed in' : 'Anonymous session'}</h2><p className="muted-copy">{user?.email ?? 'You can analyze without an account. Sign in only when you want to save private reports.'}</p></div>{user ? <button className="button button-secondary" type="button" onClick={() => void handleSignOut()}>Sign out</button> : <Link className="button button-secondary" to="/auth/sign-in">Sign in</Link>}</div><div className="panel settings-row"><div className="settings-icon"><Icon icon="ph:lock-simple-duotone" width={22} height={22} aria-hidden="true" /></div><div><h2>Privacy notice</h2><p className="muted-copy">Submitted text and public-link extracts stay in the active browser flow. Hunch saves report text and source links only when you explicitly save a report.</p></div><span className="privacy-badge">Explicit save only</span></div><div className="panel settings-row settings-danger"><div className="settings-icon"><Icon icon="ph:trash-duotone" width={22} height={22} aria-hidden="true" /></div><div><h2>Delete saved data</h2><p className="muted-copy">{savedReports.length} saved report{savedReports.length === 1 ? '' : 's'} {isSupabaseConfigured && user ? 'in your account' : 'in this session'}. Deleting saved reports does not delete an unsaved active analysis.</p></div><button className="button button-secondary" type="button" onClick={() => void clearReports()} disabled={savedReports.length === 0}>Delete all</button></div>{message && <div className={`notice ${message.startsWith('All') || message.startsWith('You are') ? 'notice-success' : 'notice-error'}`} role="status" aria-live="polite"><Icon icon="ph:check-bold" width={16} height={16} aria-hidden="true" />{message}</div>}</section></SupportPage>
+    <ConfirmDialog open={isDeleteDialogOpen} title="Delete all saved reports?" description={`This will permanently remove all saved reports ${location}. This cannot be undone.`} confirmLabel="Delete all" danger onCancel={() => setIsDeleteDialogOpen(false)} onConfirm={() => void confirmClearReports()} />
   </>
 }
