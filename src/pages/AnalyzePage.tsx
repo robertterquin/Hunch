@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { ArrowRight, Check, CircleAlert, FileText, Link as LinkIcon, LoaderCircle, LockKeyhole, RotateCcw, Sparkles } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { AnalysisReportView } from '../components/AnalysisReportView'
 import { ConfirmDialog } from '../components/ConfirmDialog'
@@ -198,7 +198,7 @@ export function AnalyzePage() {
         </div>
       </section>
 
-      {notice && <div className="notice notice-success" role="status" aria-live="polite"><Check size={16} aria-hidden="true" />{notice}</div>}
+      {notice && <div className="notice notice-success" role="status" aria-live="polite"><Icon icon="ph:check-bold" width={16} height={16} aria-hidden="true" />{notice}</div>}
 
       <ol className="workflow-steps" aria-label="How Hunch works">
         {[
@@ -208,7 +208,7 @@ export function AnalyzePage() {
         ].map(([number, title, description], index) => {
           const step = index + 1
           return <li className={`workflow-step${currentStep === step ? ' is-current' : ''}${currentStep > step ? ' is-complete' : ''}`} key={number} aria-current={currentStep === step ? 'step' : undefined}>
-            <span className="workflow-number">{currentStep > step ? <Check size={14} aria-hidden="true" /> : number}</span>
+            <span className="workflow-number">{currentStep > step ? <Icon icon="ph:check-bold" width={14} height={14} aria-hidden="true" /> : number}</span>
             <span><strong>{title}</strong><small>{description}</small></span>
           </li>
         })}
@@ -223,7 +223,7 @@ export function AnalyzePage() {
 
           <div className="input-mode-toggle" role="group" aria-label="Choose listing input method">
             <button className={inputMode === 'paste' ? 'is-active' : ''} type="button" onClick={() => { setInputMode('paste'); setError('') }} disabled={isAnalyzing}>Paste text</button>
-            <button className={inputMode === 'link' ? 'is-active' : ''} type="button" onClick={() => { setInputMode('link'); setError('') }} disabled={isAnalyzing}><LinkIcon size={15} aria-hidden="true" />Public link</button>
+            <button className={inputMode === 'link' ? 'is-active' : ''} type="button" onClick={() => { setInputMode('link'); setError('') }} disabled={isAnalyzing}><Icon icon="ph:link-simple" width={15} height={15} aria-hidden="true" />Public link</button>
           </div>
 
           {inputMode === 'paste' ? <>
@@ -234,7 +234,7 @@ export function AnalyzePage() {
             <label className="field-label" htmlFor="listing">Listing or recruiter message</label>
             <textarea id="listing" value={text} onChange={(event) => setText(event.target.value)} placeholder="Paste the listing, recruiter message, or forwarded post here." aria-describedby="listing-help listing-count" aria-invalid={Boolean(error && inputMode === 'paste')} disabled={isAnalyzing} />
             <div className="field-meta"><span id="listing-help">Use at least 40 characters for a meaningful check.</span><span id="listing-count">{characterCount} characters</span></div>
-            {text.length > 0 && text.trim().length < 40 && <p className="field-warning"><CircleAlert size={15} aria-hidden="true" />Paste {40 - text.trim().length} more characters to continue.</p>}
+            {text.length > 0 && text.trim().length < 40 && <p className="field-warning"><Icon icon="ph:warning-circle" width={15} height={15} aria-hidden="true" />Paste {40 - text.trim().length} more characters to continue.</p>}
           </> : <>
             <label className="field-label" htmlFor="public-link">Public listing URL</label>
             <input id="public-link" type="url" value={linkUrl} onChange={(event) => { setLinkUrl(event.target.value); if (error) setError('') }} placeholder="https://example.com/internship" autoComplete="url" inputMode="url" aria-describedby="public-link-help" aria-invalid={Boolean(error && inputMode === 'link')} disabled={isAnalyzing} />
@@ -258,7 +258,7 @@ export function AnalyzePage() {
 
           {error && (
             <div className="inline-error-row">
-              <p className="inline-error" role="alert"><CircleAlert size={16} aria-hidden="true" />{error}</p>
+              <p className="inline-error" role="alert"><Icon icon="ph:warning-circle" width={16} height={16} aria-hidden="true" />{error}</p>
               {inputMode === 'link' && (
                 <button
                   className="button button-secondary button-compact"
@@ -272,24 +272,24 @@ export function AnalyzePage() {
           )}
 
           <div className="button-row">
-            <button className="button button-secondary" type="button" onClick={clearInput} disabled={isAnalyzing || (!(inputMode === 'paste' ? text : linkUrl) && !activeReport)}><RotateCcw size={16} aria-hidden="true" />Clear</button>
-            {inputMode === 'paste' && <button className="button button-secondary" type="button" onClick={loadSample} disabled={isAnalyzing}><FileText size={16} aria-hidden="true" />Try a sample</button>}
-            <button className="button button-primary" type="submit" disabled={!canAnalyze}>{isAnalyzing ? <LoaderCircle className="spin" size={16} aria-hidden="true" /> : <ArrowRight size={16} aria-hidden="true" />}{isAnalyzing ? 'Checking' : inputMode === 'paste' ? 'Analyze post' : 'Analyze link'}</button>
+            <button className="button button-secondary" type="button" onClick={clearInput} disabled={isAnalyzing || (!(inputMode === 'paste' ? text : linkUrl) && !activeReport)}><Icon icon="ph:arrow-counter-clockwise" width={16} height={16} aria-hidden="true" />Clear</button>
+            {inputMode === 'paste' && <button className="button button-secondary" type="button" onClick={loadSample} disabled={isAnalyzing}><Icon icon="ph:file-text" width={16} height={16} aria-hidden="true" />Try a sample</button>}
+            <button className="button button-primary" type="submit" disabled={!canAnalyze}>{isAnalyzing ? <Icon icon="ph:circle-notch" width={16} height={16} className="spin" aria-hidden="true" /> : <Icon icon="ph:arrow-right" width={16} height={16} aria-hidden="true" />}{isAnalyzing ? 'Checking' : inputMode === 'paste' ? 'Analyze post' : 'Analyze link'}</button>
           </div>
           {loadingCopy && <div className="analysis-progress" role="status" aria-live="polite">
-            <div className="analysis-progress-heading"><span className="analysis-progress-icon"><LoaderCircle className="spin" size={16} aria-hidden="true" /></span><span><strong>{loadingCopy.label}</strong><small>{loadingCopy.detail}</small></span></div>
+            <div className="analysis-progress-heading"><span className="analysis-progress-icon"><Icon icon="ph:circle-notch" width={16} height={16} className="spin" aria-hidden="true" /></span><span><strong>{loadingCopy.label}</strong><small>{loadingCopy.detail}</small></span></div>
             <div className="analysis-progress-track" aria-hidden="true"><span className={analysisStage === 'explaining' ? 'is-explaining' : ''} /></div>
           </div>}
           <p className="trust-note">Hunch detects warning signals, not definite scams. A low score is not proof that a listing is safe.</p>
-          <p className="privacy-note"><LockKeyhole size={15} aria-hidden="true" /><span><strong>Privacy note:</strong> Pasted text is not saved unless you choose to save the report.</span></p>
+          <p className="privacy-note"><Icon icon="ph:lock-simple" width={15} height={15} aria-hidden="true" /><span><strong>Privacy note:</strong> Pasted text is not saved unless you choose to save the report.</span></p>
         </form>
 
         <aside className="panel checks-panel" aria-label="What Hunch checks">
-          <div className="signal-motif" aria-hidden="true"><Sparkles size={16} /><span /><span /><span /></div>
+          <div className="signal-motif" aria-hidden="true"><Icon icon="ph:sparkle" width={16} height={16}  /><span /><span /><span /></div>
           <p className="eyebrow">Step 2 of 3</p>
           <h2>Understand the signal, then choose your next step.</h2>
-          <ul className="signal-list">{['Payment requests', 'Recruiter email details', 'Company and role clarity', 'Urgency and chat-only hiring', 'Early sensitive-data requests'].map((item) => <li key={item}><Check size={16} aria-hidden="true" />{item}</li>)}</ul>
-          {activeReport ? <div className="preview-note preview-note-ready"><span className="preview-score"><Check size={20} aria-hidden="true" /></span><span><strong>Your result is ready below.</strong><br />Review the score, evidence, and checklist.</span></div> : <div className="preview-note"><span className="preview-score">--</span><span><strong>Your result will appear here.</strong><br />Hunch keeps the score next to its evidence and checklist.</span></div>}
+          <ul className="signal-list">{['Payment requests', 'Recruiter email details', 'Company and role clarity', 'Urgency and chat-only hiring', 'Early sensitive-data requests'].map((item) => <li key={item}><Icon icon="ph:check-bold" width={16} height={16} aria-hidden="true" />{item}</li>)}</ul>
+          {activeReport ? <div className="preview-note preview-note-ready"><span className="preview-score"><Icon icon="ph:check-bold" width={20} height={20} aria-hidden="true" /></span><span><strong>Your result is ready below.</strong><br />Review the score, evidence, and checklist.</span></div> : <div className="preview-note"><span className="preview-score">--</span><span><strong>Your result will appear here.</strong><br />Hunch keeps the score next to its evidence and checklist.</span></div>}
         </aside>
       </section>
 

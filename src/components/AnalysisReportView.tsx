@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, ChevronDown, ChevronUp, CircleAlert, ExternalLink, LockKeyhole, Sparkles } from 'lucide-react'
+import { Icon } from '@iconify/react'
 import type { AnalysisReport } from '../types/analysis'
 
 const riskLabels = {
@@ -25,7 +25,7 @@ export function AnalysisReportView({ report, id, onToggleChecklist, onSave, isSa
     <section id={id} className={`panel report-panel risk-${report.riskLevel}${compact ? ' report-compact' : ''}`} aria-labelledby={`report-${report.id}`}>
       <div className="report-header">
         <div>
-          <p className="eyebrow eyebrow-with-mark"><Sparkles size={13} aria-hidden="true" />Check result</p>
+          <p className="eyebrow eyebrow-with-mark"><Icon icon="ph:sparkle" width={13} height={13} aria-hidden="true" />Check result</p>
           <div className="result-title-row">
             <h2 id={`report-${report.id}`}>{riskLabels[report.riskLevel]}</h2>
             <span className={`risk-pill risk-pill-${report.riskLevel}`}>{report.confidence} confidence</span>
@@ -34,7 +34,7 @@ export function AnalysisReportView({ report, id, onToggleChecklist, onSave, isSa
           {report.sourceUrl && <div className="report-source">
             <p className="section-label">Source URL</p>
             <a className="report-source-link" href={report.sourceUrl} target="_blank" rel="noreferrer" title="Open the original public listing">
-              <ExternalLink size={14} aria-hidden="true" /><span>{report.sourceUrl}</span>
+              <Icon icon="ph:arrow-square-out" width={14} height={14} aria-hidden="true" /><span>{report.sourceUrl}</span>
             </a>
           </div>}
         </div>
@@ -45,7 +45,7 @@ export function AnalysisReportView({ report, id, onToggleChecklist, onSave, isSa
             <small>risk estimate</small>
           </div>
           <div className="report-guidance">
-            <div className="guidance-icon" aria-hidden="true"><Check size={16} /></div>
+            <div className="guidance-icon" aria-hidden="true"><Icon icon="ph:check-bold" width={16} height={16}  /></div>
             <div><p className="section-label">What to do next</p><p className="uncertainty-copy">{report.studentAdvice}</p></div>
           </div>
         </div>
@@ -64,9 +64,9 @@ export function AnalysisReportView({ report, id, onToggleChecklist, onSave, isSa
                 return (
                   <article className={`flag-card${isExpanded ? ' is-expanded' : ''}`} key={flag.id}>
                     <button className="flag-toggle" type="button" onClick={() => setExpandedFlagId(isExpanded ? null : flag.id)} aria-expanded={isExpanded}>
-                      <span className="flag-marker" aria-hidden="true"><CircleAlert size={14} /></span>
+                      <span className="flag-marker" aria-hidden="true"><Icon icon="ph:warning-circle" width={14} height={14}  /></span>
                       <span className="flag-title"><strong>{flag.title}</strong><small>{flag.scoreImpact} points</small></span>
-                      {isExpanded ? <ChevronUp size={17} aria-hidden="true" /> : <ChevronDown size={17} aria-hidden="true" />}
+                      {isExpanded ? <Icon icon="ph:caret-up" width={17} height={17} aria-hidden="true" /> : <Icon icon="ph:caret-down" width={17} height={17} aria-hidden="true" />}
                     </button>
                     {isExpanded && <div className="flag-detail"><p>{flag.explanation}</p><blockquote>{flag.evidence}</blockquote><p className="next-action"><strong>Next step:</strong> {flag.nextAction}</p></div>}
                   </article>
@@ -88,13 +88,13 @@ export function AnalysisReportView({ report, id, onToggleChecklist, onSave, isSa
           <div>
             <div className="section-heading-row"><p className="section-label">Before applying</p><span className="count-label">{completedCount}/{report.checklist.length}</span></div>
             <ul className="checklist-list report-checklist">
-              {report.checklist.map((item) => <li key={item.id}><button className={`check-button${item.completed ? ' is-complete' : ''}`} type="button" onClick={() => onToggleChecklist?.(item.id)} aria-label={`${item.completed ? 'Mark incomplete' : 'Complete'}: ${item.label}`}><Check size={14} aria-hidden="true" /></button><span className={item.completed ? 'is-complete' : ''}>{item.label}</span></li>)}
+              {report.checklist.map((item) => <li key={item.id}><button className={`check-button${item.completed ? ' is-complete' : ''}`} type="button" onClick={() => onToggleChecklist?.(item.id)} aria-label={`${item.completed ? 'Mark incomplete' : 'Complete'}: ${item.label}`}><Icon icon="ph:check-bold" width={14} height={14} aria-hidden="true" /></button><span className={item.completed ? 'is-complete' : ''}>{item.label}</span></li>)}
             </ul>
           </div>
         </div>
       </div>
 
-      <div className="report-footer"><span className="safety-note"><LockKeyhole size={14} aria-hidden="true" /> A lower score is not a guarantee of safety.</span>{onSave && <button className="button button-primary button-compact" type="button" onClick={onSave} disabled={isSaved}>{isSaved ? 'Report saved' : 'Save report'}</button>}</div>
+      <div className="report-footer"><span className="safety-note"><Icon icon="ph:lock-simple" width={14} height={14} aria-hidden="true" /> A lower score is not a guarantee of safety.</span>{onSave && <button className="button button-primary button-compact" type="button" onClick={onSave} disabled={isSaved}>{isSaved ? 'Report saved' : 'Save report'}</button>}</div>
     </section>
   )
 }

@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "typecheck": "tsc -b",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "icons": "node tools/build-icons.mjs"
   },
   "dependencies": {
     "@iconify/react": "^6.0.2",
@@ -18,7 +19,6 @@
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",
     "linkedom": "^0.18.13",
-    "lucide-react": "^1.25.0",
     "motion": "^12.42.2",
     "openai": "^6.48.0",
     "react": "^19.2.7",

@@ -6,11 +6,11 @@ import { useAppState } from './stateContext'
 import hunchLogo from '../assets/hunch-logo.svg'
 
 const navigation = [
-  { label: 'Analyze', to: '/analyze', icon: 'mdi:file-search-outline' },
-  { label: 'Saved', to: '/saved', icon: 'mdi:shield-check-outline' },
-  { label: 'Scam Guide', to: '/guide', icon: 'mdi:book-open-page-variant-outline' },
-  { label: 'Checklist', to: '/checklist', icon: 'mdi:checkbox-marked-outline' },
-  { label: 'Settings', to: '/settings', icon: 'mdi:cog-outline' },
+  { label: 'Analyze', to: '/analyze', icon: 'ph:file-magnifying-glass' },
+  { label: 'Saved', to: '/saved', icon: 'ph:shield-check' },
+  { label: 'Scam Guide', to: '/guide', icon: 'ph:book-open-text' },
+  { label: 'Checklist', to: '/checklist', icon: 'ph:check-square' },
+  { label: 'Settings', to: '/settings', icon: 'ph:gear-six' },
 ]
 
 export function AppShell() {
