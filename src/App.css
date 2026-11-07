@@ -121,7 +121,7 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .guidance-icon { display: grid; width: 26px; height: 26px; flex: 0 0 auto; place-items: center; color: var(--color-action-text); border-radius: 8px; background: var(--color-mint); }
 .report-guidance .section-label { margin-bottom: 4px; color: var(--color-mint); }
 .report-guidance .uncertainty-copy { min-width: 0; margin: 0; font-size: 13px; overflow-wrap: anywhere; }
-.report-subheading { margin: -3px 0 0; color: var(--color-text-secondary); font-size: 13px; font-weight: 650; }
+.report-subheading { margin: 2px 0 0; color: var(--color-text-secondary); font-size: 13px; font-weight: 650; }
 .report-source { margin-top: 12px; }
 .report-source .section-label { margin-bottom: 4px; }
 .report-source-link { display: flex; align-items: flex-start; gap: 6px; max-width: 100%; color: var(--color-action-hover); font-size: 12px; font-weight: 700; line-height: 1.45; text-decoration: none; }
@@ -135,9 +135,12 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .report-side-column { display: grid; align-content: start; gap: 26px; }
 .count-label, .confidence-label { color: var(--color-text-muted); font-size: 12px; }
 .confidence-label.is-ready { color: var(--color-risk-low-text); }
-.flag-list { margin-top: 0; }
+.section-heading-row { align-items: baseline; margin-bottom: 12px; }
+.section-heading-row .section-label { margin-bottom: 0; }
+.report-side-column .section-label { margin-bottom: 12px; }
+.flag-list { gap: 8px; margin-top: 0; }
+.report-checklist { margin-top: 0; }
 .flag-card { border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-surface-2); overflow: hidden; transition: border-color var(--motion-fast) ease, transform var(--motion-fast) ease; }
-.flag-card + .flag-card { margin-top: 8px; }
 .flag-card.is-expanded { border-color: var(--color-action); transform: translateY(-1px); }
 .flag-toggle { display: flex; align-items: center; width: 100%; gap: 10px; padding: 13px; color: var(--color-text); border: 0; background: transparent; cursor: pointer; text-align: left; }
 .flag-toggle:hover { background: var(--color-action-surface); }
@@ -281,7 +284,7 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .checklist-progress strong { color: var(--color-action-hover); font-family: var(--font-mono); font-size: 22px; }
 .progress-track { height: 6px; overflow: hidden; border-radius: 999px; background: var(--color-surface-2); }
 .progress-track span { display: block; height: 100%; border-radius: inherit; background: var(--color-action); transition: width var(--motion-fast) ease; }
-.full-checklist { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
+.full-checklist { display: grid; gap: 8px; padding: 0; margin: 0; list-style: none; }
 .full-checklist li { display: flex; align-items: center; gap: 10px; padding: 12px; color: var(--color-text-secondary); border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-surface-2); font-size: 14px; line-height: 1.45; transition: transform var(--motion-lift) ease, box-shadow var(--motion-lift) ease, border-color var(--motion-lift) ease; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; padding: 0; margin: -1px; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .empty-panel { padding: 42px 24px; text-align: center; }
@@ -294,7 +297,7 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
 .checklist-panel { display: grid; gap: 12px; }
 .full-checklist { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .checklist-depth-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
-.report-checklist-panel { display: grid; gap: 14px; }
+.report-checklist-panel { display: grid; gap: 12px; }
 .report-specific-checklist { grid-template-columns: 1fr; }
 .report-specific-checklist li { align-items: center; }
 .report-specific-checklist li > span { display: grid; gap: 4px; }
@@ -353,7 +356,7 @@ textarea::placeholder, input::placeholder { color: var(--color-text-disabled); }
   .flag-title { align-items: flex-start; flex-wrap: wrap; gap: 4px 8px; }
   .flag-title strong { overflow: visible; text-overflow: clip; white-space: normal; line-height: 1.35; }
   .flag-detail { padding: 0 12px 12px 40px; }
-  .report-checklist { gap: 0; margin-top: 12px; }
+  .report-checklist { gap: 0; }
   .report-checklist li { min-height: 40px; padding: 8px 0; border-bottom: 1px solid var(--color-border); }
   .report-checklist li:last-child { border-bottom: 0; }
   .report-checklist li > span { line-height: 1.4; }
